@@ -1,0 +1,48 @@
+.custom-divider {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    color: #84bbd9;
+    font-weight: 600;
+}
+
+.custom-divider::after {
+    flex: 1;
+    content: "";
+    padding: 0.5px;
+    background-color: #252525;
+    margin: 5px;
+}
+
+/* start opportunity custom divider */
+.divider-line {
+    display: flex;
+    align-items: center;
+    margin: 20px 3px;
+}
+
+.divider-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #84bbd9;
+    margin-right: 10px;
+    white-space: nowrap;
+}
+
+.line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: #333;
+}
+/* end opportunity custom divider */
+
+/* start of global body css -- added by rahi */
+#kt_body {
+    --kt-toolbar-height:55px;
+    --kt-toolbar-height-tablet-and-mobile:55px
+}
+.master-header {
+    background-image:url('/assets/media/misc/pattern-1.jpg')
+}
+
+/* end of global body css */

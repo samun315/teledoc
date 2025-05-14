@@ -1,0 +1,67 @@
+.payment-option {
+    display: block;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.payment-box {
+    background: #eee;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: left;
+    font-weight: bold;
+    transition: 0.3s;
+    border: 2px solid transparent;
+    color: #007bff;
+    display: flex;
+    justify-content: space-between;
+    /* Ensures checkmark is at the end */
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+input:checked+.payment-box {
+    background: #eee;
+    border-color: #007bff;
+}
+
+.checkmark {
+    display: none;
+    font-size: 18px;
+    color: rgb(185, 185, 207);
+    font-weight: bold;
+}
+
+
+input:checked+.payment-box .checkmark {
+    display: inline-block;
+}
+
+
+.payment-text {
+    flex-grow: 1;
+    /* Ensures the text takes all available space */
+}
+
+input:checked+.payment-box .checkmark {
+    display: inline-block;
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+#preview {
+    display: none;
+    width: 100%;
+    max-height: 250px;
+}
