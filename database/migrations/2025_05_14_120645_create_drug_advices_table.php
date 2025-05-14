@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('drug_types', function (Blueprint $table) {
-            $table->id('drug_type_id');
-            $table->string('drug_type');
+        Schema::create('drug_advices', function (Blueprint $table) {
+            $table->id('drug_advice_id');
+            $table->text('drug_advice');
             $table->enum('active', ['YES', 'NO'])->default('YES');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drug_types');
+        Schema::dropIfExists('drug_advices');
     }
 };
