@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('drugs', function (Blueprint $table) {
-            $table->id('drug_id');
-            $table->string('trade_name');
-            $table->string('generic_name');
-            $table->text('note');
-            $table->text('warning');
-            $table->text('side_effect');
-            $table->text('additional_advice');
+        Schema::create('subscription_types', function (Blueprint $table) {
+            $table->id('subscription_type_id');
+            $table->string('subscription_type');
             $table->enum('active', ['YES', 'NO'])->default('YES');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drugs');
+        Schema::dropIfExists('subscription_types');
     }
 };

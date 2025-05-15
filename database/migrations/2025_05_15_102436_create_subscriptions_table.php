@@ -11,18 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('drugs', function (Blueprint $table) {
-            $table->id('drug_id');
-            $table->string('trade_name');
-            $table->string('generic_name');
-            $table->text('note');
-            $table->text('warning');
-            $table->text('side_effect');
-            $table->text('additional_advice');
+        Schema::create('subscriptions', function (Blueprint $table) {
+            $table->id('subscription_id');
+            $table->unsignedBigInteger('subscription_type_id');
+            $table->text('subscription_name');
             $table->enum('active', ['YES', 'NO'])->default('YES');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
+            $table->foreign('subscription_type_id')->references('subscription_type_id')->on('subscription_types')->onDelete('cascade');
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drugs');
+        Schema::dropIfExists('subscriptions');
     }
 };
