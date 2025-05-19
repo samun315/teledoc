@@ -4,7 +4,7 @@
 <!--begin::Head-->
 
 <head>
-    <title>OurAbs</title>
+    <title>TeleDoc</title>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' 'nonce-{{ $cspNonce }}'; style-src 'self' 'nonce-{{ $cspNonce }}' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'self';">

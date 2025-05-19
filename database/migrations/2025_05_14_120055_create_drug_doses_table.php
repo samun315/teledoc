@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
-            $table->foreign('drug_dose_id')->references('drug_dose_id')->on('drug_types')->onDelete('cascade');
+            $table->foreign('drug_type_id')->references('drug_type_id')->on('drug_types')->onDelete('cascade');
         });
     }
 

@@ -1,5 +1,5 @@
 <base href="../../">
-<title>@yield('title') | OurAbs </title>
+<title>@yield('title') | TeleDoc </title>
 
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy"
