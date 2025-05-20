@@ -41,12 +41,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/menu/menu.php'));
             //End Menu Menu-item Route
 
-            //Start Request whitelist Route
+            //Start Request drugs Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
-                ->prefix('marchant')
-                ->name('marchant.request.')
-                ->group(base_path('routes/marchant/whitelist.php'));
-            //End Request whitelist Route
+                ->prefix('drug')
+                ->name('drug.')
+                ->group(base_path('routes/drug/drug.php'));
+            //End Request drugs Route
 
             //Start Balance Request Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
