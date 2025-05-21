@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Drug;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DrugTypeRequest extends FormRequest
 {
@@ -21,8 +22,37 @@ class DrugTypeRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->input('drug_type_id')) {
+            return [
+                'drug_type' => [
+                    'required',
+                    Rule::unique('drug_types')->ignore($this->input('drug_type_id'), 'drug_type_id')
+                ],
+                'status' => 'required|max:8'
+            ];
+        }
+
         return [
-            //
+            'drug_type' => 'required|unique:drug_types',
+            'status' => 'required|max:8'
         ];
+    }
+
+    public function fields(): array
+    {
+        $inputData = [];
+
+        $inputData['drug_type'] = $this->input('drug_type');
+        $inputData['status'] = $this->input('status');
+
+        if ($this->input('drug_type_id')) {
+            $inputData['updated_by'] = loggedInUserId();
+            $inputData['updated_at'] = createdAtDateConvertToDB();
+        } else {
+            $inputData['created_by'] = loggedInUserId();
+            $inputData['created_at'] = createdAtDateConvertToDB();
+        }
+
+        return $inputData;
     }
 }
