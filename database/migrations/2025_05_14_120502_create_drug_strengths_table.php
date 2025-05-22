@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('drug_strengths', function (Blueprint $table) {
             $table->id('drug_strength_id');
             $table->string('drug_strength');
-            $table->enum('active', ['YES', 'NO'])->default('YES');
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

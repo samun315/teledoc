@@ -25,13 +25,13 @@
                 <div class="modal-body py-10 px-lg-17">
                     <div class="row mb-5">
 
-                        <input type="text" hidden name="drug_type_id" id="kt_drug_type_id">
+                        <input type="text" hidden name="drug_strength_id" id="kt_drug_strength_id">
 
                         <div class="col-md-12 fv-row mb-5">
-                            <label class="required fs-5 fw-bold mb-2">Drug Type</label>
+                            <label class="required fs-5 fw-bold mb-2">Drug Strength</label>
                             <input type="text"
-                                class="form-control form-control-solid @error('drug_type') is-invalid @enderror"
-                                placeholder="Enter drug type name" name="drug_type" id="kt_drug_type" />
+                                class="form-control form-control-solid @error('drug_strength') is-invalid @enderror"
+                                placeholder="Enter drug strength name" name="drug_strength" id="kt_drug_strength" />
                         </div>
 
                         <div class="col-md-12 fv-row mb-5">

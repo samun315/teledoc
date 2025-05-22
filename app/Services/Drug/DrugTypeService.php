@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class DrugService
+class DrugTypeService
 {
     public function getDrugTypeList(Request $request): JsonResponse|Model|Builder
     {
