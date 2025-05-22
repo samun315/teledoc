@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Drug\DrugAdviceController;
+use App\Http\Controllers\Drug\DrugDurationController;
 use App\Http\Controllers\Drug\DrugTypeController;
 use App\Http\Controllers\Drug\DrugStrengthController;
 use Illuminate\Support\Facades\Route;
@@ -33,4 +34,14 @@ Route::group(['prefix' => 'drug-advice', 'as' => 'advice.'], function () {
     Route::post('/store', [DrugAdviceController::class,  'store'])->name('store');
     Route::get('/edit/{menu_id}', [DrugAdviceController::class,  'edit'])->name('edit');
     Route::put('/update/{menu_id}', [DrugAdviceController::class,  'update'])->name('update');
+});
+
+// drug duration 
+// name route  drug.duration.index
+// url /drug/drug-duration
+Route::group(['prefix' => 'drug-duration', 'as' => 'duration.'], function () {
+    Route::get('/', [DrugDurationController::class, 'index'])->name('index');
+    Route::post('/store', [DrugDurationController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [DrugDurationController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [DrugDurationController::class,  'update'])->name('update');
 });
