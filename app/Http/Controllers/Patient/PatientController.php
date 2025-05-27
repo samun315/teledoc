@@ -20,4 +20,10 @@ class PatientController extends Controller
 
         return view('patient.index');
     }
+
+    public function create():View
+    {
+        return view('patient.create');
+
+    }
 }
