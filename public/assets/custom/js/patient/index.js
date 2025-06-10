@@ -1,5 +1,11 @@
 let selectedForm = $("#submitForm");
 
+
+    $("#kt_dob").flatpickr({
+        dateFormat: "d-m-Y",
+        allowInput: true,
+    });
+
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/patient";
 

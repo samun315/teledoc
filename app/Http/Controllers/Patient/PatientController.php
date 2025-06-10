@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Patient;
 
+use App\Constant\Patient\PatientConstant;
 use App\Http\Controllers\Controller;
 use App\Services\Patient\PatientService;
 use Illuminate\Http\JsonResponse;
@@ -21,9 +22,12 @@ class PatientController extends Controller
         return view('patient.index');
     }
 
-    public function create():View
+    public function create(): View
     {
-        return view('patient.create');
+        $data['genderList'] = PatientConstant::GENDERS;
+        $data['bloodGroupList'] = PatientConstant::BLOOD_GROUPS;
+        $data['maritalStatusList'] = PatientConstant::MARITAL_STATUSES;
 
+        return view('patient.create', $data);
     }
 }
