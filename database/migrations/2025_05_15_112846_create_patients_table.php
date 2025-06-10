@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('patient_id');
             $table->string('patient_id_number');
             $table->string('name');
-            $table->email('email')->nullable();
+            $table->string('email')->nullable();
             $table->string('phone');
             $table->date('date_of_birth')->nullable();
             $table->string('photo')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->enum('gender',['Male', 'Female', 'Others'])->nullable();
             $table->enum('blood_group',['A+', 'B+', 'A-', 'B-','AB+', 'AB-','O+', 'O-'])->nullable();
-            $table->enum('gender',['Single', 'Married', 'Divorced'])->nullable();
+            $table->enum('marital_status',['Single', 'Married', 'Divorced'])->nullable();
             $table->text('note')->nullable();
             $table->text('address')->nullable();
             $table->enum('active', ['YES', 'NO'])->default('YES');

@@ -1,0 +1,68 @@
+<?php
+
+use App\Http\Controllers\Drug\DrugAdviceController;
+use App\Http\Controllers\Drug\DrugController;
+use App\Http\Controllers\Drug\DrugDosesController;
+use App\Http\Controllers\Drug\DrugDurationController;
+use App\Http\Controllers\Drug\DrugTypeController;
+use App\Http\Controllers\Drug\DrugStrengthController;
+use Illuminate\Support\Facades\Route;
+
+// drug type 
+// name route  drug.type.index
+// url /drug/drug-type
+Route::group(['prefix' => 'drug-type', 'as' => 'type.'], function () {
+    Route::get('/', [DrugTypeController::class, 'index'])->name('index');
+    Route::post('/store', [DrugTypeController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [DrugTypeController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [DrugTypeController::class,  'update'])->name('update');
+});
+
+// drug strength 
+// name route  drug.strength.index
+// url /drug/drug-strength
+Route::group(['prefix' => 'drug-strength', 'as' => 'strength.'], function () {
+    Route::get('/', [DrugStrengthController::class, 'index'])->name('index');
+    Route::post('/store', [DrugStrengthController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [DrugStrengthController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [DrugStrengthController::class,  'update'])->name('update');
+});
+
+// drug advice 
+// name route  drug.advice.index
+// url /drug/drug-advice
+Route::group(['prefix' => 'drug-advice', 'as' => 'advice.'], function () {
+    Route::get('/', [DrugAdviceController::class, 'index'])->name('index');
+    Route::post('/store', [DrugAdviceController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [DrugAdviceController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [DrugAdviceController::class,  'update'])->name('update');
+});
+
+// drug duration 
+// name route  drug.duration.index
+// url /drug/drug-duration
+Route::group(['prefix' => 'drug-duration', 'as' => 'duration.'], function () {
+    Route::get('/', [DrugDurationController::class, 'index'])->name('index');
+    Route::post('/store', [DrugDurationController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [DrugDurationController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [DrugDurationController::class,  'update'])->name('update');
+});
+
+// drug dose 
+// name route  drug.doses.index
+// url /drug/drug-doses
+Route::group(['prefix' => 'drug-doses', 'as' => 'doses.'], function () {
+    Route::get('/', [DrugDosesController::class, 'index'])->name('index');
+    Route::post('/store', [DrugDosesController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [DrugDosesController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [DrugDosesController::class,  'update'])->name('update');
+});
+
+// drug 
+// name route  drug.index
+// url /drug
+
+Route::get('/', [DrugController::class, 'index'])->name('index');
+Route::post('/store', [DrugController::class,  'store'])->name('store');
+Route::get('/edit/{menu_id}', [DrugController::class,  'edit'])->name('edit');
+Route::put('/update/{menu_id}', [DrugController::class,  'update'])->name('update');

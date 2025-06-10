@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('drug_advices', function (Blueprint $table) {
             $table->id('drug_advice_id');
             $table->text('drug_advice');
-            $table->enum('active', ['YES', 'NO'])->default('YES');
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

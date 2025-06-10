@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id('drug_id');
             $table->string('trade_name');
             $table->string('generic_name');
-            $table->text('note');
-            $table->text('warning');
-            $table->text('side_effect');
-            $table->text('additional_advice');
-            $table->enum('active', ['YES', 'NO'])->default('YES');
+            $table->text('note')->nullable();
+            $table->text('warning')->nullable();
+            $table->text('side_effect')->nullable();
+            $table->text('additional_advice')->nullable();
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
