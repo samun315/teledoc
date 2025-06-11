@@ -1,10 +1,9 @@
 let selectedForm = $("#submitForm");
 
-
-    $("#kt_dob").flatpickr({
-        dateFormat: "d-m-Y",
-        allowInput: true,
-    });
+$("#kt_dob").flatpickr({
+    dateFormat: "d-m-Y",
+    allowInput: true,
+});
 
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/patient";
@@ -64,19 +63,19 @@ let table = $("#kt_patient_table").DataTable({
             data: "photo",
             name: "photo",
         },
-             {
+        {
             data: "info",
             name: "info",
         },
-             {
+        {
             data: "contact_info",
             name: "contact_info",
         },
-             {
+        {
             data: "medical_info",
             name: "medical_info",
         },
-             {
+        {
             data: "action",
             name: "action",
         },
@@ -122,4 +121,75 @@ let table = $("#kt_patient_table").DataTable({
 
 search.keyup(function () {
     table.draw();
+});
+
+// PHOTO PREVIEW WHEN UPLOAD FROM DEVICE
+
+const photoInput = document.getElementById("photoInput");
+const photoPreview = document.getElementById("photoPreview");
+const uploadPlaceholder = document.getElementById("uploadPlaceholder");
+const removeBtn = document.getElementById("removeBtn");
+
+photoInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            photoPreview.src = e.target.result;
+            photoPreview.style.display = "block";
+            uploadPlaceholder.style.display = "none";
+            removeBtn.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+removeBtn.addEventListener("click", function (e) {
+    e.stopPropagation(); // prevent triggering file input
+    photoInput.value = "";
+    photoPreview.src = "#";
+    photoPreview.style.display = "none";
+    uploadPlaceholder.style.display = "flex";
+    removeBtn.style.display = "none";
+});
+
+// AGE CALCULATE DEPEND ON DATE OF BIRTH
+
+const dobInput = document.getElementById("kt_dob");
+const ageInput = document.getElementById("kt_age");
+
+dobInput.addEventListener("change", function () {
+    const dobStr = this.value; // e.g. "25-06-1990"
+    if (!dobStr) {
+        ageInput.value = "";
+        return;
+    }
+
+    // Parse the "d-m-Y" format manually
+    const parts = dobStr.split("-");
+    if (parts.length !== 3) {
+        ageInput.value = "";
+        return;
+    }
+
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // months are 0-based
+    const year = parseInt(parts[2], 10);
+
+    const dob = new Date(year, month, day);
+
+    if (isNaN(dob)) {
+        ageInput.value = "";
+        return;
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+
+    ageInput.value = age >= 0 ? age : "";
 });

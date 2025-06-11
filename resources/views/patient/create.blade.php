@@ -1,6 +1,78 @@
 @extends('master')
 
 @section('title', 'Patient Create')
+@section('page_css')
+    <style nonce="{{ $cspNonce }}">
+        .upload-container {
+            position: relative;
+            width: 210px;
+            height: 210px;
+        }
+
+        .upload-box {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            overflow: hidden;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-box img {
+            width: 96%;
+            height: 96%;
+            object-fit: cover;
+            border-radius: 7px;
+            display: none;
+        }
+
+        .upload-placeholder {
+            text-align: center;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+@endsection
 @section('content')
     <!--begin::Toolbar -->
     <x-toolbar-component title="Patient Create" :breadcrumbs="[
@@ -23,17 +95,21 @@
                                 {{-- Photo Upload --}}
                                 <div class="col-md-4 fv-row mb-5">
                                     <label class="fs-5 fw-bold mb-2">Photo</label>
-                                    <div class="border p-3 rounded">
-                                        <label class="d-block">
-                                            <input type="file" name="photo" class="d-none" id="photo">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <i class="bi bi-cloud-upload display-1"></i>
-                                                <span>Click to upload or select file from File Manager</span>
+
+                                    <div class="upload-container"> <!-- move class here instead -->
+                                        <label class="upload-box" for="photoInput">
+                                            <img id="photoPreview" alt="Image Preview">
+                                            <div class="upload-placeholder" id="uploadPlaceholder">
+                                                <div class="upload-icon bi bi-cloud-upload display-1"></div>
+                                                <div>Click to upload from File Manager.</div>
                                             </div>
                                         </label>
+                                        <button type="button" class="remove-btn" id="removeBtn">×</button>
+                                        <input type="file" id="photoInput" accept="image/*">
                                     </div>
                                 </div>
                             </div>
+
 
                             <div class="col-md-12">
                                 <div class="row">
@@ -42,7 +118,7 @@
                                         <label class="fs-5 fw-bold mb-2">Name</label>
                                         <input type="text" name="name"
                                             class="form-control form-control-light @error('name') is-invalid @enderror"
-                                            value="{{ old('name') }}" placeholder="Enter Name">
+                                            value="{{ old('name') }}" placeholder="Enter Name" required>
                                         @error('name')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
@@ -53,7 +129,7 @@
                                         <label class="fs-5 fw-bold mb-2">Email</label>
                                         <input type="email" name="email"
                                             class="form-control form-control-light @error('email') is-invalid @enderror"
-                                            value="{{ old('email') }}" placeholder="Enter Email">
+                                            value="{{ old('email') }}" placeholder="Enter Email" required>
                                         @error('email')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
@@ -64,7 +140,7 @@
                                         <label class="fs-5 fw-bold mb-2">Phone</label>
                                         <input type="text" name="phone"
                                             class="form-control form-control-light @error('phone') is-invalid @enderror"
-                                            value="{{ old('phone') }}" placeholder="Enter Phone">
+                                            value="{{ old('phone') }}" placeholder="Enter Phone" required>
                                         @error('phone')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
@@ -97,7 +173,7 @@
                                         <label class="fs-5 fw-bold mb-2">Date of birth</label>
                                         <input type="text" name="dob" id="kt_dob"
                                             class="form-control form-control-light @error('dob') is-invalid @enderror"
-                                            value="{{ old('dob') }}" placeholder="Enter date of birth">
+                                            value="{{ old('dob') }}" placeholder="Enter date of birth" required>
                                         @error('dob')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
@@ -106,7 +182,7 @@
                                     {{-- Age --}}
                                     <div class="col-md-4 fv-row mb-5">
                                         <label class="fs-5 fw-bold mb-2">Age(Year)</label>
-                                        <input type="number" name="age"
+                                        <input type="number" name="age" id="kt_age"
                                             class="form-control form-control-solid @error('age') is-invalid @enderror"
                                             value="{{ old('age') }}" placeholder="Age (Year)" readonly>
                                         @error('age')
@@ -141,7 +217,7 @@
                                         <label class="fs-5 fw-bold mb-2">Gender</label>
                                         <select name="gender"
                                             class="form-select form-select-light @error('gender') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Select Gender" required>
+                                            data-control="select2" data-placeholder="Select Gender">
                                             <option value=""></option>
                                             @foreach ($genderList as $gender)
                                                 <option
@@ -163,7 +239,7 @@
                                         <label class="fs-5 fw-bold mb-2">Blood group</label>
                                         <select name="blood_group"
                                             class="form-select form-select-light @error('blood_group') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Select Blood Group" required>
+                                            data-control="select2" data-placeholder="Select Blood Group">
 
                                             <option value=""></option>
 
@@ -188,7 +264,7 @@
                                         <label class="fs-5 fw-bold mb-2">Marital status</label>
                                         <select name="marital_status" id="kt_marital_status"
                                             class="form-select form-select-light @error('marital_status') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Select Marital Status" required>
+                                            data-control="select2" data-placeholder="Select Marital Status">
                                             <option value=""></option>
                                             @foreach ($maritalStatusList as $maritalStatus)
                                                 <option
