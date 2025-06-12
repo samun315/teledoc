@@ -1,8 +1,9 @@
 let selectedForm = $("#submitForm");
 
-$("#kt_dob").flatpickr({
+$("#kt_date_of_birth").flatpickr({
     dateFormat: "d-m-Y",
     allowInput: true,
+    maxDate: "today"
 });
 
 // Get the current URL of the window
@@ -156,7 +157,7 @@ removeBtn.addEventListener("click", function (e) {
 
 // AGE CALCULATE DEPEND ON DATE OF BIRTH
 
-const dobInput = document.getElementById("kt_dob");
+const dobInput = document.getElementById("kt_date_of_birth");
 const ageInput = document.getElementById("kt_age");
 
 dobInput.addEventListener("change", function () {
@@ -178,18 +179,70 @@ dobInput.addEventListener("change", function () {
     const year = parseInt(parts[2], 10);
 
     const dob = new Date(year, month, day);
-
     if (isNaN(dob)) {
         ageInput.value = "";
         return;
     }
 
     const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const m = today.getMonth() - dob.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-        age--;
+
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+    let days = today.getDate() - dob.getDate();
+
+    if (days < 0) {
+        months--;
+        // Get days in previous month to adjust days difference
+        const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += prevMonth.getDate();
     }
 
-    ageInput.value = age >= 0 ? age : "";
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    // Calculate fractional age: years + (months/12) + (days/365)
+    const fractionalAge = years + (months / 12) + (days / 365);
+
+    ageInput.value = fractionalAge >= 0 ? fractionalAge.toFixed(1) : "";
 });
+
+
+// const dobInput = document.getElementById("kt_date_of_birth");
+// const ageInput = document.getElementById("kt_age");
+
+// dobInput.addEventListener("change", function () {
+//     const dobStr = this.value; // e.g. "25-06-1990"
+//     if (!dobStr) {
+//         ageInput.value = "";
+//         return;
+//     }
+
+//     // Parse the "d-m-Y" format manually
+//     const parts = dobStr.split("-");
+//     if (parts.length !== 3) {
+//         ageInput.value = "";
+//         return;
+//     }
+
+//     const day = parseInt(parts[0], 10);
+//     const month = parseInt(parts[1], 10) - 1; // months are 0-based
+//     const year = parseInt(parts[2], 10);
+
+//     const dob = new Date(year, month, day);
+
+//     if (isNaN(dob)) {
+//         ageInput.value = "";
+//         return;
+//     }
+
+//     const today = new Date();
+//     let age = today.getFullYear() - dob.getFullYear();
+//     const m = today.getMonth() - dob.getMonth();
+//     if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+//         age--;
+//     }
+
+//     ageInput.value = age >= 0 ? age : "";
+// });

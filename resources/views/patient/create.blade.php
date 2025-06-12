@@ -86,8 +86,15 @@
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
         <div id="kt_content_container" class="container-fluid">
-            <form action="{{ route('patient.store') }}" method="POST" enctype="multipart/form-data">
+            <form class="form" method="POST" enctype="multipart/form-data"
+                action="{{ isset($editModeData) ? route('patient.update', $editModeData->patient_id) : route('patient.store') }}">
                 @csrf
+
+                @isset($editModeData)
+                    @method('PUT')
+                    <input type="text" hidden id="kt_patient_id" name="patient_id" value="{{ $editModeData->patient_id }}">
+                @endisset
+
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -105,7 +112,7 @@
                                             </div>
                                         </label>
                                         <button type="button" class="remove-btn" id="removeBtn">×</button>
-                                        <input type="file" id="photoInput" accept="image/*">
+                                        <input type="file" id="photoInput" name="photo" accept="image/*">
                                     </div>
                                 </div>
                             </div>
@@ -115,7 +122,7 @@
                                 <div class="row">
                                     {{-- Name --}}
                                     <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Name</label>
+                                        <label class="required fs-5 fw-bold mb-2">Name</label>
                                         <input type="text" name="name"
                                             class="form-control form-control-light @error('name') is-invalid @enderror"
                                             value="{{ old('name') }}" placeholder="Enter Name" required>
@@ -137,7 +144,7 @@
 
                                     {{-- Phone --}}
                                     <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Phone</label>
+                                        <label class="required fs-5 fw-bold mb-2">Phone</label>
                                         <input type="text" name="phone"
                                             class="form-control form-control-light @error('phone') is-invalid @enderror"
                                             value="{{ old('phone') }}" placeholder="Enter Phone" required>
@@ -170,11 +177,11 @@
 
                                     {{-- Date of Birth --}}
                                     <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Date of birth</label>
-                                        <input type="text" name="dob" id="kt_dob"
-                                            class="form-control form-control-light @error('dob') is-invalid @enderror"
-                                            value="{{ old('dob') }}" placeholder="Enter date of birth" required>
-                                        @error('dob')
+                                        <label class="required fs-5 fw-bold mb-2">Date of birth</label>
+                                        <input type="text" name="date_of_birth" id="kt_date_of_birth"
+                                            class="form-control form-control-light @error('date_of_birth') is-invalid @enderror"
+                                            value="{{ old('date_of_birth') }}" placeholder="Enter date of birth" required>
+                                        @error('date_of_birth')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
                                     </div>

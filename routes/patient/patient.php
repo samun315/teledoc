@@ -11,4 +11,5 @@ Route::get('/', [PatientController::class, 'index'])->name('index');
 Route::get('/create', [PatientController::class, 'create'])->name('create');
 Route::post('/store', [PatientController::class, 'store'])->name('store');
 Route::get('/edit/{patient_id}', [PatientController::class, 'edit'])->name('edit');
+Route::put('/update/{patient_id}', [PatientController::class, 'update'])->name('update');
 Route::get('/view/{patient_id}', [PatientController::class, 'view'])->name('view');

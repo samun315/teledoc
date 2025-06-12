@@ -11,7 +11,7 @@ class PatientRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,75 @@ class PatientRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $validationData = [];
+        //Basic Information
+
+        if ($this->input('patient_id')) {
+
+            $patientId = $this->input('patient_id');
+
+            $validationData['photo'] = 'nullable';
+            $validationData['name'] = 'nullable';
+            $validationData['email'] = 'nullable|email|unique:patients,email,' . $patientId;
+            $validationData['phone'] = 'nullable|unique:patients,phone,' . $patientId;
+            $validationData['password'] = 'nullable|min:6';
+            $validationData['confirm_password'] = 'nullable|same:password';
+            $validationData['date_of_birth'] = 'nullable';
+            $validationData['age'] = 'nullable';
+            $validationData['height'] = 'nullable';
+            $validationData['weight'] = 'nullable';
+            $validationData['gender'] = 'nullable';
+            $validationData['blood_group'] = 'nullable';
+            $validationData['marital_status'] = 'nullable';
+            $validationData['note'] = 'nullable';
+            $validationData['address'] = 'nullable';
+        } else {
+            $validationData['photo'] = 'nullable';
+            $validationData['name'] = 'required';
+            $validationData['email'] = 'nullable|email|unique:patients,email';
+            $validationData['phone'] = 'required|unique:patients,phone';
+            $validationData['password'] = 'nullable|min:6';
+            $validationData['confirm_password'] = 'nullable|same:password';
+            $validationData['date_of_birth'] = 'required';
+            $validationData['age'] = 'nullable';
+            $validationData['height'] = 'nullable';
+            $validationData['weight'] = 'nullable';
+            $validationData['gender'] = 'nullable';
+            $validationData['blood_group'] = 'nullable';
+            $validationData['marital_status'] = 'nullable';
+            $validationData['note'] = 'nullable';
+            $validationData['address'] = 'nullable';
+        }
+
+        return $validationData;
+    }
+
+    public function fields(): array
+    {
+        $inputData = [];
+
+        $inputData['name'] = $this->input('name');
+        $inputData['email'] = $this->input('email') ?? null;
+        $inputData['phone'] = $this->input('phone');
+        $inputData['password'] = $this->input('password') ?? null;
+        $inputData['date_of_birth'] = dateConvertFormToDB($this->input('date_of_birth'));
+        $inputData['age'] = $this->input('age') ?? null;
+        $inputData['height'] = $this->input('height') ?? null;
+        $inputData['weight'] = $this->input('weight') ?? null;
+        $inputData['gender'] = $this->input('gender') ?? null;
+        $inputData['blood_group'] = $this->input('blood_group') ?? null;
+        $inputData['marital_status'] = $this->input('marital_status') ?? null;
+        $inputData['note'] = $this->input('note') ?? null;
+        $inputData['address'] = $this->input('address') ?? null;
+
+        if ($this->input('patient_id')) {
+            $inputData['updated_by'] = loggedInUserId();
+            $inputData['updated_at'] = createdAtDateConvertToDB();
+        } else {
+            $inputData['created_by'] = loggedInUserId();
+            $inputData['created_at'] = createdAtDateConvertToDB();
+        }
+
+        return $inputData;
     }
 }

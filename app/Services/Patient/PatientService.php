@@ -2,6 +2,7 @@
 
 namespace App\Services\Patient;
 
+use App\Http\Requests\Patient\PatientRequest;
 use App\Models\Patient\Patient;
 use App\Traits\FileUploader;
 use Exception;
@@ -63,5 +64,26 @@ class PatientService
             })
             ->rawColumns(['photo', 'info', 'contact_info', 'medical_info', 'action'])
             ->make(true);
+    }
+
+    public function storePatient(PatientRequest $request): Model
+    {
+        try {
+            $patientData = $request->fields();
+
+            if (!empty($request->photo)) {
+                $patientData['photo'] = $this->uploadMedia($request, 'photo', 'patient');
+            }
+
+            $totalPatient = Patient::query()->count();
+
+            $patientData['patient_id_number'] = 'P' . sprintf("%06d", $totalPatient + 1);
+
+            $patient = Patient::query()->create($patientData);
+
+            return $patient;
+        } catch (Exception $exception) {
+            throw $exception;
+        }
     }
 }
