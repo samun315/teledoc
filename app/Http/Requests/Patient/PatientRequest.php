@@ -30,10 +30,8 @@ class PatientRequest extends FormRequest
 
             $validationData['photo'] = 'nullable';
             $validationData['name'] = 'nullable';
-            $validationData['email'] = 'nullable|email|unique:patients,email,' . $patientId;
-            $validationData['phone'] = 'nullable|unique:patients,phone,' . $patientId;
-            $validationData['password'] = 'nullable|min:6';
-            $validationData['confirm_password'] = 'nullable|same:password';
+            $validationData['email'] = 'nullable|email|unique:patients,email,' . $patientId . ',patient_id';
+            $validationData['phone'] = 'nullable|unique:patients,phone,' . $patientId . ',patient_id';
             $validationData['date_of_birth'] = 'nullable';
             $validationData['age'] = 'nullable';
             $validationData['height'] = 'nullable';
@@ -71,7 +69,6 @@ class PatientRequest extends FormRequest
         $inputData['name'] = $this->input('name');
         $inputData['email'] = $this->input('email') ?? null;
         $inputData['phone'] = $this->input('phone');
-        $inputData['password'] = $this->input('password') ?? null;
         $inputData['date_of_birth'] = dateConvertFormToDB($this->input('date_of_birth'));
         $inputData['age'] = $this->input('age') ?? null;
         $inputData['height'] = $this->input('height') ?? null;
@@ -86,6 +83,7 @@ class PatientRequest extends FormRequest
             $inputData['updated_by'] = loggedInUserId();
             $inputData['updated_at'] = createdAtDateConvertToDB();
         } else {
+            $inputData['password'] = $this->input('password') ?? null;
             $inputData['created_by'] = loggedInUserId();
             $inputData['created_at'] = createdAtDateConvertToDB();
         }

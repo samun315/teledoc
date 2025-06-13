@@ -34,7 +34,7 @@ class PatientController extends Controller
         return view('patient.create', $data);
     }
 
-        public function store(PatientRequest $request): RedirectResponse
+    public function store(PatientRequest $request): RedirectResponse
     {
         try {
 
@@ -47,5 +47,41 @@ class PatientController extends Controller
         } catch (Exception $exception) {
             return back()->with('error', $exception->getMessage());
         }
+    }
+
+    public function edit(int $patientId): View
+    {
+        $data['genderList'] = PatientConstant::GENDERS;
+        $data['bloodGroupList'] = PatientConstant::BLOOD_GROUPS;
+        $data['maritalStatusList'] = PatientConstant::MARITAL_STATUSES;
+
+        $data['editModeData'] = $this->patientService->getPatientById($patientId);
+
+        return view('patient.create', $data);
+    }
+
+
+    public function update(PatientRequest $request, int $patientId): RedirectResponse
+    {
+        try {
+
+            $storeUserInfo = $this->patientService->updatePatient($request, $patientId);
+
+            return to_route('patient.index')->with(
+                'success',
+                'Patient Updated successfully.'
+            );
+        } catch (Exception $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
+    }
+
+
+    public function view(int $patientId): View
+    {
+
+        $data['editModeData'] = $this->patientService->getPatientById($patientId);
+
+        return view('patient.view', $data);
     }
 }

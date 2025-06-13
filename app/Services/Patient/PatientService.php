@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\In;
+use Termwind\Components\Hr;
 use Yajra\DataTables\DataTables;
 
 class PatientService
@@ -75,6 +78,8 @@ class PatientService
                 $patientData['photo'] = $this->uploadMedia($request, 'photo', 'patient');
             }
 
+            $patientData['password'] = Hash::make($patientData['password']);
+
             $totalPatient = Patient::query()->count();
 
             $patientData['patient_id_number'] = 'P' . sprintf("%06d", $totalPatient + 1);
@@ -82,6 +87,31 @@ class PatientService
             $patient = Patient::query()->create($patientData);
 
             return $patient;
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
+
+    public function getPatientById(int $patientId): Model|Builder
+    {
+        return Patient::query()->where('patient_id', $patientId)->first();
+    }
+
+    public function updatePatient(PatientRequest $request, int $patientId): Model
+    {
+        try {
+            $patientData = $request->fields();
+            // dd($patientData);
+
+            $patientInfo = $this->getPatientById($patientId);
+
+            if (!empty($request->photo)) {
+                $patientData['photo'] = $this->updateMedia($request, 'photo', 'patient', $patientInfo['photo']);
+            }
+
+            $patientInfo->update($patientData);
+
+            return $patientInfo;
         } catch (Exception $exception) {
             throw $exception;
         }

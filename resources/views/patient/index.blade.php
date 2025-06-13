@@ -8,8 +8,8 @@
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
         ['label' => 'Patient', 'url' => route('patient.index')],
         ['label' => 'Patient List', 'active' => true],
-    ]"  actionUrl="{{ route('patient.create') }}" actionIcon="fas fa-plus"
-        actionLabel="Create Patient" />
+    ]" actionUrl="{{ route('patient.create') }}"
+        actionIcon="fas fa-plus" actionLabel="Create Patient" />
     <!--end::Toolbar -->
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
@@ -38,7 +38,8 @@
 
                     <!--begin::Table-->
                     <div class="table-responsive">
-                        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4" id="kt_patient_table">
+                        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4"
+                            id="kt_patient_table">
                             <!--begin::Table head-->
                             <thead>
                                 <!--begin::Table row-->
@@ -68,8 +69,8 @@
 @section('page_script')
 
     <!-- begin::Page Custom Stylesheets(used by this page) -->
-    <script src="{{ asset('assets/custom/js/patient/index.js') }}"
-        {{ Sri::html('assets/custom/js/patient/index.js') }}></script>
+    <script src="{{ asset('assets/custom/js/patient/index.js') }}" {{ Sri::html('assets/custom/js/patient/index.js') }}>
+    </script>
     <!--end::Page Custom Stylesheets(used by this page)-->
 
 @endsection

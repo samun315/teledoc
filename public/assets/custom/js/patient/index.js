@@ -3,7 +3,7 @@ let selectedForm = $("#submitForm");
 $("#kt_date_of_birth").flatpickr({
     dateFormat: "d-m-Y",
     allowInput: true,
-    maxDate: "today"
+    maxDate: "today",
 });
 
 // Get the current URL of the window
@@ -90,34 +90,34 @@ let table = $("#kt_patient_table").DataTable({
     paging: true, // Enables pagination
     pageLength: 10, // Show 5 records per page
     lengthMenu: [10, 25, 50, 75, 100, 200], // Dropdown for selecting number of rows
-    dom:
-        '<"row"<"col-sm-2"l><"col-sm-10 d-flex justify-content-end"B>>' + // Length menu & buttons
-        '<"row"<"col-sm-12"tr>>' + // Table rows
-        '<"row mt-2"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>', // Pagination & info
-    buttons: [
-        {
-            extend: "excelHtml5",
-            text: "Excel",
-            className: "btn btn-success btn-sm",
-            attr: {
-                style: "margin-top: 25px;padding: 0 10px; font-size: 12px; line-height: 1; height: 30px;",
-            },
-            exportOptions: {
-                columns: ":not(:first-child)", // Exclude the first column (DT_RowIndex)
-            },
-        },
-        {
-            extend: "pdfHtml5",
-            text: "PDF",
-            className: "btn btn-danger btn-sm",
-            attr: {
-                style: "margin-top: 25px;padding: 0 10px; font-size: 12px; line-height: 1; height: 30px;",
-            },
-            exportOptions: {
-                columns: ":not(:first-child)", // Exclude the first column (DT_RowIndex)
-            },
-        },
-    ],
+    // dom:
+    //     '<"row"<"col-sm-2"l><"col-sm-10 d-flex justify-content-end"B>>' + // Length menu & buttons
+    //     '<"row"<"col-sm-12"tr>>' + // Table rows
+    //     '<"row mt-2"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>', // Pagination & info
+    // buttons: [
+    //     {
+    //         extend: "excelHtml5",
+    //         text: "Excel",
+    //         className: "btn btn-success btn-sm",
+    //         attr: {
+    //             style: "margin-top: 25px;padding: 0 10px; font-size: 12px; line-height: 1; height: 30px;",
+    //         },
+    //         exportOptions: {
+    //             columns: ":not(:first-child)", // Exclude the first column (DT_RowIndex)
+    //         },
+    //     },
+    //     {
+    //         extend: "pdfHtml5",
+    //         text: "PDF",
+    //         className: "btn btn-danger btn-sm",
+    //         attr: {
+    //             style: "margin-top: 25px;padding: 0 10px; font-size: 12px; line-height: 1; height: 30px;",
+    //         },
+    //         exportOptions: {
+    //             columns: ":not(:first-child)", // Exclude the first column (DT_RowIndex)
+    //         },
+    //     },
+    // ],
 });
 
 search.keyup(function () {
@@ -131,28 +131,44 @@ const photoPreview = document.getElementById("photoPreview");
 const uploadPlaceholder = document.getElementById("uploadPlaceholder");
 const removeBtn = document.getElementById("removeBtn");
 
+function showPreview(src) {
+    photoPreview.src = src;
+    photoPreview.classList.remove("d-none");
+    photoPreview.classList.add("d-block");
+
+    uploadPlaceholder.classList.add("d-none");
+    uploadPlaceholder.classList.remove("d-flex");
+
+    removeBtn.classList.remove("d-none");
+    removeBtn.classList.add("d-block");
+}
+
+function resetPreview() {
+    photoInput.value = "";
+    photoPreview.src = "";
+    photoPreview.classList.add("d-none");
+    photoPreview.classList.remove("d-block");
+
+    uploadPlaceholder.classList.remove("d-none");
+    uploadPlaceholder.classList.add("d-flex");
+
+    removeBtn.classList.add("d-none");
+    removeBtn.classList.remove("d-block");
+}
+
 photoInput.addEventListener("change", function () {
     const file = this.files[0];
-
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            photoPreview.src = e.target.result;
-            photoPreview.style.display = "block";
-            uploadPlaceholder.style.display = "none";
-            removeBtn.style.display = "block";
+            showPreview(e.target.result);
         };
         reader.readAsDataURL(file);
     }
 });
 
-removeBtn.addEventListener("click", function (e) {
-    e.stopPropagation(); // prevent triggering file input
-    photoInput.value = "";
-    photoPreview.src = "#";
-    photoPreview.style.display = "none";
-    uploadPlaceholder.style.display = "flex";
-    removeBtn.style.display = "none";
+removeBtn.addEventListener("click", function () {
+    resetPreview();
 });
 
 // AGE CALCULATE DEPEND ON DATE OF BIRTH
@@ -203,11 +219,10 @@ dobInput.addEventListener("change", function () {
     }
 
     // Calculate fractional age: years + (months/12) + (days/365)
-    const fractionalAge = years + (months / 12) + (days / 365);
+    const fractionalAge = years + months / 12 + days / 365;
 
     ageInput.value = fractionalAge >= 0 ? fractionalAge.toFixed(1) : "";
 });
-
 
 // const dobInput = document.getElementById("kt_date_of_birth");
 // const ageInput = document.getElementById("kt_age");

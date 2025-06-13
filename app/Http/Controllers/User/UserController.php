@@ -102,7 +102,7 @@ class UserController extends Controller
 
         $data['personalInfoData'] = $this->userService->getUserInfoById($userId);
         // dd($data);
-        return view('user.profile.index',$data);
+        return view('user.profile.index', $data);
     }
 
     public function editProfile(): View
@@ -111,7 +111,7 @@ class UserController extends Controller
         $userId = (int) getLoggedInUserInfo('logged_session_data.id');
 
         $data['editModeData'] = $this->userService->getUserInfoById($userId);
-     
+
         return view('user.profile.edit', $data);
     }
 
@@ -162,7 +162,7 @@ class UserController extends Controller
                 } else {
                     return back()->with('error', 'New password and confirm password does not matched');
                 }
-            }else{
+            } else {
                 return back()->with('error', 'New password can not be same as old password.');
             }
         } else {
