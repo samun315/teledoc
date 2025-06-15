@@ -5,6 +5,7 @@ use App\Http\Controllers\Drug\DrugController;
 use App\Http\Controllers\Drug\DrugDosesController;
 use App\Http\Controllers\Drug\DrugDurationController;
 use App\Http\Controllers\Drug\DrugStrengthController;
+use App\Http\Controllers\Drug\SubscriptionController;
 use App\Http\Controllers\Drug\SubscriptionTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,14 +22,14 @@ Route::group(['prefix' => 'subscription-type', 'as' => 'type.'], function () {
 
 });
 
-// drug strength 
-// name route  drug.strength.index
-// url /drug/drug-strength
-Route::group(['prefix' => 'drug-strength', 'as' => 'strength.'], function () {
-    Route::get('/', [DrugStrengthController::class, 'index'])->name('index');
-    Route::post('/store', [DrugStrengthController::class,  'store'])->name('store');
-    Route::get('/edit/{menu_id}', [DrugStrengthController::class,  'edit'])->name('edit');
-    Route::put('/update/{menu_id}', [DrugStrengthController::class,  'update'])->name('update');
+// subscription 
+// name route  drug.supscription.index
+// url /drug/subscription
+Route::group(['prefix' => 'subscription'], function () {
+    Route::get('/', [SubscriptionController::class, 'index'])->name('index');
+    Route::post('/store', [SubscriptionController::class,  'store'])->name('store');
+    Route::get('/edit/{menu_id}', [SubscriptionController::class,  'edit'])->name('edit');
+    Route::put('/update/{menu_id}', [SubscriptionController::class,  'update'])->name('update');
 });
 
 // drug advice 
