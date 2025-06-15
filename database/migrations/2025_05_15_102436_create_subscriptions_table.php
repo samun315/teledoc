@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('subscription_id');
             $table->unsignedBigInteger('subscription_type_id');
             $table->text('subscription_name');
-            $table->enum('active', ['YES', 'NO'])->default('YES');
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
