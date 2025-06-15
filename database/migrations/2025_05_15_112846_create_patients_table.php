@@ -17,12 +17,15 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone');
+            $table->string('password')->nullable();
             $table->date('date_of_birth')->nullable();
+            $table->float('age')->nullable();
+            $table->string('photo')->nullable();
             $table->string('height')->nullable();
             $table->string('weight')->nullable();
-            $table->enum('gender',['Male', 'Female', 'Others'])->nullable();
-            $table->enum('blood_group',['A+', 'B+', 'A-', 'B-','AB+', 'AB-','O+', 'O-'])->nullable();
-            $table->enum('marital_status',['Single', 'Married', 'Divorced'])->nullable();
+            $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();
+            $table->enum('blood_group', ['A+', 'B+', 'A-', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
+            $table->enum('marital_status', ['Married', 'Unmarried', 'Others'])->nullable();
             $table->text('note')->nullable();
             $table->text('address')->nullable();
             $table->enum('active', ['YES', 'NO'])->default('YES');

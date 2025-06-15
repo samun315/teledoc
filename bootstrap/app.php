@@ -48,12 +48,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/drug/drug.php'));
             //End Request drugs Route
 
-            //Start Balance Request Route
+            //Start Patient Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
-                ->prefix('marchant')
-                ->name('marchant.balance.request.')
-                ->group(base_path('routes/marchant/balanceRequest.php'));
-            //End Balance Request Route
+                ->prefix('patient')
+                ->name('patient.')
+                ->group(base_path('routes/patient/patient.php'));
+            //End Patient Route
 
             //Start ORDER Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
