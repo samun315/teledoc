@@ -58,7 +58,6 @@ class SubscriptionTypeController extends Controller
 
         return view('drugs.subscriptionType.reorder', $data);
     }
-
     
     public function reorderUpdate(Request $request): JsonResponse
     {
