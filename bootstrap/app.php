@@ -48,6 +48,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/drug/drug.php'));
             //End Request drugs Route
 
+            //Start Request prescription helper subscription Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('drug')
+                ->name('drug.subscription.')
+                ->group(base_path('routes/drug/prescriptionHelper.php'));
+            //End Request prescription helper subscription Route
+
             //Start Patient Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
                 ->prefix('patient')

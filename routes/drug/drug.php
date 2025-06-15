@@ -61,7 +61,6 @@ Route::group(['prefix' => 'drug-doses', 'as' => 'doses.'], function () {
 // drug 
 // name route  drug.index
 // url /drug
-
 Route::get('/', [DrugController::class, 'index'])->name('index');
 Route::post('/store', [DrugController::class,  'store'])->name('store');
 Route::get('/edit/{menu_id}', [DrugController::class,  'edit'])->name('edit');
