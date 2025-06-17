@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('department_id');
             $table->string('department_name');
             $table->text('description')->nullable();
-            $table->enum('active', ['YES', 'NO'])->default('YES');
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

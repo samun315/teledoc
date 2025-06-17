@@ -62,12 +62,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/patient/patient.php'));
             //End Patient Route
 
-            //Start ORDER Route
+            //Start doctor Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
-                ->prefix('marchant')
-                ->name('marchant.order.balance.')
-                ->group(base_path('routes/marchant/order.php'));
-            //End ORDER Route
+                ->prefix('doctor')
+                ->name('doctor.')
+                ->group(base_path('routes/doctor/doctor.php'));
+            //End doctor Route
 
             //Start Transfer Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
