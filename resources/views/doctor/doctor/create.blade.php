@@ -75,25 +75,25 @@
 @endsection
 @section('content')
     <!--begin::Toolbar -->
-    <x-toolbar-component title="Patient {{ isset($editModeData) ? 'Edit' : 'Create' }}" :breadcrumbs="[
+    <x-toolbar-component title="Doctor {{ isset($editModeData) ? 'Edit' : 'Create' }}" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
-        ['label' => 'Patient', 'url' => route('patient.index')],
-        ['label' => 'Patient ' . (isset($editModeData) ? 'Edit' : 'Create'), 'active' => true],
+        ['label' => 'Doctor', 'url' => route('doctor.index')],
+        ['label' => 'Doctor ' . (isset($editModeData) ? 'Edit' : 'Create'), 'active' => true],
     ]"
-        actionUrl="{{ route('patient.index') }}" actionIcon="fas fa-list" actionLabel="Patient List" />
+        actionUrl="{{ route('doctor.index') }}" actionIcon="fas fa-list" actionLabel="Doctor List" />
     <!--end::Toolbar -->
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
         <div id="kt_content_container" class="container-fluid">
             <form method="POST"
-                action="{{ isset($editModeData) ? route('patient.update', $editModeData?->patient_id) : route('patient.store') }}"
+                action="{{ isset($editModeData) ? route('doctor.update', $editModeData?->doctor_id) : route('doctor.store') }}"
                 enctype="multipart/form-data">
                 @csrf
 
                 @isset($editModeData)
                     @method('PUT')
-                    <input type="text" hidden id="kt_patient_id" name="patient_id" value="{{ $editModeData?->patient_id }}">
+                    <input type="text" hidden id="kt_doctor_id" name="doctor_id" value="{{ $editModeData?->doctor_id }}">
                 @endisset
 
                 <div class="card">
@@ -107,7 +107,7 @@
                                     <div class="upload-container"> <!-- move class here instead -->
                                         <label class="upload-box" for="photoInput">
                                             <img id="photoPreview" alt="Image Preview"
-                                                src="{{ !empty($editModeData?->photo) ? asset('/uploads/patient/' . $editModeData?->photo) : '' }}"
+                                                src="{{ !empty($editModeData?->photo) ? asset('/uploads/doctor/' . $editModeData?->photo) : '' }}"
                                                 class="{{ !empty($editModeData?->photo) ? 'd-block' : 'd-none' }}">
                                             <div class="upload-placeholder {{ !empty($editModeData?->photo) ? 'd-none' : 'd-flex' }}"
                                                 id="uploadPlaceholder">
@@ -125,6 +125,19 @@
 
                             <div class="col-md-12">
                                 <div class="row">
+
+                                    {{-- Title --}}
+                                    <div class="col-md-4 fv-row mb-5">
+                                        <label class="required fs-5 fw-bold mb-2">Title</label>
+                                        <input type="text" name="title"
+                                            class="form-control form-control-light @error('title') is-invalid @enderror"
+                                            value="{{ $editModeData?->title ?? old('title') }}" placeholder="Enter Title"
+                                            required>
+                                        @error('title')
+                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
                                     {{-- Name --}}
                                     <div class="col-md-4 fv-row mb-5">
                                         <label class="required fs-5 fw-bold mb-2">Name</label>
@@ -139,10 +152,11 @@
 
                                     {{-- Email --}}
                                     <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Email</label>
+                                        <label class="required fs-5 fw-bold mb-2">Email</label>
                                         <input type="email" name="email"
                                             class="form-control form-control-light @error('email') is-invalid @enderror"
-                                            value="{{ $editModeData?->email ?? old('email') }}" placeholder="Enter Email">
+                                            value="{{ $editModeData?->email ?? old('email') }}" placeholder="Enter Email"
+                                            required>
                                         @error('email')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
@@ -184,139 +198,43 @@
                                         </div>
                                     @endif
 
-
-                                    {{-- Date of Birth --}}
-                                    <div class="col-md-4 fv-row mb-5">
-                                        <label class="required fs-5 fw-bold mb-2">Date of birth</label>
-                                        <input type="text" name="date_of_birth" id="kt_date_of_birth"
-                                            class="form-control form-control-light @error('date_of_birth') is-invalid @enderror"
-                                            value="{{ !empty($editModeData?->date_of_birth) ? \Carbon\Carbon::parse($editModeData?->date_of_birth)->format('d-m-Y') : old('date_of_birth') }}"
-                                            placeholder="Enter date of birth" required>
-                                        @error('date_of_birth')
-                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Age --}}
-                                    <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Age(Year)</label>
-                                        <input type="number" name="age" id="kt_age"
-                                            class="form-control form-control-solid @error('age') is-invalid @enderror"
-                                            value="{{ $editModeData?->age ?? old('age') }}" placeholder="Age (Year)"
-                                            readonly>
-                                        @error('age')
-                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Height --}}
-                                    <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Height</label>
-                                        <input type="text" name="height"
-                                            class="form-control form-control-light @error('height') is-invalid @enderror"
-                                            value="{{ $editModeData?->height ?? old('height') }}"
-                                            placeholder="Enter Height">
-                                        @error('height')
-                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Weight --}}
-                                    <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Weight</label>
-                                        <input type="text" name="weight"
-                                            class="form-control form-control-light @error('weight') is-invalid @enderror"
-                                            value="{{ $editModeData?->weight ?? old('weight') }}"
-                                            placeholder="Enter Weight">
-                                        @error('weight')
-                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Gender --}}
-                                    <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Gender</label>
-                                        <select name="gender"
-                                            class="form-select form-select-light @error('gender') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Select Gender">
-                                            <option value=""></option>
-                                            @foreach ($genderList as $gender)
-                                                <option
-                                                    @isset($editModeData)
-                                            {{ $editModeData?->gender === $gender ? 'selected' : '' }}
-                                            @endisset
-                                                    {{ old('gender') === $gender ? 'selected' : '' }}
-                                                    value="{{ $gender ?? old('gender') }}">{{ $gender }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('gender')
-                                            <span class="text-danger mt-2">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
-                                    {{-- Blood Group --}}
-                                    <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Blood group</label>
-                                        <select name="blood_group"
-                                            class="form-select form-select-light @error('blood_group') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Select Blood Group">
-
-                                            <option value=""></option>
-
-                                            @foreach ($bloodGroupList as $bloodGroup)
-                                                <option
-                                                    @isset($editModeData)
-                                            {{ $editModeData?->blood_group === $bloodGroup ? 'selected' : '' }}
-                                            @endisset
-                                                    {{ old('blood_group') === $bloodGroup ? 'selected' : '' }}
-                                                    value="{{ $bloodGroup ?? old('blood_group') }}">
-                                                    {{ $bloodGroup }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('blood_group')
-                                            <span class="text-danger mt-2">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
                                     {{-- Marital status --}}
                                     <div class="col-md-4 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Marital status</label>
-                                        <select name="marital_status" id="kt_marital_status"
-                                            class="form-select form-select-light @error('marital_status') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Select Marital Status">
+                                        <label class="required fs-5 fw-bold mb-2">Department</label>
+                                        <select name="department_id" id="kt_department_id"
+                                            class="form-select form-select-light @error('department_id') is-invalid @enderror"
+                                            data-control="select2" data-placeholder="Select Department" required>
                                             <option value=""></option>
-                                            @foreach ($maritalStatusList as $maritalStatus)
+                                            @foreach ($departments as $department)
                                                 <option
                                                     @isset($editModeData)
-                                            {{ $editModeData?->marital_status === $maritalStatus ? 'selected' : '' }}
+                                            {{ $editModeData?->department_id === $department->department_id ? 'selected' : '' }}
                                             @endisset
-                                                    {{ old('marital_status') === $maritalStatus ? 'selected' : '' }}
-                                                    value="{{ $maritalStatus }}">{{ $maritalStatus }}</option>
+                                                    {{ old('department_id') === $department->department_id ? 'selected' : '' }}
+                                                    value="{{ $department->department_id }}">
+                                                    {{ $department->department_name }}</option>
                                             @endforeach
                                         </select>
-                                        @error('marital_status')
+                                        @error('department_id')
                                             <span class="text-danger mt-2">{{ $message }}</span>
                                         @enderror
                                     </div>
-
-                                    <div class="col-md-6 fv-row mb-5">
-                                        <label class="fs-5 fw-bold mb-2">Note</label>
-                                        <textarea class="form-control form-control-light note @error('note') is-invalid @enderror" id="kt_note"
-                                            placeholder="Write note...." name="note" data-kt-autosize="true">{{ $editModeData?->note ?? old('note') }}</textarea>
-
-                                        @error('note')
-                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-
+                                    <div class="col-md-8"></div>
                                     <div class="col-md-6 fv-row mb-5">
                                         <label class="fs-5 fw-bold mb-2">Address</label>
                                         <textarea class="form-control form-control-light address @error('address') is-invalid @enderror" id="kt_address"
                                             placeholder="Write address...." name="address" data-kt-autosize="true">{{ $editModeData?->address ?? old('address') }}</textarea>
 
                                         @error('address')
+                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6 fv-row mb-5">
+                                        <label class="fs-5 fw-bold mb-2">Description</label>
+                                        <textarea class="form-control form-control-light description @error('description') is-invalid @enderror"
+                                            id="kt_description" placeholder="Write description...." name="description" data-kt-autosize="true">{{ $editModeData?->description ?? old('description') }}</textarea>
+
+                                        @error('description')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -342,7 +260,7 @@
 @section('page_script')
 
     <!-- begin::Page Custom Stylesheets(used by this page) -->
-    <script src="{{ asset('assets/custom/js/patient/index.js') }}" {{ Sri::html('assets/custom/js/patient/index.js') }}>
+    <script src="{{ asset('assets/custom/js/doctor/doctor/index.js') }}" {{ Sri::html('assets/custom/js/doctor/doctor/index.js') }}>
     </script>
     <!--end::Page Custom Stylesheets(used by this page)-->
 

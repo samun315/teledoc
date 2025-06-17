@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('doctor_degrees', function (Blueprint $table) {
             $table->id('degree_id');
             $table->unsignedBigInteger('doctor_id');
-            $table->string('title');
+            $table->string('degree_title');
             $table->text('description')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();

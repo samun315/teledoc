@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('address')->nullable();
             $table->text('description')->nullable();
-            $table->string('photo_url')->nullable();
+            $table->string('photo')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
