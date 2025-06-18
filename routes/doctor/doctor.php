@@ -22,6 +22,6 @@ Route::group(['prefix' => 'department', 'as' => 'department.'], function () {
 Route::get('/', [DoctorController::class, 'index'])->name('index');
 Route::get('/create', [DoctorController::class, 'create'])->name('create');
 Route::post('/store', [DoctorController::class, 'store'])->name('store');
-Route::get('/edit/{patient_id}', [DoctorController::class, 'edit'])->name('edit');
-Route::put('/update/{patient_id}', [DoctorController::class, 'update'])->name('update');
-Route::get('/view/{patient_id}', [DoctorController::class, 'view'])->name('view');
+Route::get('/edit/{doctor_id}', [DoctorController::class, 'edit'])->name('edit');
+Route::put('/update/{doctor_id}', [DoctorController::class, 'update'])->name('update');
+Route::get('/view/{doctor_id}', [DoctorController::class, 'view'])->name('view');

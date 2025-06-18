@@ -26,7 +26,7 @@ class DoctorController extends Controller
 
         $data['departments'] = DoctorDepartment::query()->where('status', 'Active')->get(['department_id', 'department_name']);
 
-        return view('doctor.doctor.index',$data);
+        return view('doctor.doctor.index', $data);
     }
 
     public function create(): View
@@ -42,22 +42,20 @@ class DoctorController extends Controller
 
             $storeUserInfo = $this->doctorService->storeDoctor($request);
 
-            return to_route('patient.index')->with(
+            return to_route('doctor.index')->with(
                 'success',
-                'Patient Stored successfully.'
+                'Doctor Stored successfully.'
             );
         } catch (Exception $exception) {
             return back()->with('error', $exception->getMessage());
         }
     }
 
-    public function edit(int $patientId): View
+    public function edit(int $doctorId): View
     {
-        $data['genderList'] = PatientConstant::GENDERS;
-        $data['bloodGroupList'] = PatientConstant::BLOOD_GROUPS;
-        $data['maritalStatusList'] = PatientConstant::MARITAL_STATUSES;
+        $data['departments'] = DoctorDepartment::query()->where('status', 'Active')->get(['department_id', 'department_name']);
 
-        $data['editModeData'] = $this->doctorService->getDoctorById($patientId);
+        $data['editModeData'] = $this->doctorService->getDoctorForEditById($doctorId);
 
         return view('doctor.doctor.create', $data);
     }
@@ -69,9 +67,9 @@ class DoctorController extends Controller
 
             $storeUserInfo = $this->doctorService->updateDoctor($request, $patientId);
 
-            return to_route('patient.index')->with(
+            return to_route('doctor.index')->with(
                 'success',
-                'Patient Updated successfully.'
+                'Doctor Updated successfully.'
             );
         } catch (Exception $exception) {
             return back()->with('error', $exception->getMessage());
@@ -79,10 +77,10 @@ class DoctorController extends Controller
     }
 
 
-    public function view(int $patientId): View
+    public function view(int $doctorId): View
     {
 
-        $data['editModeData'] = $this->doctorService->getDoctorById($patientId);
+        $data['editModeData'] = $this->doctorService->getDoctorForEditById($doctorId);
 
         return view('doctor.doctor.view', $data);
     }

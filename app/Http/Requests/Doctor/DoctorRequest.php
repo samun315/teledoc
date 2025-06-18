@@ -36,6 +36,9 @@ class DoctorRequest extends FormRequest
             $validationData['department_id'] = 'nullable';
             $validationData['description'] = 'nullable';
             $validationData['address'] = 'nullable';
+
+            $validationData['degree_title'] = 'nullable';
+            $validationData['degree_description'] = 'nullable';
         } else {
             $validationData['photo'] = 'nullable';
             $validationData['title'] = 'required';
@@ -47,6 +50,10 @@ class DoctorRequest extends FormRequest
             $validationData['department_id'] = 'required';
             $validationData['description'] = 'nullable';
             $validationData['address'] = 'nullable';
+
+
+            $validationData['degree_title'] = 'required';
+            $validationData['degree_description'] = 'nullable';
         }
 
         return $validationData;
@@ -63,6 +70,10 @@ class DoctorRequest extends FormRequest
         $inputData['department_id'] = $this->input('department_id');
         $inputData['description'] = $this->input('description') ?? null;
         $inputData['address'] = $this->input('address') ?? null;
+
+
+        $inputData['degree_title'] = $this->input('degree_title');
+        $inputData['degree_description'] = $this->input('degree_description') ?? null;
 
         if ($this->input('doctor_id')) {
             $inputData['updated_by'] = loggedInUserId();

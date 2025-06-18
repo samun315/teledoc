@@ -138,3 +138,54 @@ photoInput.addEventListener("change", function () {
 removeBtn.addEventListener("click", function () {
     resetPreview();
 });
+
+// let incrementId = 1;
+
+// Add more rows Start
+$("#addMoreBtn").on("click", function () {
+    const lastRow = $(".degree_row_element").last().length
+        ? $(".degree_row_element").last()
+        : $(".static_row"); // fallback to static first row
+
+    let degree_title = lastRow.find(".degree_title").val();
+    let degree_description = lastRow.find(".degree_description").val();
+
+    // 🔎 Validate inputs
+    if (!degree_title || !degree_description) {
+        toastr.info(
+            "Please fill degree title and description before adding a new row."
+        );
+        return;
+    }
+
+    incrementId++;
+    const newRow = `
+        <div class="row degree_row_element" data-increment-id="${incrementId}">
+            <div class="row">
+                 <div class="col-md-5 fv-row mb-5">
+                    <label class="required fs-5 fw-bold mb-2">Title</label>
+                        <input type="text" class="form-control form-control-light degree_title"
+                                                name="degree_title[]" id="degree_title_${incrementId}" required />
+                </div>
+                <div class="col-md-6 fv-row mb-5">
+                    <label class="fs-5 fw-bold mb-2">Description</label>
+                    <input type="text" class="form-control form-control-light degree_description"
+                                                name="degree_description[]" id="degree_description_${incrementId}" />
+                </div>
+                <div class="col-md-1 fv-row mb-5">
+                    <div class="d-flex align-items-end">
+                         <button type="button" class="btn btn-sm btn-icon btn-danger mt-10 ms-2 deleteDegree">
+                             <i class="fas fa-trash-alt ms-1"></i>
+                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    $(".degree_append_div").append(newRow);
+});
+
+// Remove transfer row
+$(document).on("click", ".deleteDegree", function () {
+    $(this).parents(".degree_row_element").remove();
+});

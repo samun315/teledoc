@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('degree_id');
             $table->unsignedBigInteger('doctor_id');
             $table->string('degree_title');
-            $table->text('description')->nullable();
+            $table->text('degree_description')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

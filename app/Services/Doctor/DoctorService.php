@@ -5,6 +5,7 @@ namespace App\Services\Doctor;
 use App\Http\Requests\Doctor\DoctorRequest;
 use App\Http\Requests\Patient\PatientRequest;
 use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorDegree;
 use App\Models\Patient\Patient;
 use App\Traits\FileUploader;
 use Exception;
@@ -56,17 +57,18 @@ class DoctorService
                 return '<img src="' . asset('uploads/doctor/' . $row->photo) . '" alt="Doctor" class="rounded-circle" width="80" height="80">';
             })
             ->addColumn('info', function ($row) {
+                $title = e($row->title);
                 $name = e($row->name);
                 $department = e($row->department->department_name ?? '');
 
                 $degreesHtml = '';
                 foreach ($row->degrees as $degree) {
-                    $title = e($degree->degree_title);
-                    $desc = e($degree->description);
-                    $degreesHtml .= "<p class='fas fa-ring text-warning'><strong> {$title}</strong> {$desc}</p>";
+                    $degree_title = e($degree->degree_title);
+                    $desc = e($degree->degree_description);
+                    $degreesHtml .= "<p class='text-dark'><strong> {$degree_title}</strong> :- {$desc}</p>";
                 }
 
-                return "{$name}<br><p class='badge badge-info'>{$department}</p><br>{$degreesHtml}";
+                return "<strong>{$row->title} {$name}</strong><br><p class='badge badge-info'>{$department}</p><br>{$degreesHtml}";
             })
             ->addColumn('contact_info', function ($row) {
                 $email = e($row->email);
@@ -82,8 +84,8 @@ class DoctorService
                 $viewUrl = route('doctor.view', $row->doctor_id);
 
                 return "<div class='btn-group' role='group'>
-                    <a href='{$editUrl}' class='btn btn-icon btn-bg-info text-white btn-sm me-2'><i class='fas fa-edit'></i></a>
-                    <a href='{$viewUrl}' class='btn btn-icon btn-bg-light btn-sm viewDoctorBtn'><i class='fas fa-eye'></i></a>
+                    <a href='{$editUrl}' class='btn btn-icon btn-bg-info btn-sm me-2'><i class='fas fa-edit text-white'></i></a>
+                    <a href='{$viewUrl}' class='btn btn-icon btn-bg-light btn-sm viewDoctorBtn'><i class='fas fa-eye text-dark'></i></a>
                 </div>";
             })
             ->rawColumns(['photo', 'info', 'contact_info', 'action'])
@@ -92,25 +94,47 @@ class DoctorService
 
     public function storeDoctor(DoctorRequest $request): Model
     {
+        DB::beginTransaction();
         try {
             $doctorData = $request->fields();
+            $degreeData = [];
 
             if (!empty($request->photo)) {
-                $patientData['photo'] = $this->uploadMedia($request, 'photo', 'doctor');
+                $doctorData['photo'] = $this->uploadMedia($request, 'photo', 'doctor');
             }
 
-            $patientData['password'] = Hash::make($patientData['password']);
+            $doctorData['password'] = Hash::make($doctorData['password']);
 
-            $totalPatient = Doctor::query()->count();
+            $doctor = Doctor::query()->create($doctorData);
 
-            $patientData['patient_id_number'] = 'P' . sprintf("%06d", $totalPatient + 1);
+            if (!empty($doctorData['degree_title'])) {
+                // Loop through the product items
+                foreach ($doctorData['degree_title'] as $index => $degreeTitle) {
+                    $degreeData[] = [
+                        'doctor_id' => $doctor->doctor_id,
+                        'degree_title' => $degreeTitle,
+                        'degree_description' => $doctorData['degree_description'][$index],
+                        'created_by' => loggedInUserId(),
+                        'created_at' => createdAtDateConvertToDB(),
+                    ];
+                }
+                // dd($paymentScheduleData);
+                if (!empty($degreeData)) {
+                    DoctorDegree::query()->insert($degreeData);
+                }
+            }
+            DB::commit();
 
-            $patient = Patient::query()->create($patientData);
-
-            return $patient;
+            return $doctor;
         } catch (Exception $exception) {
+            DB::rollBack();
             throw $exception;
         }
+    }
+
+    public function getDoctorForEditById(int $doctorId): Model|Builder
+    {
+        return Doctor::with('department', 'degrees')->find($doctorId);
     }
 
     public function getDoctorById(int $doctorId): Model|Builder
@@ -120,20 +144,44 @@ class DoctorService
 
     public function updateDoctor(DoctorRequest $request, int $doctorId): Model
     {
+        DB::beginTransaction();
         try {
-            $patientData = $request->fields();
-            // dd($patientData);
+            $doctorData = $request->fields();
+            $doctorDegree = [];
+            // dd($doctorData);
 
-            $patientInfo = $this->getDoctorById($doctorId);
+            $doctorInfo = $this->getDoctorById($doctorId);
 
             if (!empty($request->photo)) {
-                $patientData['photo'] = $this->updateMedia($request, 'photo', 'doctor', $patientInfo['photo']);
+                $doctorData['photo'] = $this->updateMedia($request, 'photo', 'doctor', $doctorInfo['photo']);
             }
 
-            $patientInfo->update($patientData);
+            if (!empty($doctorData['degree_title'])) {
 
-            return $patientInfo;
+                DoctorDegree::where('doctor_id', $doctorId)->delete();
+
+                // Loop through the product items
+                foreach ($doctorData['degree_title'] as $index => $degreeTitle) {
+                    $degreeData[] = [
+                        'doctor_id' => $doctorId,
+                        'degree_title' => $degreeTitle,
+                        'degree_description' => $doctorData['degree_description'][$index],
+                        'created_by' => loggedInUserId(),
+                        'created_at' => createdAtDateConvertToDB(),
+                    ];
+                }
+                // dd($paymentScheduleData);
+                if (!empty($degreeData)) {
+                    DoctorDegree::query()->insert($degreeData);
+                }
+            }
+
+            $doctorInfo->update($doctorData);
+            DB::commit();
+
+            return $doctorInfo;
         } catch (Exception $exception) {
+            DB::rollBack();
             throw $exception;
         }
     }

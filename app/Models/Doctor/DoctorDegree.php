@@ -17,7 +17,7 @@ class DoctorDegree extends Model
         'degree_id',
         'doctor_id',
         'degree_title',
-        'description',
+        'degree_description',
         'status',
         'created_by',
         'updated_by',

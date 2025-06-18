@@ -1,6 +1,6 @@
 @extends('master')
 
-@section('title', 'Patient')
+@section('title', 'Doctor')
 @section('page_css')
     <style nonce="{{ $cspNonce }}">
         .upload-container {
@@ -174,7 +174,7 @@
                                         @enderror
                                     </div>
 
-                                    @if (empty($editModeData?->patient_id))
+                                    @if (empty($editModeData?->doctor_id))
                                         {{-- Password --}}
                                         <div class="col-md-4 fv-row mb-5">
                                             <label class="fs-5 fw-bold mb-2">Password</label>
@@ -241,6 +241,86 @@
                                 </div>
                             </div>
 
+                            <div class="divider-line">
+                                <span class="divider-text fs-3 text-dark">Degrees</span>
+                                <div class="line"></div>
+                            </div>
+
+                            @if (!empty($editModeData) && count($editModeData->degrees))
+                                @foreach ($editModeData->degrees as $index => $degree)
+                                    <div class="{{ $index === 0 ? 'row static_row' : 'row degree_row_element' }}"
+                                        data-increment-id="{{ $index + 1 }}">
+                                        <div class="row">
+                                            <!-- degree_title, degree_description, Action columns -->
+                                            <div class="col-md-5 fv-row mb-5">
+                                                <label class="required fs-5 fw-bold mb-2">Title</label>
+                                                <input type="text" class="form-control form-control-light degree_title"
+                                                    name="degree_title[]" id="degree_title_{{ $index + 1 }}"
+                                                    value="{{ $degree->degree_title }}" required />
+                                            </div>
+                                            <div class="col-md-6 fv-row mb-5">
+                                                <label class="fs-5 fw-bold mb-2">Description</label>
+                                                <input type="text"
+                                                    class="form-control form-control-light degree_description"
+                                                    name="degree_description[]"
+                                                    id="degree_description_{{ $index + 1 }}"
+                                                    value="{{ $degree->degree_description }}" />
+                                            </div>
+                                            <div class="col-md-1 fv-row mb-5">
+                                                @if ($index === 0)
+                                                    <label class="fs-5 fw-bold mb-2">Action</label>
+                                                @else
+                                                    <label class="fs-5 fw-bold mb-2 invisible">Action</label>
+                                                @endif
+                                                <div class="d-flex align-items-end">
+                                                    @if ($index === 0)
+                                                        <button type="button"
+                                                            class="btn btn-icon btn-sm btn-success mt-1 ms-2"
+                                                            id="addMoreBtn">
+                                                            <i class="fas fa-plus-circle"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-icon btn-danger mt-1 ms-2 deleteDegree">
+                                                            <i class="fas fa-trash-alt ms-1"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                {{-- Place degree_append_div after all existing rows --}}
+                                <div class="row static_row">
+                                    <div class="degree_append_div"></div>
+                                </div>
+                            @else
+                                {{-- Create mode fallback --}}
+                                <div class="row static_row">
+                                    <div class="col-md-5 fv-row mb-5">
+                                        <label class="required fs-5 fw-bold mb-2">Title</label>
+                                        <input type="text" class="form-control form-control-light degree_title"
+                                            name="degree_title[]" id="degree_title_1" required />
+                                    </div>
+                                    <div class="col-md-6 fv-row mb-5">
+                                        <label class="fs-5 fw-bold mb-2">Description</label>
+                                        <input type="text" class="form-control form-control-light degree_description"
+                                            name="degree_description[]" id="degree_description_1" />
+                                    </div>
+                                    <div class="col-md-1 fv-row mb-5">
+                                        <label class="fs-5 fw-bold mb-2">Action</label>
+                                        <div class="d-flex align-items-end">
+                                            <button type="button" class="btn btn-icon btn-sm btn-success mt-1 ms-2"
+                                                id="addMoreBtn">
+                                                <i class="fas fa-plus-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="degree_append_div"></div>
+                            @endif
+
                             <div class="mt-4 text-end">
                                 <button type="submit" class="btn btn-sm btn-primary">Submit</button>
                             </div>
@@ -259,9 +339,13 @@
 
 @section('page_script')
 
-    <!-- begin::Page Custom Stylesheets(used by this page) -->
-    <script src="{{ asset('assets/custom/js/doctor/doctor/index.js') }}" {{ Sri::html('assets/custom/js/doctor/doctor/index.js') }}>
+    <script nonce="{{ $cspNonce }}">
+        let incrementId = {{ isset($editModeData) && count($editModeData->degrees) ? count($editModeData->degrees) : 1 }};
     </script>
+
+    <!-- begin::Page Custom Stylesheets(used by this page) -->
+    <script src="{{ asset('assets/custom/js/doctor/doctor/index.js') }}"
+        {{ Sri::html('assets/custom/js/doctor/doctor/index.js') }}></script>
     <!--end::Page Custom Stylesheets(used by this page)-->
 
 @endsection

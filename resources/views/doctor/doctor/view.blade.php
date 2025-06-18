@@ -1,6 +1,6 @@
 @extends('master')
 
-@section('title', 'Patient')
+@section('title', 'Doctor')
 @section('page_css')
     <style nonce="{{ $cspNonce }}">
         .upload-container {
@@ -32,13 +32,13 @@
 @endsection
 @section('content')
     <!--begin::Toolbar -->
-    <x-toolbar-component title="Patient View" :breadcrumbs="[
+    <x-toolbar-component title="Doctor View" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
-        ['label' => 'Patient', 'url' => route('patient.index')],
-        ['label' => 'Patient View', 'active' => true],
-    ]" actionUrl="{{ route('patient.index') }}"
-        actionIcon="fas fa-list" actionLabel="Patient List" />
+        ['label' => 'Doctor', 'url' => route('doctor.index')],
+        ['label' => 'Doctor View', 'active' => true],
+    ]" actionUrl="{{ route('doctor.index') }}"
+        actionIcon="fas fa-list" actionLabel="Doctor List" />
     <!--end::Toolbar -->
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
@@ -54,7 +54,7 @@
                                 <div class="upload-container"> <!-- move class here instead -->
                                     <label class="upload-box">
                                         <img id="photoPreview" alt="Image Preview"
-                                            src="{{ !empty($editModeData?->photo) ? asset('/uploads/patient/' . $editModeData?->photo) : '' }}">
+                                            src="{{ !empty($editModeData?->photo) ? asset('/uploads/doctor/' . $editModeData?->photo) : '' }}">
                                     </label>
                                 </div>
                             </div>
@@ -62,6 +62,13 @@
 
                         <div class="col-md-12">
                             <div class="row">
+
+                                {{-- Title --}}
+                                <div class="col-md-4 fv-row mb-5">
+                                    <label class="fs-5 fw-bold mb-2">Title</label>
+                                    <input type="text" class="form-control form-control-solid"
+                                        value="{{ $editModeData?->title }}" readonly>
+                                </div>
                                 {{-- Name --}}
                                 <div class="col-md-4 fv-row mb-5">
                                     <label class="fs-5 fw-bold mb-2">Name</label>
@@ -83,67 +90,49 @@
                                         value="{{ $editModeData?->phone }}" readonly>
                                 </div>
 
-                                {{-- Date of Birth --}}
+                                {{-- department --}}
                                 <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Date of birth</label>
+                                    <label class="fs-5 fw-bold mb-2">Department</label>
                                     <input type="text" class="form-control form-control-solid"
-                                        value="{{ !empty($editModeData?->date_of_birth) ? \Carbon\Carbon::parse($editModeData?->date_of_birth)->format('d M, Y') : '' }}"
-                                        readonly>
+                                        value="{{ $editModeData?->department?->department_name }}" readonly>
                                 </div>
 
-                                {{-- Age --}}
-                                <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Age(Year)</label>
-                                    <input type="number" class="form-control form-control-solid"
-                                        value="{{ $editModeData?->age }}" readonly>
-                                </div>
-
-                                {{-- Height --}}
-                                <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Height</label>
-                                    <input type="text" class="form-control form-control-solid"
-                                        value="{{ $editModeData?->height }}" readonly>
-                                </div>
-
-                                {{-- Weight --}}
-                                <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Weight</label>
-                                    <input type="text" class="form-control form-control-solid"
-                                        value="{{ $editModeData?->weight }}" readonly>
-                                </div>
-
-                                {{-- Gender --}}
-                                <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Gender</label>
-                                    <input type="text" class="form-control form-control-solid"
-                                        value="{{ $editModeData?->gender }}" readonly>
-                                </div>
-
-                                {{-- Blood Group --}}
-                                <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Blood group</label>
-                                    <input type="text" class="form-control form-control-solid"
-                                        value="{{ $editModeData?->blood_group }}" readonly>
-                                </div>
-
-                                {{-- Marital status --}}
-                                <div class="col-md-4 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Marital status</label>
-                                    <input type="text" class="form-control form-control-solid"
-                                        value="{{ $editModeData?->marital_status }}" readonly>
-                                </div>
-
-                                <div class="col-md-8 fv-row mb-5">
-                                    <label class="fs-5 fw-bold mb-2">Note</label>
-                                    <textarea class="form-control form-control-solid" data-kt-autosize="true" readonly>{{ $editModeData?->note }}</textarea>
-                                </div>
-
+                                {{-- Address --}}
                                 <div class="col-md-6 fv-row mb-5">
                                     <label class="fs-5 fw-bold mb-2">Address</label>
                                     <textarea class="form-control form-control-solid" data-kt-autosize="true" readonly>{{ $editModeData?->address }}</textarea>
                                 </div>
+
+                                {{-- description --}}
+                                <div class="col-md-6 fv-row mb-5">
+                                    <label class="fs-5 fw-bold mb-2">Description</label>
+                                    <textarea class="form-control form-control-solid" data-kt-autosize="true" readonly>{{ $editModeData?->description }}</textarea>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="divider-line">
+                            <span class="divider-text fs-3 text-dark">Degrees</span>
+                            <div class="line"></div>
+                        </div>
+
+                        @foreach ($editModeData->degrees as $index => $degree)
+                            <div class="degree_row_element" data-increment-id="{{ $index + 1 }}">
+                                <div class="row">
+                                    <!-- degree_title, degree_description, Action columns -->
+                                    <div class="col-md-5 fv-row mb-5">
+                                        <label class="fs-5 fw-bold mb-2">Title</label>
+                                        <input type="text" class="form-control form-control-solid"
+                                            value="{{ $degree?->degree_title }}" readonly>
+                                    </div>
+                                    <div class="col-md-7 fv-row mb-5">
+                                        <label class="fs-5 fw-bold mb-2">Description</label>
+                                        <input type="text" class="form-control form-control-solid"
+                                            value="{{ $degree?->degree_description }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
                 </div>
@@ -160,7 +149,7 @@
 @section('page_script')
 
     <!-- begin::Page Custom Stylesheets(used by this page) -->
-    <script src="{{ asset('assets/custom/js/patient/index.js') }}" {{ Sri::html('assets/custom/js/patient/index.js') }}>
+    <script src="{{ asset('assets/custom/js/doctor/index.js') }}" {{ Sri::html('assets/custom/js/doctor/index.js') }}>
     </script>
     <!--end::Page Custom Stylesheets(used by this page)-->
 
