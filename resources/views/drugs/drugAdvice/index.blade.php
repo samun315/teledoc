@@ -60,8 +60,8 @@
 @section('page_script')
 
     <!-- begin::Page Custom Stylesheets(used by this page) -->
-    <script src="{{ asset('assets/custom/js/drugs/drugAdvice/index.js') }}" {{ Sri::html('assets/custom/js/drugs/drugAdvice/index.js') }}>
-    </script>
+    <script src="{{ asset('assets/custom/js/drugs/drugAdvice/index.js') }}"
+        {{ Sri::html('assets/custom/js/drugs/drugAdvice/index.js') }}></script>
     <!--end::Page Custom Stylesheets(used by this page)-->
 
 @endsection
