@@ -10,7 +10,7 @@ use App\Http\Controllers\Drug\SubscriptionTypeController;
 use Illuminate\Support\Facades\Route;
 
 // subscription type 
-// name route  drug.supscription.type.index
+// name route  drug.subscription.type.index
 // url /drug/subscription-type
 Route::group(['prefix' => 'subscription-type', 'as' => 'type.'], function () {
     Route::get('/', [SubscriptionTypeController::class, 'index'])->name('index');
@@ -22,7 +22,7 @@ Route::group(['prefix' => 'subscription-type', 'as' => 'type.'], function () {
 });
 
 // subscription 
-// name route  drug.supscription.index
+// name route  drug.subscription.index
 // url /drug/subscription
 Route::group(['prefix' => 'subscription'], function () {
     Route::get('/', [SubscriptionController::class, 'index'])->name('index');

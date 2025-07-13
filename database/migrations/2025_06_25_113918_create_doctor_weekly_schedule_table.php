@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('day_of_week',['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
             $table->time('start_time');
             $table->time('end_time');
-            $table->int('slot_duration_minutes');
+            $table->unsignedBigInteger('slot_duration_minutes');
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
