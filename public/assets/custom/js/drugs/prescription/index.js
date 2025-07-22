@@ -118,8 +118,8 @@ let table = $("#kt_prescription_table").DataTable({
             name: "prescription_number",
         },
         {
-            data: "prescription_number",
-            name: "prescription_number",
+            data: "patient_name",
+            name: "patient_name",
         },
         {
             data: "status",

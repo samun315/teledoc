@@ -17,7 +17,7 @@ class PrescriptionController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->ajax()) {
-            return $this->prescriptionService->getSubscriptionList($request);
+            return $this->prescriptionService->getPrescriptionList($request);
         }
 
         return view('drugs.prescription.index');

@@ -2,6 +2,7 @@
 
 namespace App\Services\Drug;
 
+use App\Models\Drug\Prescription;
 use App\Models\Drug\Subscription;
 use Exception;
 use Illuminate\Http\Request;
@@ -14,23 +15,20 @@ use Yajra\DataTables\DataTables;
 
 class PrescriptionService
 {
-    public function getSubscriptionList(Request $request): JsonResponse|Model|Builder
+    public function getPrescriptionList(Request $request): JsonResponse|Model|Builder
     {
         $searchKeyword = $request->input('search');
         $subscriptionTypeId = $request->input('subscription_type');
 
-        $query = Subscription::query()
-            ->leftJoin('subscription_types', 'subscriptions.subscription_type_id', '=', 'subscription_types.subscription_type_id')
-            ->select('subscriptions.*', 'subscription_types.subscription_type')->latest();
+        $query = Prescription::query()
+            ->leftJoin('patients', 'prescriptions.patient_id', '=', 'patients.patient_id')
+            ->leftJoin('doctors', 'prescriptions.doctor_id', '=', 'doctors.doctor_id')
+            ->select('prescriptions.*', 'patients.name as patient_name', 'doctors.name as doctor_name')->latest();
 
         if ($searchKeyword) {
-            $query->where('subscriptions.subscription_name', 'like', '%' . $searchKeyword . '%')
+            $query->where('patients.name', 'like', '%' . $searchKeyword . '%')
                 ->orWhere('subscriptions.status', 'like', '%' . $searchKeyword . '%')
-                ->orWhere('subscription_types.subscription_type', 'like', '%' . $searchKeyword . '%');
-        }
-
-        if ($subscriptionTypeId) {
-            $query->where('subscriptions.subscription_type_id', '=',   $subscriptionTypeId);
+                ->orWhere('doctors.name', 'like', '%' . $searchKeyword . '%');
         }
 
 
@@ -40,7 +38,7 @@ class PrescriptionService
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
 
-                $editBtn = '<button data-id="' . $row?->subscription_id . '" class="btn btn-bg-info text-white btn-sm editSubscriptionBtn" data-bs-toggle="modal" data-bs-target="#showModal"><i class="fas fa-edit text-white"></i> Edit</button>';
+                $editBtn = '<button data-id="' . $row?->prescription_id . '" class="btn btn-bg-info text-white btn-sm editPrescriptionBtn"><i class="fas fa-edit text-white"></i> Edit</button>';
 
                 $button = '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
