@@ -1,15 +1,18 @@
 @extends('master')
 
 @section('title', 'Prescription')
-
+@section('page_css')
+    <!-- Menu item custom css -->
+    <link href="{{ asset('assets/custom/css/prescription/style.css') }}"
+        {{ Sri::html('assets/custom/css/prescription/style.css') }} rel="stylesheet" type="text/css" />
+@endsection
 @section('content')
     <x-toolbar-component title="Prescription List" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
-        ['label' => 'Prescription Helper', 'url' => 'javascript:void(0)'],
         ['label' => 'Prescription', 'url' => route('drug.prescription.index')],
         ['label' => 'Prescription List', 'active' => true],
-    ]" actionUrl="{{ route('drug.prescription.create') }}"
+    ]" modalTarget="openPatientModal"
         actionIcon="fas fa-plus-circle" actionLabel="Create Prescription" />
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
@@ -75,6 +78,10 @@
         </div>
         <!--end::Container-->
     </div>
+
+    {{-- NEW PRESCRIPTION ADD MODAL --}}
+    @include('drugs.prescription.modal.selectPatientModal')
+
 
 @endsection
 

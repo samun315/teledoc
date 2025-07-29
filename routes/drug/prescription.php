@@ -16,6 +16,8 @@ Route::group(['prefix' => 'prescription'], function () {
     Route::get('/', [PrescriptionController::class, 'index'])->name('index');
     Route::get('/create', [PrescriptionController::class, 'create'])->name('create');
     Route::post('/store', [PrescriptionController::class,  'store'])->name('store');
+    Route::get('/get-patient', [PrescriptionController::class,  'getPatientList'])->name('getPatientList');
     Route::get('/edit/{menu_id}', [PrescriptionController::class,  'edit'])->name('edit');
     Route::put('/update/{menu_id}', [PrescriptionController::class,  'update'])->name('update');
+
 });

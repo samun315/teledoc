@@ -41,6 +41,12 @@ class PrescriptionController extends Controller
         }
     }
 
+      public function getPatientList(): JsonResponse
+    {
+        $data = $this->prescriptionService->getPatientList();
+        return sendSuccessResponse(200, '', 'patientInfo', $data);
+    }
+
     public function edit(int $subscriptionId): JsonResponse
     {
         $data = $this->prescriptionService->getSubscriptionById($subscriptionId);

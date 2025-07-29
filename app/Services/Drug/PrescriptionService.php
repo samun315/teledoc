@@ -4,6 +4,7 @@ namespace App\Services\Drug;
 
 use App\Models\Drug\Prescription;
 use App\Models\Drug\Subscription;
+use App\Models\Patient\Patient;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -64,6 +65,10 @@ class PrescriptionService
         }
     }
 
+    public function getPatientList(): Collection
+    {
+        return Patient::query()->where('active', 'YES')->get();
+    }
     public function getSubscriptionById(int $subscriptionId): Model|Builder
     {
         return Subscription::find($subscriptionId);

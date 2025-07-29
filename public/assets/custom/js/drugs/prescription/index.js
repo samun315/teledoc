@@ -1,62 +1,135 @@
-// Select the form element with the id attribute "submitForm"
-let selectedForm = $("#submitForm");
+// Get the current URL of the window
+const BASE_URL = window.location.origin + "/drug/prescription";
+const filePath = window.location.origin;
+
+$(document).ready(function () {
+
+    // Open patient modal
+    $('#openPatientModal').on('click', function () {
+        $('#patientModal').modal('show');
+
+        getPatientList();
+    });
+
+    // Search filter
+    // $(document).on('keyup', '#searchPatient', function () {
+    //   const term = $(this).val().toLowerCase();
+    //   $('#patientList .select-patient').each(function () {
+    //     const text = $(this).text().toLowerCase();
+    //     $(this).toggle(text.includes(term));
+    //   });
+    // });
+
+    // Prevent form submission on Enter key inside search input
+    $('#searchPatient').on('keypress', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+        }
+    });
+
+    // Live filter as user types
+$('#searchPatient').on('keyup', function () {
+    const term = $(this).val().toLowerCase().trim();
+
+    if (term === '') {
+        $('#patientList .select-patient').show();
+        return;
+    }
+
+    $('#patientList .select-patient').each(function () {
+        const name = $(this).find('.patient-name').text().toLowerCase();
+
+        if (name.includes(term)) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+});
+
+
+
+
+
+    // Patient selection
+    $(document).on('click', '.select-patient', function () {
+        $('.select-patient').removeClass('active');
+        $('.check-icon').addClass('d-none');
+        $(this).addClass('active');
+        $(this).find('.check-icon').removeClass('d-none');
+    });
+
+    // Reset selection when modal is closed
+    $('#patientModal').on('hidden.bs.modal', function () {
+        $('.select-patient.active').removeClass('active');
+        $('.check-icon').addClass('d-none');
+        $('#searchPatient').val('');
+    });
+
+    // Placeholder for create prescription button handler
+    $('#createPrescription').on('click', function () {
+        // Add prescription creation logic here if needed
+    });
+});
+
+
+function getPatientList() {
+    $.ajax({
+        type: "GET",
+        url: `${BASE_URL}/get-patient`,
+        dataType: "json",
+        success: (response) => {
+            if (response?.success && response?.statusCode === 200) {
+                const { patientInfo } = response;
+
+                const $patientList = $('#patientList');
+                $patientList.empty(); // Clear existing list
+
+                if (Array.isArray(patientInfo) && patientInfo.length > 0) {
+                    patientInfo.forEach(patient => {
+                        const imagePath = patient.photo ? `${filePath}/uploads/patient/${patient.photo}` : `${filePath}/assets/media/avatars/blank.png`;
+
+                        // Build the patient item div dynamically
+                        // Assuming patient has id, name, phone properties - adjust as needed
+                        const patientItem = `
+                <div class="select-patient d-flex align-items-center justify-content-between border rounded p-2 mb-2 cursor-pointer" data-id="${patient.patient_id}">
+                  <div class="d-flex align-items-center patient-info">
+                    <img src="${imagePath}" class="rounded-circle me-2"  width="40" height="40" alt="Patient Avatar">
+                    <div>
+                      <strong class="patient-name">${patient.name}</strong><br>
+                      <small>${patient.phone}</small>
+                    </div>
+                  </div>
+                  <div class="check-icon d-none text-primary">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                </div>
+              `;
+                        $patientList.append(patientItem);
+                    });
+                } else {
+                    $patientList.html('<p class="text-muted">No patients found.</p>');
+                }
+            } else {
+                toastr.error(response?.message || "An unexpected error occurred.");
+            }
+        },
+        error: (jqXHR) => {
+            // Optional loader function you may have
+            // loader(selectedForm, false);
+
+            if (jqXHR.status === 422) {
+                displayValidationErrors(jqXHR.responseJSON?.errors);
+            } else {
+                toastr.error(jqXHR.responseJSON?.message || "An unexpected error occurred.");
+            }
+        },
+    });
+}
+
 
 let search = $("#search");
 let subscription_type = $("#subscription_type_id");
-// Get the current URL of the window
-const BASE_URL = window.location.origin + "/drug/prescription";
-
-let validate = selectedForm.validate({
-    rules: {
-        name: "required",
-    },
-    onsubmit: true,
-});
-
-$(".formReset").on("click", function () {
-    formReset();
-});
-
-function formReset() {
-    $("#submitForm").trigger("reset");
-    $("#kt_subscription_type_id").val("").trigger("change");
-    $("#kt_status").val("Active").trigger("change");
-}
-
-selectedForm.submit(function (e) {
-    e.preventDefault();
-
-    if (!validate.valid()) return;
-
-    loader(selectedForm, true);
-
-    // Setup CSRF token
-    setCSRFToken();
-
-    $(".error").remove();
-
-    const formData = new FormData(this);
-
-    const subscriptionId = $("#kt_subscription_id").val();
-    let URL = `${BASE_URL}/store`;
-
-    // Append _method if METHOD is PUT
-    if (subscriptionId) {
-        URL = `${BASE_URL}/update/${subscriptionId}`;
-        formData.append("_method", "PUT");
-    }
-
-    $.ajax({
-        type: "POST", // Always use POST for FormData, append _method for PUT
-        url: URL,
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: handleSuccessWithModal,
-        error: handleError,
-    });
-});
 
 const formatDate = (data) => {
     if (!data) return "";
@@ -157,57 +230,3 @@ search.keyup(function () {
 subscription_type.change(function () {
     table.draw();
 });
-
-//  GET EDIT EDUCATION INFO DATA
-$(document).on("click", ".editSubscriptionBtn", function () {
-    let subscription_id = $(this).attr("data-id");
-    getSubscriptionInfo(subscription_id);
-});
-
-function getSubscriptionInfo(subscription_id) {
-    loader(selectedForm, true);
-    $(".error").remove();
-
-    $.ajax({
-        type: "GET",
-        url: `${BASE_URL}/edit/${subscription_id}`,
-        dataType: "json",
-        success: (response) => {
-            loader(selectedForm, false);
-
-            if (response?.success && response?.statusCode === 200) {
-                const { subscriptionInfo } = response;
-
-                $("#kt_subscription_id").val(subscriptionInfo?.subscription_id);
-                $("#kt_subscription_name").val(
-                    subscriptionInfo?.subscription_name
-                );
-
-                $("#kt_subscription_type_id")
-                    .val(subscriptionInfo?.subscription_type_id)
-                    .trigger("change");
-
-                $("#kt_status").val(subscriptionInfo?.status).trigger("change");
-
-                $("#modalTitle").html("Edit Subscription");
-                $(".btnSubmit").html("Update");
-            } else {
-                toastr.error(
-                    response?.message || "An unexpected error occurred."
-                );
-            }
-        },
-        error: (jqXHR) => {
-            loader(selectedForm, false);
-
-            if (jqXHR.status === 422) {
-                displayValidationErrors(jqXHR.responseJSON?.errors);
-            } else {
-                toastr.error(
-                    jqXHR.responseJSON?.message ||
-                        "An unexpected error occurred."
-                );
-            }
-        },
-    });
-}
