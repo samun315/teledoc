@@ -1,77 +1,85 @@
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/drug/prescription";
-const filePath = window.location.origin;
+const ORIGIN_URL = window.location.origin;
 
 $(document).ready(function () {
 
     // Open patient modal
     $('#openPatientModal').on('click', function () {
         $('#patientModal').modal('show');
-
         getPatientList();
     });
 
-    // Search filter
-    // $(document).on('keyup', '#searchPatient', function () {
-    //   const term = $(this).val().toLowerCase();
-    //   $('#patientList .select-patient').each(function () {
-    //     const text = $(this).text().toLowerCase();
-    //     $(this).toggle(text.includes(term));
-    //   });
-    // });
-
-    // Prevent form submission on Enter key inside search input
+    // Prevent form submission on Enter inside search box
     $('#searchPatient').on('keypress', function (e) {
-        if (e.which === 13) {
-            e.preventDefault();
-        }
+        if (e.which === 13) e.preventDefault();
     });
 
-    // Live filter as user types
-$('#searchPatient').on('keyup', function () {
-    const term = $(this).val().toLowerCase().trim();
+    // Live search: filter by name or phone
+    $('#searchPatient').on('keyup', function () {
+        const term = $(this).val().toLowerCase().trim();
 
-    if (term === '') {
-        $('#patientList .select-patient').show();
-        return;
-    }
+        $('#patientList .select-patient').each(function () {
+            const name = $(this).find('.patient-name').text().toLowerCase();
+            const phone = $(this).find('small').text().toLowerCase();
 
-    $('#patientList .select-patient').each(function () {
-        const name = $(this).find('.patient-name').text().toLowerCase();
+            if (term === '' || name.includes(term) || phone.includes(term)) {
+                $(this).removeClass('d-none').addClass('d-flex');
+            } else {
+                $(this).removeClass('d-flex').addClass('d-none');
+            }
+        });
 
-        if (name.includes(term)) {
-            $(this).show();
+        // Check if any patient is visible after filtering
+        if ($('#patientList .select-patient.d-flex').length === 0) {
+            // If none visible, show "No patients found"
+            if ($('#patientList .no-patient-message').length === 0) {
+                $('#patientList').append('<p class="no-patient-message text-muted">No patients found.</p>');
+            }
         } else {
-            $(this).hide();
+            // Remove the message if patients are visible
+            $('#patientList .no-patient-message').remove();
         }
     });
-});
 
 
-
-
-
-    // Patient selection
+    // Patient selection behavior
     $(document).on('click', '.select-patient', function () {
         $('.select-patient').removeClass('active');
         $('.check-icon').addClass('d-none');
         $(this).addClass('active');
         $(this).find('.check-icon').removeClass('d-none');
+
+        const patientId = $(this).data('patient-id'); // Corrected variable
+
+        // const baseUrl = $('#createPrescription').data('route'); // Get the base URL from data attribute
+        const prescriptionRoute = ORIGIN_URL + `/drug/prescription/create/${patientId}`;
+
+        // Set the href dynamically
+        $('#createPrescription').attr('href', prescriptionRoute);
     });
 
-    // Reset selection when modal is closed
+
+    // Reset everything on modal close
     $('#patientModal').on('hidden.bs.modal', function () {
-        $('.select-patient.active').removeClass('active');
-        $('.check-icon').addClass('d-none');
         $('#searchPatient').val('');
+        $('.select-patient').removeClass('active d-none').addClass('d-flex');
+        $('.check-icon').addClass('d-none');
+
+        // Remove the href from Create Prescription button
+        $('#createPrescription').removeAttr('href');
     });
 
-    // Placeholder for create prescription button handler
+    // Placeholder: create prescription action
     $('#createPrescription').on('click', function () {
-        // Add prescription creation logic here if needed
+        const selectedPatient = $('.select-patient.active');
+        if (selectedPatient.length === 0) {
+            toastr.error('Please select a patient first!');
+            return;
+        }
     });
-});
 
+});
 
 function getPatientList() {
     $.ajax({
@@ -81,32 +89,34 @@ function getPatientList() {
         success: (response) => {
             if (response?.success && response?.statusCode === 200) {
                 const { patientInfo } = response;
-
                 const $patientList = $('#patientList');
-                $patientList.empty(); // Clear existing list
+                $patientList.empty();
 
                 if (Array.isArray(patientInfo) && patientInfo.length > 0) {
                     patientInfo.forEach(patient => {
-                        const imagePath = patient.photo ? `${filePath}/uploads/patient/${patient.photo}` : `${filePath}/assets/media/avatars/blank.png`;
+                        const imagePath = patient.photo
+                            ? `${ORIGIN_URL}/uploads/patient/${patient.photo}`
+                            : `${ORIGIN_URL}/assets/media/avatars/blank.png`;
 
-                        // Build the patient item div dynamically
-                        // Assuming patient has id, name, phone properties - adjust as needed
                         const patientItem = `
-                <div class="select-patient d-flex align-items-center justify-content-between border rounded p-2 mb-2 cursor-pointer" data-id="${patient.patient_id}">
-                  <div class="d-flex align-items-center patient-info">
-                    <img src="${imagePath}" class="rounded-circle me-2"  width="40" height="40" alt="Patient Avatar">
-                    <div>
-                      <strong class="patient-name">${patient.name}</strong><br>
-                      <small>${patient.phone}</small>
-                    </div>
-                  </div>
-                  <div class="check-icon d-none text-primary">
-                    <i class="bi bi-check-circle-fill"></i>
-                  </div>
-                </div>
-              `;
+                            <div class="select-patient d-flex align-items-center justify-content-between border rounded p-2 mb-2 cursor-pointer" data-patient-id="${patient.patient_id}">
+                                <div class="d-flex align-items-center patient-info">
+                                    <img src="${imagePath}" class="rounded-circle me-2" width="40" height="40" alt="Patient Avatar">
+                                    <div>
+                                        <strong class="patient-name">${patient.name}</strong><br>
+                                        <small>${patient.phone}</small>
+                                    </div>
+                                </div>
+                                <div class="check-icon d-none text-primary">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                            </div>
+                        `;
                         $patientList.append(patientItem);
                     });
+
+                    // Reapply search if user already typed something
+                    $('#searchPatient').trigger('keyup');
                 } else {
                     $patientList.html('<p class="text-muted">No patients found.</p>');
                 }
@@ -115,9 +125,6 @@ function getPatientList() {
             }
         },
         error: (jqXHR) => {
-            // Optional loader function you may have
-            // loader(selectedForm, false);
-
             if (jqXHR.status === 422) {
                 displayValidationErrors(jqXHR.responseJSON?.errors);
             } else {

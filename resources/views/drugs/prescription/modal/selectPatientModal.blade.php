@@ -18,7 +18,7 @@
             </div>
 
             <div class="modal-footer justify-content-between">
-                <button class="btn btn-success">Create Prescription</button>
+                <a class="btn btn-success" id="createPrescription" target="_blank" >Create Prescription</a>
                 <a href="{{ route('patient.create') }}" target="_blank" class="btn btn-warning">New Patient</a>
             </div>
         </div>

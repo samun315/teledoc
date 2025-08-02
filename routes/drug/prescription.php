@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 // url /drug/prescription
 Route::group(['prefix' => 'prescription'], function () {
     Route::get('/', [PrescriptionController::class, 'index'])->name('index');
-    Route::get('/create', [PrescriptionController::class, 'create'])->name('create');
+    Route::get('/create/{patient_id}', [PrescriptionController::class, 'create'])->name('create');
     Route::post('/store', [PrescriptionController::class,  'store'])->name('store');
     Route::get('/get-patient', [PrescriptionController::class,  'getPatientList'])->name('getPatientList');
     Route::get('/edit/{menu_id}', [PrescriptionController::class,  'edit'])->name('edit');

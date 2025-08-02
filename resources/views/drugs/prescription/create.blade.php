@@ -15,58 +15,53 @@
         <div id="kt_content_container" class="container-fluid">
             <!--begin::Card-->
             <div class="card">
+                <!--begin::Card body-->
+                @include('message')
 
-                <!--begin::Header-->
-                <div class="card-header border-0 pt-5">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <!-- START SEARCH ICON-->
-                                <x-search />
-                                <!-- END SEARCH ICON-->
-                            </div>
-                            <div class="col-md-3">
-                                {{-- <select name="subscription_type_id" id="subscription_type_id"
-                                    class="form-select form-select-solid" data-control="select2"
-                                    data-placeholder="Select subscription type" data-allow-clear="true">
-                                    <option value=""></option>
-                                    @foreach ($subscriptionTypes as $subscriptionType)
-                                        <option {{ old('subscription_type_id') ? 'selected' : '' }}
-                                            value="{{ $subscriptionType->subscription_type_id ?? old('subscription_type_id') }}">
-                                            {{ $subscriptionType->subscription_type }}</option>
-                                    @endforeach --}}
-                                </select>
-                            </div>
+                <div class="row p-2">
+                    <!-- Left Column -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm p-3">
+                            @foreach ($subscriptionTypes as $type)
+                                <div class="position-relative mb-7">
+                                    <textarea class="form-control pe-5" rows="3" name="subscription_type"
+                                        id="subscription_type_{{ $type->subscription_type_id }}" placeholder="{{ $type->subscription_type }}"></textarea>
+
+                                    <button type="button"
+                                        class="btn btn-sm btn-icon btn-dark rounded-circle position-absolute top-0 end-0 translate-middle-y"
+                                        title="Add More">
+                                        <i class="fas fa-plus fs-5 text-white"></i>
+                                    </button>
+                                </div>
+                            @endforeach
+
+
                         </div>
                     </div>
-                </div>
-                <!--end::Header-->
 
-                <!--begin::Card body-->
-                <div class="card-body py-4">
-                    @include('message')
-
-                    <!--begin::Table-->
-                    <div class="table-responsive">
-                        <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4"
-                            id="kt_prescription_table">
-                            <!--begin::Table head-->
-                            <thead>
-                                <!--begin::Table row-->
-                                <tr class="text-start text-muted text-uppercase fw-bolder fs-7 gs-0">
-                                    <th>#</th>
-                                    <th>Date</th>
-                                    <th>Prescription Id</th>
-                                    <th>Patient</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                                <!--end::Table row-->
-                            </thead>
-                            <!--end::Table head-->
-                        </table>
+                    <!-- Right Column -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm p-3">
+                            <label>Date</label>
+                            <input type="text" class="form-control" value="08/02/2025">
+                        </div>
                     </div>
-                    <!--end::Table-->
+
+                    <div class="col-md-4">
+                        <div class="card shadow-sm text-center p-3">
+                            <img src="{{ $patientInfo?->photo ? asset('uploads/patient/' . $patientInfo->photo) : asset('assets/media/avatars/blank.png') }}"
+                                class="rounded-circle mb-2 mx-auto d-block" width="100" height="100"
+                                alt="Patient Avatar">
+
+                            <h5 class="fw-bold mb-1">{{ $patientInfo?->name }}</h5>
+                            <p class="mb-1 text-muted">{{ $patientInfo?->age }} years old, {{ $patientInfo?->gender }}</p>
+                            <p class="mb-1"><strong>Phone:</strong> {{ $patientInfo?->phone }}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{ $patientInfo?->email }}</p>
+                            <p class="mb-0"><strong>Address:</strong>
+                                {{ $patientInfo?->address }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <!--end::Card body-->
             </div>

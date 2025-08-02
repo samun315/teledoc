@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Drug;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Drug\PrescriptionRequest;
+use App\Models\Drug\SubscriptionType;
+use App\Models\Patient\Patient;
 use App\Services\Drug\PrescriptionService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -23,10 +25,12 @@ class PrescriptionController extends Controller
         return view('drugs.prescription.index');
     }
 
-    public function create(): View
+    public function create(int $patientId): View
     {
-
-        return view('drugs.prescription.create');
+        $data['patientInfo'] = Patient::query()->where('patient_id', $patientId)->first();
+        $data['subscriptionTypes'] = SubscriptionType::query()->where('status', 'Active')->get(['subscription_type_id', 'subscription_type']);
+       
+        return view('drugs.prescription.create', $data);
     }
 
 
@@ -41,7 +45,7 @@ class PrescriptionController extends Controller
         }
     }
 
-      public function getPatientList(): JsonResponse
+    public function getPatientList(): JsonResponse
     {
         $data = $this->prescriptionService->getPatientList();
         return sendSuccessResponse(200, '', 'patientInfo', $data);
