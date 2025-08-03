@@ -69,6 +69,12 @@ class PrescriptionService
     {
         return Patient::query()->where('active', 'YES')->get();
     }
+
+    public function getSubscriptionList(int $subscriptionTypeId): Collection
+    {
+        return Subscription::query()->where('subscription_type_id', $subscriptionTypeId)->where('status', 'Active')->get();
+    }
+
     public function getSubscriptionById(int $subscriptionId): Model|Builder
     {
         return Subscription::find($subscriptionId);

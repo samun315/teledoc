@@ -237,3 +237,91 @@ search.keyup(function () {
 subscription_type.change(function () {
     table.draw();
 });
+
+
+$(".addMoreBtn").on("click", function name() {
+
+    const subscription_type_id = $(this).data("subscription-type-id");
+    const subscription_type = $(this).data("subscription-type");
+
+    $("#showSubscriptionModal").modal("show");
+    $("#modalTitle").text(subscription_type+ " List");
+
+    getSubscriptionData(subscription_type_id);
+
+});
+
+
+function getSubscriptionData(subscription_type_id) {
+    $.ajax({
+        type: "GET",
+        url: `${BASE_URL}/get-subscriptions/` + subscription_type_id,
+        dataType: "json",
+        success: (response) => {
+            if (response?.success && response?.statusCode === 200) {
+                const { subscriptions } = response;
+                const $subscriptionList = $('#subscriptionList');
+                $subscriptionList.empty();
+
+                if (Array.isArray(subscriptions) && subscriptions.length > 0) {
+                    subscriptions.forEach(subscription => {
+                        const subscriptionItem = `
+                        <div class="form-check select-subscription mb-5">
+                            <input class="form-check-input" type="checkbox" value="${subscription.subscription_id}" id="subscriptionId${subscription.subscription_id}" />
+                            <label class="form-check-label fw-bold subscription-name ms-3" for="subscriptionId">
+                                ${subscription.subscription_name}
+                            </label>
+                        </div>
+                        `;
+                        $subscriptionList.append(subscriptionItem);
+                    });
+
+                    // Reapply search if user already typed something
+                    $('#search').trigger('keyup');
+                } else {
+                    $subscriptionList.html('<p class="text-muted">No subscription found.</p>');
+                }
+            } else {
+                toastr.error(response?.message || "An unexpected error occurred.");
+            }
+        },
+        error: (jqXHR) => {
+            if (jqXHR.status === 422) {
+                displayValidationErrors(jqXHR.responseJSON?.errors);
+            } else {
+                toastr.error(jqXHR.responseJSON?.message || "An unexpected error occurred.");
+            }
+        },
+    });
+}
+
+    // Prevent form submission on Enter inside search box
+    $('#search').on('keypress', function (e) {
+        if (e.which === 13) e.preventDefault();
+    });
+
+    // Live search: filter by name or phone
+    $('#search').on('keyup', function () {
+        const term = $(this).val().toLowerCase().trim();
+
+        $('#subscriptionList .select-subscription').each(function () {
+            const name = $(this).find('.subscription-name').text().toLowerCase();
+
+            if (term === '' || name.includes(term)) {
+                $(this).removeClass('d-none').addClass('d-flex');
+            } else {
+                $(this).removeClass('d-flex').addClass('d-none');
+            }
+        });
+
+        // Check if any patient is visible after filtering
+        if ($('#subscriptionList .select-subscription.d-flex').length === 0) {
+            // If none visible, show "No patients found"
+            if ($('#subscriptionList .no-subscription-message').length === 0) {
+                $('#subscriptionList').append('<p class="no-subscription-message text-muted">No subscriptions found.</p>');
+            }
+        } else {
+            // Remove the message if patients are visible
+            $('#subscriptionList .no-subscription-message').remove();
+        }
+    });

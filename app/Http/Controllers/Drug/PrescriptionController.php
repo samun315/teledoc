@@ -29,7 +29,7 @@ class PrescriptionController extends Controller
     {
         $data['patientInfo'] = Patient::query()->where('patient_id', $patientId)->first();
         $data['subscriptionTypes'] = SubscriptionType::query()->where('status', 'Active')->get(['subscription_type_id', 'subscription_type']);
-       
+
         return view('drugs.prescription.create', $data);
     }
 
@@ -49,6 +49,12 @@ class PrescriptionController extends Controller
     {
         $data = $this->prescriptionService->getPatientList();
         return sendSuccessResponse(200, '', 'patientInfo', $data);
+    }
+
+    public function getSubscriptionList(int $subscriptionTypeId): JsonResponse
+    {
+        $data = $this->prescriptionService->getSubscriptionList($subscriptionTypeId);
+        return sendSuccessResponse(200, '', 'subscriptions', $data);
     }
 
     public function edit(int $subscriptionId): JsonResponse

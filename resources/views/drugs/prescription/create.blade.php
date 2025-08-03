@@ -27,15 +27,13 @@
                                     <textarea class="form-control pe-5" rows="3" name="subscription_type"
                                         id="subscription_type_{{ $type->subscription_type_id }}" placeholder="{{ $type->subscription_type }}"></textarea>
 
-                                    <button type="button"
-                                        class="btn btn-sm btn-icon btn-dark rounded-circle position-absolute top-0 end-0 translate-middle-y"
+                                    <button type="button" data-subscription-type-id="{{$type->subscription_type_id}}" data-subscription-type="{{$type->subscription_type}}"
+                                        class="btn btn-sm btn-icon btn-dark rounded-circle position-absolute top-0 end-0 translate-middle-y addMoreBtn"
                                         title="Add More">
                                         <i class="fas fa-plus fs-5 text-white"></i>
                                     </button>
                                 </div>
                             @endforeach
-
-
                         </div>
                     </div>
 
@@ -69,6 +67,10 @@
         </div>
         <!--end::Container-->
     </div>
+
+    {{--start:: NEW PRESCRIPTION ADD MODAL --}}
+    @include('drugs.prescription.modal.addSubscriptionModal')
+    {{--end:: NEW PRESCRIPTION ADD MODAL --}}
 
 @endsection
 
