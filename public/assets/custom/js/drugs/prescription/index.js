@@ -238,19 +238,21 @@ subscription_type.change(function () {
     table.draw();
 });
 
+// SUBSCRIPTION TYPE AND DETAILS ADD
+let selectedSubscriptionTypeId = null;
+let selectedTextarea = null;
 
 $(".addMoreBtn").on("click", function name() {
 
-    const subscription_type_id = $(this).data("subscription-type-id");
-    const subscription_type = $(this).data("subscription-type");
+    selectedSubscriptionTypeId = $(this).data("subscription-type-id");
+    selectedTextarea = $("#subscription_type_" + selectedSubscriptionTypeId);
 
+    $("#modalTitle").text($(this).data("subscription-type") + " List");
     $("#showSubscriptionModal").modal("show");
-    $("#modalTitle").text(subscription_type+ " List");
 
-    getSubscriptionData(subscription_type_id);
+    getSubscriptionData(selectedSubscriptionTypeId);
 
 });
-
 
 function getSubscriptionData(subscription_type_id) {
     $.ajax({
@@ -267,7 +269,7 @@ function getSubscriptionData(subscription_type_id) {
                     subscriptions.forEach(subscription => {
                         const subscriptionItem = `
                         <div class="form-check select-subscription mb-5">
-                            <input class="form-check-input" type="checkbox" value="${subscription.subscription_id}" id="subscriptionId${subscription.subscription_id}" />
+                            <input class="form-check-input" type="checkbox" value="${subscription.subscription_name}" id="subscriptionId${subscription.subscription_id}" />
                             <label class="form-check-label fw-bold subscription-name ms-3" for="subscriptionId">
                                 ${subscription.subscription_name}
                             </label>
@@ -295,33 +297,293 @@ function getSubscriptionData(subscription_type_id) {
     });
 }
 
-    // Prevent form submission on Enter inside search box
-    $('#search').on('keypress', function (e) {
-        if (e.which === 13) e.preventDefault();
-    });
+// Prevent form submission on Enter inside search box
+$('#search').on('keypress', function (e) {
+    if (e.which === 13) e.preventDefault();
+});
 
-    // Live search: filter by name or phone
-    $('#search').on('keyup', function () {
-        const term = $(this).val().toLowerCase().trim();
+// Live search: filter by name or phone
+$('#search').on('keyup', function () {
+    const term = $(this).val().toLowerCase().trim();
 
-        $('#subscriptionList .select-subscription').each(function () {
-            const name = $(this).find('.subscription-name').text().toLowerCase();
+    $('#subscriptionList .select-subscription').each(function () {
+        const name = $(this).find('.subscription-name').text().toLowerCase();
 
-            if (term === '' || name.includes(term)) {
-                $(this).removeClass('d-none').addClass('d-flex');
-            } else {
-                $(this).removeClass('d-flex').addClass('d-none');
-            }
-        });
-
-        // Check if any patient is visible after filtering
-        if ($('#subscriptionList .select-subscription.d-flex').length === 0) {
-            // If none visible, show "No patients found"
-            if ($('#subscriptionList .no-subscription-message').length === 0) {
-                $('#subscriptionList').append('<p class="no-subscription-message text-muted">No subscriptions found.</p>');
-            }
+        if (term === '' || name.includes(term)) {
+            $(this).removeClass('d-none').addClass('d-flex');
         } else {
-            // Remove the message if patients are visible
-            $('#subscriptionList .no-subscription-message').remove();
+            $(this).removeClass('d-flex').addClass('d-none');
         }
     });
+
+    // Check if any patient is visible after filtering
+    if ($('#subscriptionList .select-subscription.d-flex').length === 0) {
+        // If none visible, show "No patients found"
+        if ($('#subscriptionList .no-subscription-message').length === 0) {
+            $('#subscriptionList').append('<p class="no-subscription-message text-muted">No subscriptions found.</p>');
+        }
+    } else {
+        // Remove the message if patients are visible
+        $('#subscriptionList .no-subscription-message').remove();
+    }
+});
+
+
+$(".btnAddSubscription").on("click", function () {
+    const selectedNames = [];
+    const searchText = $('#search').val().trim().toLowerCase();
+
+    $('#subscriptionList .select-subscription input:checked').each(function () {
+        selectedNames.push($(this).closest('.select-subscription').find('.subscription-name').text().trim());
+    });
+
+    // Case 1: At least one checkbox selected
+    if (selectedNames.length > 0) {
+        updateTextarea(selectedNames);
+        resetSubscriptionModal();
+        $("#showSubscriptionModal").modal("hide");
+        return;
+    }
+
+    // Case 2: No checkbox selected, check if search matches any existing item
+    let matchFound = false;
+
+    $('#subscriptionList .subscription-name').each(function () {
+        const existingName = $(this).text().trim().toLowerCase();
+        if (existingName === searchText) {
+            matchFound = true;
+            return false; // break loop
+        }
+    });
+
+    if (matchFound) {
+        // Match found but not checked → don't allow auto-add
+        toastr.warning("This item already exists in the list. Please select it instead of creating a new one.");
+        return;
+    }
+
+    // Case 3: No match found → create new
+    if (searchText !== '') {
+        $.ajax({
+            type: "POST",
+            url: `${BASE_URL}/create-subscription/` + selectedSubscriptionTypeId,
+            data: {
+                subscription_name: searchText,
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function (response) {
+                if (response.success) {
+                    selectedNames.push(response.subscription.subscription_name);
+                    updateTextarea(selectedNames);
+                    resetSubscriptionModal();
+                    $("#showSubscriptionModal").modal("hide");
+                } else {
+                    toastr.error("Failed to create subscription.");
+                }
+            },
+            error: function () {
+                toastr.error("Server error occurred.");
+            }
+        });
+        return;
+    }
+
+    // Case 4: Empty search, nothing selected
+    toastr.warning("Please select at least one item or add new using the search bar!");
+});
+
+
+function resetSubscriptionModal() {
+    // Uncheck all checkboxes
+    $('#subscriptionList .select-subscription input:checked').prop('checked', false);
+
+    // Clear the search input
+    $('#search').val('');
+
+    // Optional: Clear or refresh the search results list
+    $('#subscriptionList').find('.subscription-name').removeClass('highlight'); // example
+
+    // Optional: If you want to reload the list dynamically
+    // reloadSubscriptionList(); // your custom function (if any)
+}
+
+
+function updateTextarea(names) {
+    const existing = selectedTextarea.val();
+    const updated = existing ? existing.split('\n') : [];
+
+    names.forEach(name => {
+        if (!updated.includes(name)) {
+            updated.push(name);
+        }
+    });
+
+    selectedTextarea.val(updated.join("\n"));
+}
+
+
+// DRUG DOSE FETCH 
+
+$("#kt_drug_dose_id").empty();
+
+$(document).on('change', '#kt_drug_type_id', function () {
+    const drugTypeId = $(this).val() // Corrected variable
+
+    getDrugDoseByDrugType(drugTypeId)
+
+});
+
+function getDrugDoseByDrugType(drugTypeId) {
+    if (drugTypeId) {
+        $.ajax({
+            url: BASE_URL + "/get-drug-dose/" + drugTypeId,
+            type: "GET",
+            success: function (response) {
+                let data = response?.doses;
+
+                if (response?.success && response?.statusCode === 200 && data) {
+                    $("#kt_drug_dose_id").empty();
+                    $("#kt_drug_dose_id").append(
+                        '<option value="">Dose</option>'
+                    );
+
+                    $.each(data, function (key, value) {
+                        $("#kt_drug_dose_id").append(
+                            '<option value="' +
+                            value?.drug_dose_id +
+                            '">' +
+                            value?.drug_dose +
+                            "</option>"
+                        );
+                    });
+                }
+            },
+        });
+    } else {
+        $("#kt_drug_dose_id").empty();
+        $("#kt_drug_dose_id").append(
+            '<option value="">Dose</option>'
+        );
+    }
+}
+
+
+let editingDrugIndex = null;
+
+// Add Drug
+$('#btnAddDrug').on('click', function () {
+    const drugData = getDrugFormData();
+    if (!drugData) return;
+
+    const html = generateDrugCard(drugData, Date.now());
+    $('#drugListWrapper').append(html);
+
+    resetDrugForm();
+});
+
+// Update Drug
+$('#btnUpdateDrug').on('click', function () {
+    if (editingDrugIndex === null) {
+        toastr.warning("No drug selected for update.");
+        return;
+    }
+
+    const drugData = getDrugFormData();
+    if (!drugData) return;
+
+    const html = generateDrugCard(drugData, editingDrugIndex);
+    $(`.drug-item[data-drug-index="${editingDrugIndex}"]`).replaceWith(html);
+
+    editingDrugIndex = null;
+    resetDrugForm();
+    $('#btnUpdateDrug').removeClass('d-block');
+    $('#btnUpdateDrug').addClass('d-none');
+    $('#btnAddDrug').removeClass('d-none');
+    $('#btnAddDrug').addClass('d-block');
+});
+
+// Remove
+$(document).on('click', '.remove-drug-btn', function () {
+    $(this).closest('.card').remove();
+});
+
+// Edit (just load data to form)
+$(document).on('click', '.edit-drug-btn', function () {
+    const card = $(this).closest('.card');
+    editingDrugIndex = card.data('drug-index');
+
+    $('#kt_drug_type_id').val(card.find('input[name="drug_type_id[]"]').val()).trigger('change');
+    $('#kt_drug_id').val(card.find('input[name="drug_id[]"]').val()).trigger('change');
+    $('#kt_drug_strength_id').val(card.find('input[name="drug_strength_id[]"]').val()).trigger('change');
+    $('#kt_drug_dose_id').val(card.find('input[name="drug_dose_id[]"]').val()).trigger('change');
+    $('#kt_drug_duration_id').val(card.find('input[name="drug_duration_id[]"]').val()).trigger('change');
+    $('#kt_drug_advice_id').val(card.find('input[name="drug_advice_id[]"]').val()).trigger('change');
+
+    $('#btnUpdateDrug').removeClass('d-none');
+    $('#btnUpdateDrug').addClass('d-block');
+    $('#btnAddDrug').removeClass('d-block');
+    $('#btnAddDrug').addClass('d-none');
+});
+
+// Helper: Get data from form
+function getDrugFormData() {
+    const drugTypeText = $('#kt_drug_type_id option:selected').text();
+    const medicineText = $('#kt_drug_id option:selected').text();
+    const strengthText = $('#kt_drug_strength_id option:selected').text();
+    const doseText = $('#kt_drug_dose_id option:selected').text();
+    const durationText = $('#kt_drug_duration_id option:selected').text();
+    const adviceText = $('#kt_drug_advice_id option:selected').text();
+
+    const drugTypeId = $('#kt_drug_type_id').val();
+    const drugId = $('#kt_drug_id').val();
+    const strengthId = $('#kt_drug_strength_id').val();
+    const doseId = $('#kt_drug_dose_id').val();
+    const durationId = $('#kt_drug_duration_id').val();
+    const adviceId = $('#kt_drug_advice_id').val();
+
+    if (!drugTypeId || !drugId || !strengthId || !doseId || !durationId || !adviceId) {
+        toastr.warning("Please fill in all fields before adding.");
+        return null;
+    }
+
+    return { drugTypeText, medicineText, strengthText, doseText, durationText, adviceText, drugTypeId, drugId, strengthId, doseId, durationId, adviceId };
+}
+
+// Helper: Generate drug card HTML
+function generateDrugCard(data, index) {
+    return `
+        <div class="card card-body border shadow-sm position-relative drug-item" data-drug-index="${index}">
+            <div>
+                <strong>Type:</strong> ${data.drugTypeText} |
+                <strong>Medicine:</strong> ${data.medicineText} |
+                <strong>Strength:</strong> ${data.strengthText} |
+                <strong>Dose:</strong> ${data.doseText} |
+                <strong>Duration:</strong> ${data.durationText} |
+                <strong>Advice:</strong> ${data.adviceText}
+            </div>
+            <div class="position-absolute top-0 end-0 m-2">
+                <button type="button" class="btn btn-sm btn-light-danger bg-transparent btn-icon remove-drug-btn"><i class="fas fa-times"></i></button>
+                <button type="button" class="btn btn-sm btn-light-primary bg-transparent btn-icon edit-drug-btn"><i class="fas fa-edit"></i></button>
+          </div>
+
+            <!-- Hidden inputs -->
+            <input type="hidden" name="drug_type_id[]" value="${data.drugTypeId}">
+            <input type="hidden" name="drug_id[]" value="${data.drugId}">
+            <input type="hidden" name="drug_strength_id[]" value="${data.strengthId}">
+            <input type="hidden" name="drug_dose_id[]" value="${data.doseId}">
+            <input type="hidden" name="drug_duration_id[]" value="${data.durationId}">
+            <input type="hidden" name="drug_advice_id[]" value="${data.adviceId}">
+        </div>
+    `;
+}
+
+// Helper: Reset form
+function resetDrugForm() {
+    $('#kt_drug_type_id').val('').trigger('change');
+    $('#kt_drug_id').val('').trigger('change');
+    $('#kt_drug_strength_id').val('').trigger('change');
+    $('#kt_drug_dose_id').val('').trigger('change');
+    $('#kt_drug_duration_id').val('').trigger('change');
+    $('#kt_drug_advice_id').val('').trigger('change');
+}
+

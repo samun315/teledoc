@@ -2,6 +2,7 @@
 
 namespace App\Services\Drug;
 
+use App\Models\Drug\DrugDoses;
 use App\Models\Drug\Prescription;
 use App\Models\Drug\Subscription;
 use App\Models\Patient\Patient;
@@ -50,7 +51,7 @@ class PrescriptionService
             ->make(true);
     }
 
-    public function createSubscription(array $data): Model|Builder|bool
+    public function createPrescription(array $data): Model|Builder|bool
     {
         DB::beginTransaction();
         try {
@@ -74,6 +75,35 @@ class PrescriptionService
     {
         return Subscription::query()->where('subscription_type_id', $subscriptionTypeId)->where('status', 'Active')->get();
     }
+
+
+    public function createSubscription(Request $request, int $subscriptionTypeId): Model
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'subscription_type_id' => 'nullable|exists:subscription_types,subscription_type_id',
+                'subscription_name' => 'required|string',
+            ]);
+
+            $subscription = Subscription::create([
+                'subscription_type_id' => $subscriptionTypeId,
+                'subscription_name' => $request->subscription_name,
+            ]);
+            DB::commit();
+
+            return $subscription;
+        } catch (Exception $exception) {
+            DB::rollBack();
+            throw $exception;
+        }
+    }
+
+    public function getDrugDoseByType(int $drugTypeId): Collection
+    {
+        return DrugDoses::query()->where('drug_type_id', $drugTypeId)->where('status', 'Active')->get();
+    }
+
 
     public function getSubscriptionById(int $subscriptionId): Model|Builder
     {
