@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('doctor_id');
             $table->unsignedBigInteger('appointment_id');
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->date('old_prescription_date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

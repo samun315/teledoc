@@ -136,7 +136,6 @@ function getPatientList() {
 
 
 let search = $("#search");
-let subscription_type = $("#subscription_type_id");
 
 const formatDate = (data) => {
     if (!data) return "";
@@ -168,7 +167,7 @@ const formatDate = (data) => {
     let minute = date.getMinutes().toString().padStart(2, "0");
     let second = date.getSeconds().toString().padStart(2, "0");
 
-    return `${day} ${month}, ${date.getFullYear()} ,${hour}:${minute} ${amPm}`;
+    return `${day} ${month}, ${date.getFullYear()}`;
 };
 
 // fetch the data
@@ -179,7 +178,6 @@ let table = $("#kt_prescription_table").DataTable({
         url: BASE_URL,
         data: function (d) {
             d.search = search.val();
-            d.subscription_type = subscription_type.val();
         },
     },
     columns: [
@@ -198,8 +196,8 @@ let table = $("#kt_prescription_table").DataTable({
             name: "prescription_number",
         },
         {
-            data: "patient_name",
-            name: "patient_name",
+            data: "info",
+            name: "info",
         },
         {
             data: "status",
@@ -234,10 +232,6 @@ search.keyup(function () {
     table.draw();
 });
 
-subscription_type.change(function () {
-    table.draw();
-});
-
 // SUBSCRIPTION TYPE AND DETAILS ADD
 let selectedSubscriptionTypeId = null;
 let selectedTextarea = null;
@@ -245,7 +239,7 @@ let selectedTextarea = null;
 $(".addMoreBtn").on("click", function name() {
 
     selectedSubscriptionTypeId = $(this).data("subscription-type-id");
-    selectedTextarea = $("#subscription_type_" + selectedSubscriptionTypeId);
+    selectedTextarea = $("#subscription_details_" + selectedSubscriptionTypeId);
 
     $("#modalTitle").text($(this).data("subscription-type") + " List");
     $("#showSubscriptionModal").modal("show");
@@ -254,10 +248,10 @@ $(".addMoreBtn").on("click", function name() {
 
 });
 
-function getSubscriptionData(subscription_type_id) {
+function getSubscriptionData(selectedSubscriptionTypeId) {
     $.ajax({
         type: "GET",
-        url: `${BASE_URL}/get-subscriptions/` + subscription_type_id,
+        url: `${BASE_URL}/get-subscriptions/` + selectedSubscriptionTypeId,
         dataType: "json",
         success: (response) => {
             if (response?.success && response?.statusCode === 200) {
@@ -586,4 +580,185 @@ function resetDrugForm() {
     $('#kt_drug_duration_id').val('').trigger('change');
     $('#kt_drug_advice_id').val('').trigger('change');
 }
+
+// Initialize flatpickr with today's date
+const datePicker = $("#kt_prescription_date").flatpickr({
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+});
+
+// Make icon open date picker
+$("#dateIcon").on("click", function () {
+    datePicker.open();
+});
+
+// GET SELECTED DOCTOR'S PRESCRIPTION
+// $('#kt_doctor_id').on('change', function () {
+//     let doctorId = $(this).val();
+//     let patientId = $("#kt_patient_id").val();
+
+//     $.ajax({
+//         url: BASE_URL + '/get-doctor-prescriptions/' + doctorId + '/' + patientId,
+//         method: 'GET',
+//         beforeSend: function () {
+//             $('#drugListWrapper').html('<p class="text-info">Loading prescriptions...</p>');
+//         },
+//         success: function (response) {
+//             const medications = response.prescription || [];
+
+//             if (medications.length === 0) {
+//                 $('#drugListWrapper').html('<p class="text-danger">No prescriptions found.</p>');
+//                 return;
+//             }
+
+//             let grouped = {};
+//             medications.forEach(med => {
+//                 let pid = med.prescription_id;
+//                 if (!grouped[pid]) {
+//                     grouped[pid] = {
+//                         prescription_id: pid,
+//                         drugs: []
+//                     };
+//                 }
+//                 grouped[pid].drugs.push(med);
+//             });
+
+//             let html = '';
+//             Object.values(grouped).forEach((prescription) => {
+//                 if (prescription.drugs.length === 0) {
+//                     html += '<p>No drugs found.</p>';
+//                 } else {
+//                     prescription.drugs.forEach((drug, dIndex) => {
+//                         const drugData = {
+//                             drugTypeText: drug.drug_type ?? 'N/A',
+//                             medicineText: drug.trade_name ?? 'N/A',
+//                             strengthText: drug.drug_strength ?? 'N/A',
+//                             doseText: drug.drug_dose ?? 'N/A',
+//                             durationText: drug.drug_duration ?? 'N/A',
+//                             adviceText: drug.drug_advice ?? 'N/A',
+
+//                             drugTypeId: drug.drug_type_id ?? '',
+//                             drugId: drug.drug_id ?? '',
+//                             strengthId: drug.drug_strength_id ?? '',
+//                             doseId: drug.drug_dose_id ?? '',
+//                             durationId: drug.drug_duration_id ?? '',
+//                             adviceId: drug.drug_advice_id ?? '',
+//                         };
+//                         html += generateDrugCard(drugData, dIndex);
+//                     });
+//                 }
+//             });
+
+//             $('#drugListWrapper').html(html);
+//         },
+
+//         error: function () {
+//             $('#drugListWrapper').html('<p class="text-danger">Error loading prescriptions.</p>');
+//         }
+//     });
+// });
+
+// GET OLD PRESCRIPTION LIST
+$('#kt_prescription_id').on('change', function () {
+    let prescriptionId = $(this).val();
+
+    $.ajax({
+        url: BASE_URL + '/get-old-prescriptions/' + prescriptionId,
+        method: 'GET',
+        beforeSend: function () {
+            $('#drugListWrapper').html('<p class="text-info">Loading prescriptions...</p>');
+        },
+        success: function (response) {
+            const medications = response.prescription || [];
+
+            if (medications.length === 0) {
+                $('#drugListWrapper').html('<p class="text-danger">No prescriptions found.</p>');
+                return;
+            }
+
+            let grouped = {};
+            medications.forEach(med => {
+                let pid = med.prescription_id;
+                if (!grouped[pid]) {
+                    grouped[pid] = {
+                        prescription_id: pid,
+                        drugs: []
+                    };
+                }
+                grouped[pid].drugs.push(med);
+            });
+
+            let html = '';
+            Object.values(grouped).forEach((prescription) => {
+                if (prescription.drugs.length === 0) {
+                    html += '<p>No drugs found.</p>';
+                } else {
+                    prescription.drugs.forEach((drug, dIndex) => {
+                        const drugData = {
+                            drugTypeText: drug.drug_type ?? 'N/A',
+                            medicineText: drug.trade_name ?? 'N/A',
+                            strengthText: drug.drug_strength ?? 'N/A',
+                            doseText: drug.drug_dose ?? 'N/A',
+                            durationText: drug.drug_duration ?? 'N/A',
+                            adviceText: drug.drug_advice ?? 'N/A',
+
+                            drugTypeId: drug.drug_type_id ?? '',
+                            drugId: drug.drug_id ?? '',
+                            strengthId: drug.drug_strength_id ?? '',
+                            doseId: drug.drug_dose_id ?? '',
+                            durationId: drug.drug_duration_id ?? '',
+                            adviceId: drug.drug_advice_id ?? '',
+                        };
+                        html += generateDrugCard(drugData, dIndex);
+
+                        const date = new Date(drug.prescription_date);
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-based
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const formattedDate = `${year}-${month}-${day}`;
+
+                        $("#kt_prescription_date").val(formattedDate);
+
+                    });
+                }
+            });
+
+            $('#drugListWrapper').html(html);
+        },
+
+        error: function () {
+            $('#drugListWrapper').html('<p class="text-danger">Error loading prescriptions.</p>');
+        }
+    });
+});
+
+// form submit validation
+$('#prescriptionForm').on('submit', function (e) {
+    toastr.clear();
+
+
+    if ($('#drugListWrapper .drug-item').length === 0) {
+        e.preventDefault();
+        toastr.error('Please add at least one drug in prescription before submitting.');
+        return false;
+    }
+
+    let doctorId = $('#kt_doctor_id').val();
+    if (!doctorId) {
+        e.preventDefault();
+        toastr.error('Please select a doctor before submitting.');
+        // focus and open select2 dropdown
+        $('#kt_doctor_id').select2('open');
+        return false;
+    }
+
+    let prescriptionDate = $('#kt_prescription_date').val();
+    if (!prescriptionDate) {
+        e.preventDefault();
+        toastr.error('Please select a prescription date before submitting.');
+        $('#kt_prescription_date').focus();
+        return false;
+    }
+
+});
 

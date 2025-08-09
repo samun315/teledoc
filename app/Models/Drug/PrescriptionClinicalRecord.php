@@ -5,22 +5,19 @@ namespace App\Models\Drug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Prescription extends Model
+class PrescriptionClinicalRecord extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'prescription_id';
+    protected $primaryKey = 'prescription_clinical_record_id ';
 
-    protected $table = 'prescriptions';
+    protected $table = 'prescription_clinical_records';
 
     protected $fillable = [
+        'prescription_clinical_record_id ',
         'prescription_id',
-        'prescription_number',
-        'patient_id',
-        'doctor_id',
-        'appointment_id',
-        'status',
-        'old_prescription_date',
+        'subscription_type_id',
+        'subscription_details',
         'created_by',
         'updated_by',
         'created_at',

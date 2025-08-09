@@ -22,7 +22,7 @@
                 <!--begin::Card body-->
                 @include('message')
 
-                <form action="{{ route('drug.prescription.store') }}" id="prescriptionForm">
+                <form method="POST" action="{{ route('drug.prescription.store') }}" id="prescriptionForm">
                     @csrf
                     <div class="prescription-form-container">
                         <div class="row p-2">
@@ -30,11 +30,13 @@
                             <div class="col-md-3">
                                 <div class="card shadow-sm p-3">
                                     @foreach ($subscriptionTypes as $type)
+                                        <input type="hidden" name="subscription_type_id[]"
+                                            value="{{ $type->subscription_type_id }}">
                                         <div class="form-group position-relative mb-7">
-                                            <textarea class="form-control subscription-textarea" id="subscription_type_{{ $type->subscription_type_id }}"
-                                                name="subscription_type" placeholder="" rows="3"></textarea>
+                                            <textarea class="form-control subscription-textarea" id="subscription_details_{{ $type->subscription_type_id }}"
+                                                name="subscription_details[]" placeholder="" rows="3"></textarea>
 
-                                            <label for="subscription_type_{{ $type->subscription_type_id }}"
+                                            <label for="subscription_details_{{ $type->subscription_type_id }}"
                                                 class="subscription-label">
                                                 {{ $type->subscription_type }}
                                             </label>
@@ -172,7 +174,7 @@
 
                                 <div id="prescriptionDrugList">
                                     <h4 class="mb-3">Added Drugs</h4>
-                                    <div id="drugListWrapper" class="d-grid gap-2">
+                                    <div id="drugListWrapper" class="d-grid gap-2" tabindex="-1">
                                         {{-- Added drugs will appear here --}}
                                     </div>
                                 </div>
@@ -180,7 +182,59 @@
                             </div>
 
                             <div class="col-md-4">
+                                <div class="card shadow-sm p-3 mb-2">
+                                    <label class="fs-6 fw-bold mb-2">Prescription Date</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control form-control-light"
+                                            id="kt_prescription_date" name="prescription_date" placeholder="Select date">
+                                        <span class="input-group-text bg-light cursor-pointer" id="dateIcon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    @error('prescription_date')
+                                        <div class="text-danger mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="card shadow-sm p-3 mb-2">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="fs-6 fw-bold mb-2">Ready Treatment</label>
+                                        <select id="kt_doctor_id" name="doctor_id"
+                                            class="form-select form-select-light @error('doctor_id') is-invalid @enderror"
+                                            data-control="select2" data-placeholder="Ready Treatment">
+                                            <option value=""></option>
+                                            @foreach ($doctorInfos as $doctorInfo)
+                                                <option {{ old('doctor_id') ? 'selected' : '' }}
+                                                    value="{{ $doctorInfo->doctor_id ?? old('doctor_id') }}">
+                                                    {{ $doctorInfo->title }} {{ $doctorInfo->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('doctor_id')
+                                            <div class="text-danger mt-2">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="fs-6 fw-bold mb-2">Old Prescription</label>
+                                        <select id="kt_prescription_id" name="prescription_id"
+                                            class="form-select form-select-light @error('prescription_id') is-invalid @enderror"
+                                            data-control="select2" data-placeholder="Old Prescription">
+                                            <option value=""></option>
+                                            @foreach ($oldPrescriptionInfos as $oldPrescription)
+                                                <option
+                                                    {{ old('prescription_id') == $oldPrescription->prescription_id ? 'selected' : '' }}
+                                                    value="{{ $oldPrescription->prescription_id }}">
+                                                    {{ $oldPrescription->prescription_number }}
+                                                    ({{ \Carbon\Carbon::parse($oldPrescription->created_at)->format('Y-m-d') }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="card shadow-sm text-center p-3">
+                                    <input type="hidden" name="patient_id" id="kt_patient_id"
+                                        value="{{ $patientInfo?->patient_id }}">
                                     <img src="{{ $patientInfo?->photo ? asset('uploads/patient/' . $patientInfo->photo) : asset('assets/media/avatars/blank.png') }}"
                                         class="rounded-circle mb-2 mx-auto d-block" width="100" height="100"
                                         alt="Patient Avatar">
