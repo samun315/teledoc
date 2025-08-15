@@ -69,12 +69,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/doctor/doctor.php'));
             //End doctor Route
 
-            //Start Transfer Route
+            //Start Schedule Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
-                ->prefix('marchant')
-                ->name('marchant.transfer.balance.')
-                ->group(base_path('routes/marchant/transfer.php'));
-            //End Transfer Route
+                ->prefix('schedule')
+                ->name('schedule.')
+                ->group(base_path('routes/doctor/schedule.php'));
+            //End Schedule Route
 
             //Start Payment Gateway Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
