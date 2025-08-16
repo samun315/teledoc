@@ -62,7 +62,7 @@ class DoctorScheduleService
                     }
                 }
 
-                return "<strong>Day: {$dayOfWeek} <br> Start Time: {$startTime} <br> End Time: {$endTime}<br> Slot Time: {$slotTimeText}</strong>";
+                return "<strong>Day: {$dayOfWeek} <br> Start Time: <span class='text-primary'> {$startTime}</span> <br> End Time: <span class='text-danger'> {$endTime}</span><br> Slot Time: <span class='text-success'> {$slotTimeText}</span></strong>";
             })
 
             ->addColumn('action', function ($row) {
@@ -136,10 +136,52 @@ class DoctorScheduleService
         return Doctor::query()->with('department')->find($doctorId);
     }
 
-    public function updateDepartment(array $updateData, int $departmentId): int
+    public function getScheduleById(int $scheduleId): Model|Builder
     {
-        $department = $this->getDepartmentById($departmentId);
+        return DoctorSchedule::query()->with('doctor.department')->find($scheduleId);
+    }
 
-        return $department->update($updateData);
+    public function updateSchedule(array $updateData, int $scheduleId): int
+    {
+        $schedule = $this->getScheduleById($scheduleId);
+
+        // overlap check
+        if (!empty($updateData['day_of_week'])) {
+            foreach ($updateData['day_of_week'] as $index => $dayOfWeek) {
+
+                $startTime = $updateData['start_time'][$index]; // already 24-hour format
+                $endTime   = $updateData['end_time'][$index];
+
+                // Check for overlap with existing schedules
+                $overlapExists = DoctorSchedule::query()
+                    ->where('doctor_id', $updateData['doctor_id'])
+                    ->where('day_of_week', $dayOfWeek)
+                    ->where('schedule_id', '!=', $scheduleId) // নিজেরটা বাদ দিব
+                    ->where(function ($query) use ($startTime, $endTime) {
+                        $query->whereBetween('start_time', [$startTime, $endTime])
+                            ->orWhereBetween('end_time', [$startTime, $endTime])
+                            ->orWhere(function ($q) use ($startTime, $endTime) {
+                                $q->where('start_time', '<=', $startTime)
+                                    ->where('end_time', '>=', $endTime);
+                            });
+                    })
+                    ->exists();
+
+                if ($overlapExists) {
+                    throw new Exception("Schedule conflicted with schedule time range.");
+                }
+
+                $schedule->update([
+                    'day_of_week' => $dayOfWeek,
+                    'start_time' => $updateData['start_time'][$index],
+                    'end_time' => $updateData['end_time'][$index],
+                    'slot_duration_minutes' => $updateData['slot_duration_minutes'][$index],
+                    'updated_by' => $updateData['updated_by'],
+                    'updated_at' => $updateData['updated_at'],
+                ]);
+            }
+        }
+
+        return $scheduleId;
     }
 }

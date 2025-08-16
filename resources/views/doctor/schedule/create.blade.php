@@ -84,13 +84,12 @@
                                             <select name="day_of_week[]" class="form-select form-select-light dayOfWeek"
                                                 data-control="select2" data-placeholder="Select Doctor">
                                                 <option value=""></option>
-                                                <option value="Saturday">Saturday</option>
-                                                <option value="Sunday">Sunday</option>
-                                                <option value="Monday">Monday</option>
-                                                <option value="Tuesday">Tuesday</option>
-                                                <option value="Wednesday">Wednesday</option>
-                                                <option value="Thursday">Thursday</option>
-                                                <option value="Friday">Friday</option>
+                                                @foreach ($days as $day)
+                                                    <option value="{{ $day }}"
+                                                        {{ old('day_of_week') == $day ? 'selected' : '' }}>
+                                                        {{ $day }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </td>
                                         <td>
@@ -184,13 +183,12 @@
                         <select name="day_of_week[]" class="form-select form-select-light dayOfWeek"
                             data-control="select2" data-placeholder="Select Doctor">
                             <option value=""></option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
+                            @foreach ($days as $day)
+                                <option value="{{ $day }}"
+                                    {{ old('day_of_week') == $day ? 'selected' : '' }}>
+                                    {{ $day }}
+                                </option>
+                            @endforeach
                         </select>
                     </td>
                     <td>

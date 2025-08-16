@@ -4,6 +4,7 @@ namespace App\Models\Doctor;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DoctorSchedule extends Model
 {
@@ -26,4 +27,9 @@ class DoctorSchedule extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(Doctor::class,'doctor_id','doctor_id');
+    }
 }

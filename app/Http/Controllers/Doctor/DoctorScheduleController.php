@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Doctor;
 
+use App\Constant\Schedule\ScheduleConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\DoctorScheduleRequest;
 use App\Models\Doctor\Doctor;
@@ -27,6 +28,7 @@ class DoctorScheduleController extends Controller
 
     public function create(): View
     {
+        $data['days'] = ScheduleConstant::DAYS;
         $data['doctorInfos'] = Doctor::query()->where('status', 'Active')->get(['doctor_id', 'title', 'name']);
 
         return view('doctor.schedule.create', $data);
@@ -44,26 +46,31 @@ class DoctorScheduleController extends Controller
         try {
 
             $this->doctorScheduleService->createDoctorSchedule($request->fields());
-            return to_route('schedule.index')->with('success','Schedule created successfully!');
+            return to_route('schedule.index')->with('success', 'Schedule created successfully!');
         } catch (Exception $e) {
-               return back()->with('general', $e->getMessage());
+            return back()->with('general', $e->getMessage());
         }
     }
 
-    public function edit(int $departmentId): JsonResponse
+    public function edit(int $scheduleId): View
     {
-        $data = $this->doctorScheduleService->getDepartmentById($departmentId);
-        return sendSuccessResponse(200, '', 'departmentInfo', $data);
+        $data['editModeData'] = $this->doctorScheduleService->getScheduleById($scheduleId);
+
+        $data['days'] = ScheduleConstant::DAYS;
+
+        $data['doctorInfos'] = Doctor::query()->where('status', 'Active')->get(['doctor_id', 'title', 'name']);
+
+        return view('doctor.schedule.edit', $data);
     }
 
-    public function update(DoctorScheduleRequest $request, int $departmentId): JsonResponse
+    public function update(DoctorScheduleRequest $request, int $scheduleId): RedirectResponse
     {
         try {
 
-            $this->doctorScheduleService->updateDepartment($request->fields(), $departmentId);
-            return sendSuccessResponse(201, 'Department updated successfully.');
+            $this->doctorScheduleService->updateSchedule($request->fields(), $scheduleId);
+            return to_route('schedule.index')->with('success', 'Schedule updated successfully!');
         } catch (Exception $e) {
-            return sendErrorResponse('Internal Server Error: ', $e->getMessage());
+            return back()->with('general', $e->getMessage());
         }
     }
 }
