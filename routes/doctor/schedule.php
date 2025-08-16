@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // url /schedule
     Route::get('/', [DoctorScheduleController::class, 'index'])->name('index');
     Route::get('/create', [DoctorScheduleController::class, 'create'])->name('create');
+    Route::get('/get-doctor-info/{doctor_id}', [DoctorScheduleController::class, 'getDoctorInfoById'])->name('getDoctorInfoById');
     Route::post('/store', [DoctorScheduleController::class, 'store'])->name('store');
     Route::get('/edit/{schedule_id}', [DoctorScheduleController::class, 'edit'])->name('edit');
     Route::put('/update/{schedule_id}', [DoctorScheduleController::class, 'update'])->name('update');

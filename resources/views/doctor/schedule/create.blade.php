@@ -17,6 +17,16 @@
                 <!--begin::Card body-->
                 @include('message')
 
+                @if (session('general'))
+                    <div class="alert alert-danger d-flex justify-content-between align-items-center col-md-12">
+                        <span>{{ session('general') }}</span>
+                        <button type="button" class="btn btn-sm btn-icon btn-danger ms-2" data-bs-dismiss="alert"
+                            aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('schedule.store') }}" id="scheduleForm">
                     @csrf
 
@@ -25,7 +35,7 @@
                             <label class="fs-5 fw-bold mb-2">Doctor</label>
                             <select id="kt_doctor_id" name="doctor_id"
                                 class="form-select form-select-light @error('doctor_id') is-invalid @enderror"
-                                data-control="select2" data-placeholder="Select Doctor">
+                                data-control="select2" data-placeholder="Select Doctor" required>
                                 <option value=""></option>
                                 @foreach ($doctorInfos as $doctorInfo)
                                     <option {{ old('doctor_id') ? 'selected' : '' }}
@@ -43,10 +53,14 @@
                                     height="100" alt="Doctor Avatar">
 
                                 <h5 class="fw-bold mb-1" id="kt_doctor_name"></h5>
+                                <p class="mb-1" id="kt_doctor_department"><strong>Department:</strong></p>
                                 <p class="mb-1" id="kt_doctor_phone"><strong>Phone:</strong></p>
                                 <p class="mb-1" id="kt_doctor_email"><strong>Email:</strong></p>
                                 <p class="mb-0" id="kt_doctor_address"><strong>Address:</strong></p>
                             </div>
+                        </div>
+                        <div class="col-md-6 card text-center p-10 noDoctorDiv">
+                            <p class="mb-1 text-danger"><strong>No Data Found For this Doctor</strong></p>
                         </div>
                     </div>
 
@@ -54,20 +68,20 @@
                         <!-- Days Table -->
                         <h5 class="fw-bold p-3">Days</h5>
                         <div class="table-responsive">
-                            <table class="table table-row-dashed align-middle gs-0 gy-4">
-                                <thead>
-                                    <tr class="text-start text-muted text-uppercase fw-bolder fs-7 gs-0">
-                                        <th>Day</th>
+                            <table class="table table-row-dashed align-middle gy-4">
+                                <thead class="bg-info">
+                                    <tr class="text-white text-uppercase fw-bolder fs-7">
+                                        <th class="ps-2 rounded-start">Day</th>
                                         <th>Start Time</th>
                                         <th>End Time</th>
                                         <th>Slot Duration (Minute)</th>
-                                        <th></th>
+                                        <th class="rounded-end"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="daysTable">
                                     <tr>
                                         <td>
-                                            <select name="day_of_week" class="form-select form-select-light dayOfWeek"
+                                            <select name="day_of_week[]" class="form-select form-select-light dayOfWeek"
                                                 data-control="select2" data-placeholder="Select Doctor">
                                                 <option value=""></option>
                                                 <option value="Saturday">Saturday</option>
@@ -81,7 +95,7 @@
                                         </td>
                                         <td>
                                             <div class="input-group">
-                                                <input type="text" name="start_time"
+                                                <input type="text" name="start_time[]"
                                                     class="form-control form-control-light timepicker start_time"
                                                     placeholder="--:-- --">
                                                 <span class="input-group-text"><i class="fas fa-clock"></i></span>
@@ -89,14 +103,14 @@
                                         </td>
                                         <td>
                                             <div class="input-group">
-                                                <input type="text" name="end_time"
+                                                <input type="text" name="end_time[]"
                                                     class="form-control form-control-light timepicker end_time"
                                                     placeholder="--:-- --">
                                                 <span class="input-group-text"><i class="fas fa-clock"></i></span>
                                             </div>
                                         </td>
                                         <td>
-                                            <input type="number" name="slot_duration_minutes"
+                                            <input type="number" name="slot_duration_minutes[]"
                                                 class="form-control form-control-light slotTime"
                                                 placeholder="Slot Duration (Minute)">
                                         </td>
@@ -167,7 +181,7 @@
                 let row = `
                 <tr>
                     <td>
-                        <select name="day_of_week" class="form-select form-select-light dayOfWeek"
+                        <select name="day_of_week[]" class="form-select form-select-light dayOfWeek"
                             data-control="select2" data-placeholder="Select Doctor">
                             <option value=""></option>
                             <option value="Saturday">Saturday</option>
@@ -181,7 +195,7 @@
                     </td>
                     <td>
                        <div class="input-group">
-                            <input type="text" name="start_time"
+                            <input type="text" name="start_time[]"
                                 class="form-control form-control-light timepicker start_time"
                                 placeholder="--:-- --">
                             <span class="input-group-text"><i class="fas fa-clock"></i></span>
@@ -189,14 +203,14 @@
                     </td>
                     <td>
                         <div class="input-group">
-                            <input type="text" name="end_time"
+                            <input type="text" name="end_time[]"
                                 class="form-control form-control-light timepicker end_time"
                                 placeholder="--:-- --">
                             <span class="input-group-text"><i class="fas fa-clock"></i></span>
                         </div>
                     </td>
                     <td>
-                       <input type="number" name="slot_duration_minutes"
+                       <input type="number" name="slot_duration_minutes[]"
                         class="form-control form-control-light slotTime"
                         placeholder="Slot Duration (Minute)">
                     </td>
@@ -214,6 +228,131 @@
             $(document).on("click", ".removeScheduleRow", function() {
                 $(this).closest("tr").remove();
             });
+
+            // Start time input change
+
+            $(document).on("change", "input.start_time", function() {
+                let row = $(this).closest("tr");
+                let day = row.find("select.dayOfWeek").val();
+                let start = $(this).val();
+                let end = row.find("input.end_time").val();
+
+                if (!day || !start) return;
+
+                let newStart = convertToMinutes(start);
+                let conflict = false;
+
+                $("#scheduleForm tbody tr").not(row).each(function() {
+                    let otherDay = $(this).find("select.dayOfWeek").val();
+                    let otherStart = $(this).find("input.start_time").val();
+                    let otherEnd = $(this).find("input.end_time").val();
+
+                    if (day === otherDay && otherStart && otherEnd) {
+                        let otherStartMin = convertToMinutes(otherStart);
+                        let otherEndMin = convertToMinutes(otherEnd);
+
+                        // নতুন start_time অবশ্যই আগের end_time থেকে >1 মিনিট পর হতে হবে
+                        if (newStart <= otherEndMin) {
+                            conflict = true;
+                            toastr.error(
+                                `Same day: Start time must be after previous end time (${formatTime(otherEndMin + 1)})`
+                            );
+                            $(row).find("input.start_time").addClass("is-invalid");
+                            return false; // break loop
+                        }
+                    }
+                });
+
+                if (!conflict) {
+                    $(row).find("input.start_time").removeClass("is-invalid");
+                }
+            });
+
+            // End time input change
+            $(document).on("change", "input.end_time", function() {
+                let row = $(this).closest("tr");
+                let day = row.find("select.dayOfWeek").val();
+                let start = row.find("input.start_time").val();
+                let end = $(this).val();
+
+                if (!day || !start || !end) return;
+
+                let newStart = convertToMinutes(start);
+                let newEnd = convertToMinutes(end);
+                let conflict = false;
+
+                $("#scheduleForm tbody tr").not(row).each(function() {
+                    let otherDay = $(this).find("select.dayOfWeek").val();
+                    let otherStart = $(this).find("input.start_time").val();
+                    let otherEnd = $(this).find("input.end_time").val();
+
+                    if (day === otherDay && otherStart && otherEnd) {
+                        let otherStartMin = convertToMinutes(otherStart);
+                        let otherEndMin = convertToMinutes(otherEnd);
+
+                        // নতুন end_time অবশ্যই আগের start–end range এর বাইরে হতে হবে
+                        if (newEnd <= otherEndMin && newEnd > otherStartMin) {
+                            conflict = true;
+                            toastr.error(`Same day: End time overlaps previous slot!`);
+                            $(row).find("input.end_time").addClass("is-invalid");
+                            return false; // break loop
+                        }
+                    }
+                });
+
+                if (!conflict) {
+                    $(row).find("input.end_time").removeClass("is-invalid");
+                }
+            });
+
+            // Helper: convert "h:i K" to minutes
+            function convertToMinutes(timeStr) {
+                if (!timeStr) return 0;
+                let parts = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                if (!parts) return 0;
+
+                let hours = parseInt(parts[1], 10);
+                let minutes = parseInt(parts[2], 10);
+                let period = parts[3].toUpperCase();
+
+                if (period === "PM" && hours !== 12) hours += 12;
+                if (period === "AM" && hours === 12) hours = 0;
+
+                return hours * 60 + minutes;
+            }
+
+            // Helper: convert minutes back to "h:i AM/PM" format for message
+            function formatTime(minutes) {
+                let h = Math.floor(minutes / 60);
+                let m = minutes % 60;
+                let period = h >= 12 ? "PM" : "AM";
+                if (h > 12) h -= 12;
+                if (h === 0) h = 12;
+                return `${h}:${m.toString().padStart(2,"0")} ${period}`;
+            }
+        });
+
+
+        $("#scheduleForm").on("submit", function(e) {
+            let validRowFound = false;
+
+            $("#scheduleForm tbody tr").each(function() {
+                let day = $(this).find("select[name='day_of_week[]']").val().trim();
+                let start = $(this).find("input[name='start_time[]']").val().trim();
+                let end = $(this).find("input[name='end_time[]']").val().trim();
+                let duration = $(this).find("input[name='slot_duration_minutes[]']").val().trim();
+
+                if (day && start && end && duration) {
+                    validRowFound = true;
+                    return false; // break loop (কমপক্ষে একটা row পেলেই আর খোঁজা লাগবে না)
+                }
+            });
+
+            if (!validRowFound) {
+                e.preventDefault();
+                toastr.error("At least one row must be fully filled before submitting!");
+                return false;
+            }
         });
     </script>
 

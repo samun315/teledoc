@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Doctor;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,40 +24,51 @@ class DoctorScheduleRequest extends FormRequest
 
     public function rules(): array
     {
-        if ($this->input('department_id')) {
-            return [
-                'department_name' => [
-                    'required',
-                    Rule::unique('departments')->ignore($this->input('department_id'), 'department_id')
-                ],
-                'status' => 'required|max:8',
-                'description' => 'nullable'
-            ];
-        }
-
         return [
-            'department_name' => 'required|unique:departments',
-            'status' => 'required|max:8',
-            'description' => 'nullable'
+            'doctor_id' => 'required',
+            'day_of_week' => 'nullable',
+            'start_time' => 'nullable',
+            'end_time' => 'nullable',
+            'slot_duration_minutes' => 'nullable',
         ];
     }
 
-    public function fields(): array
-    {
-        $inputData = [];
+public function fields(): array
+{
+    $inputData = [];
 
-        $inputData['department_name'] = $this->input('department_name');
-        $inputData['description'] = $this->input('description');
-        $inputData['status'] = $this->input('status');
+    $inputData['doctor_id'] = $this->input('doctor_id');
+    $inputData['day_of_week'] = $this->input('day_of_week'); // array
 
-        if ($this->input('department_id')) {
-            $inputData['updated_by'] = loggedInUserId();
-            $inputData['updated_at'] = createdAtDateConvertToDB();
-        } else {
-            $inputData['created_by'] = loggedInUserId();
-            $inputData['created_at'] = createdAtDateConvertToDB();
-        }
+    $startTimes = $this->input('start_time', []);
+    $endTimes   = $this->input('end_time', []);
 
-        return $inputData;
+    $convertedStart = [];
+    $convertedEnd   = [];
+
+    foreach ($startTimes as $key => $time) {
+        // null check removed, empty string will throw exception if format wrong
+        $convertedStart[$key] = Carbon::createFromFormat('h:i A', $time)->format('H:i:s');
     }
+
+    foreach ($endTimes as $key => $time) {
+        $convertedEnd[$key] = Carbon::createFromFormat('h:i A', $time)->format('H:i:s');
+    }
+
+    $inputData['start_time'] = $convertedStart;
+    $inputData['end_time']   = $convertedEnd;
+
+    $inputData['slot_duration_minutes'] = $this->input('slot_duration_minutes'); // array
+
+    if ($this->input('schedule_id')) {
+        $inputData['updated_by'] = loggedInUserId();
+        $inputData['updated_at'] = createdAtDateConvertToDB();
+    } else {
+        $inputData['created_by'] = loggedInUserId();
+        $inputData['created_at'] = createdAtDateConvertToDB();
+    }
+
+    return $inputData;
+}
+
 }

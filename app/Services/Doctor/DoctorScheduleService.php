@@ -2,6 +2,7 @@
 
 namespace App\Services\Doctor;
 
+use App\Models\Doctor\Doctor;
 use App\Models\Doctor\DoctorSchedule;
 use App\Models\Drug\DrugType;
 use Carbon\Carbon;
@@ -77,24 +78,62 @@ class DoctorScheduleService
             ->make(true);
     }
 
-    public function createDepartment(array $data): Model|Builder|bool
+    public function createDoctorSchedule(array $data): Model|Builder|bool
     {
         DB::beginTransaction();
         try {
+            $makeScheduleData = [];
 
-            $department = DoctorSchedule::query()->create($data);
+            if (!empty($data['day_of_week'])) {
+                foreach ($data['day_of_week'] as $index => $dayOfWeek) {
+
+                    $startTime = $data['start_time'][$index]; // already 24-hour format
+                    $endTime   = $data['end_time'][$index];
+
+                    // Check for overlap with existing schedules
+                    $overlapExists = DoctorSchedule::query()
+                        ->where('doctor_id', $data['doctor_id'])
+                        ->where('day_of_week', $dayOfWeek)
+                        ->where(function ($query) use ($startTime, $endTime) {
+                            $query->whereBetween('start_time', [$startTime, $endTime])
+                                ->orWhereBetween('end_time', [$startTime, $endTime])
+                                ->orWhere(function ($q) use ($startTime, $endTime) {
+                                    $q->where('start_time', '<=', $startTime)
+                                        ->where('end_time', '>=', $endTime);
+                                });
+                        })
+                        ->exists();
+
+                    if ($overlapExists) {
+                        throw new Exception("Schedule already created for {$dayOfWeek} at {$startTime} - {$endTime}");
+                    }
+
+                    $makeScheduleData[$index] = [
+                        'doctor_id' => $data['doctor_id'],
+                        'day_of_week' => $dayOfWeek,
+                        'start_time' => $startTime,
+                        'end_time' => $endTime,
+                        'slot_duration_minutes' => $data['slot_duration_minutes'][$index],
+                        'created_by' => loggedInUserId(),
+                        'created_at' => createdAtDateConvertToDB(),
+                    ];
+                }
+            }
+
+            $schedule = DoctorSchedule::query()->insert($makeScheduleData);
             DB::commit();
 
-            return $department;
+            return $schedule;
         } catch (Exception $exception) {
             DB::rollBack();
             throw $exception;
         }
     }
 
-    public function getDepartmentById(int $departmentId): Model|Builder
+
+    public function getDoctorInfoById(int $doctorId): Model|Builder
     {
-        return DoctorSchedule::find($departmentId);
+        return Doctor::query()->with('department')->find($doctorId);
     }
 
     public function updateDepartment(array $updateData, int $departmentId): int
