@@ -5,7 +5,7 @@
         <!--begin::Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-danger"></h5>
+                <h5 class="modal-title fw-bolder">Schedules for: <span class="modal-span text-danger"></span> </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body scroll h-450px">

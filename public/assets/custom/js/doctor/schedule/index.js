@@ -132,7 +132,7 @@ $(document).on("click", '.showDetailsBtn', function () {
 
     html += `</div>`; // row close
 
-    $('#showScheduleDetailsModal .modal-title').text("Schedules for " + doctor);
+    $('#showScheduleDetailsModal .modal-title .modal-span').text(doctor);
     $("#showScheduleDetailsModal .modal-body").html(html);
     $("#showScheduleDetailsModal").modal("show");
 });
