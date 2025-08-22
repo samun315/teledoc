@@ -1,0 +1,87 @@
+/* Slide-in modal from right */
+.modal.slide-right .modal-dialog {
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    height: 100vh;
+    max-width: 450px; /* Adjust width if needed */
+    width: 100%;
+    pointer-events: none;
+    z-index: 1055;
+}
+
+.modal.slide-right.show .modal-dialog {
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+/* Optional smoother backdrop */
+.modal-backdrop.show {
+    opacity: 0.4;
+}
+
+/* Utility for cursor */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.select-patient.active {
+    background-color: #e9f5ff;
+    border-color: #0d6efd;
+}
+
+.check-icon {
+    font-size: 1.2rem;
+}
+
+/* PRESCRIPTION CREATE STYLE */
+.subscription-textarea {
+    border: 2px solid #ccc;
+    padding: 14px 10px 8px 10px; /* top-right-bottom-left */
+    font-size: 13px;
+    resize: vertical;
+}
+
+.subscription-label {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    font-size: 16px;
+    color: #666;
+    background: #fff;
+    padding: 0 4px;
+    transition: 0.2s;
+    pointer-events: none;
+    font-weight: normal; /* default state */
+}
+
+/* When focused or has text */
+.subscription-textarea:focus + .subscription-label,
+.subscription-textarea:not(:placeholder-shown) + .subscription-label {
+    top: -10px;
+    left: 12px;
+    font-size: 13px;
+    color: #000;
+    font-weight: bold; /* make bold when floating */
+}
+
+.prescription-form-container {
+        max-height: 80vh; /* or any height depending on your layout */
+        overflow-y: auto;
+        padding-top: 10px; /* space for fixed button */
+        padding-bottom: 80px; /* space for fixed button */
+        position: relative;
+    }
+
+    .submit-btn-wrapper {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        z-index: 10;
+    }
