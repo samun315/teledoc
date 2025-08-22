@@ -51,6 +51,7 @@
         </div>
         <!--end::Container-->
     </div>
+    @include('doctor.schedule.modal.doctorScheduleDetailsModal')
 
 @endsection
 
