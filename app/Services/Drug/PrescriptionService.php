@@ -74,10 +74,12 @@ class PrescriptionService
             })
             ->addColumn('action', function ($row) {
 
-                $editBtn = '<button data-id="' . $row?->prescription_id . '" class="btn btn-bg-info text-white btn-sm editPrescriptionBtn"><i class="fas fa-edit text-white"></i> Edit</button>';
+                $editBtn = '<a href="' . route('drug.prescription.edit', $row->prescription_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
+                $excelBtn = '<button type="button" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></button>';
                 $button = '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
+                            ' . $excelBtn . '
                             </div>';
                 return $button;
             })
@@ -103,7 +105,7 @@ class PrescriptionService
                 'doctor_id' => $data['doctor_id'],
                 'appointment_id' => 1,
                 'created_by' => $data['created_by'],
-                'created_at' => $data['prescription_date'],
+                'created_at' => $data['created_at'],
             ];
 
             $prescription = Prescription::query()->create($prescriptionData);
@@ -252,14 +254,14 @@ class PrescriptionService
     }
 
 
-    public function getSubscriptionById(int $subscriptionId): Model|Builder
+    public function getPrescriptionInfoById(int $prescriptionId): Model|Builder
     {
-        return Subscription::find($subscriptionId);
+        return Prescription::query()->with('medication', 'clinicalRecord')->where('prescription_id', $prescriptionId)->first();
     }
 
-    public function updateSubscription(array $updateData, int $subscriptionId): int
+    public function updateSubscription(array $updateData, int $prescriptionId): int
     {
-        $subscription = $this->getSubscriptionById($subscriptionId);
+        $subscription = $this->getPrescriptionInfoById($prescriptionId);
 
         return $subscription->update($updateData);
     }
