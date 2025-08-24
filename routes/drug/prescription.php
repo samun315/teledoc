@@ -17,7 +17,7 @@ Route::group(['prefix' => 'prescription'], function () {
     Route::get('/create/{patient_id}', [PrescriptionController::class, 'create'])->name('create');
     Route::post('/store', [PrescriptionController::class,  'store'])->name('store');
     Route::get('/get-patient', [PrescriptionController::class,  'getPatientList'])->name('getPatientList');
-    Route::get('/edit/{menu_id}', [PrescriptionController::class,  'edit'])->name('edit');
+    Route::get('/edit/{prescription_id}', [PrescriptionController::class,  'edit'])->name('edit');
     Route::put('/update/{menu_id}', [PrescriptionController::class,  'update'])->name('update');
     Route::get('/get-drug-dose/{drug_type_id}', [PrescriptionController::class,  'getDrugDoseByType'])->name('getDrugDoseByType');
 
