@@ -33,42 +33,42 @@ class DoctorScheduleRequest extends FormRequest
         ];
     }
 
-public function fields(): array
-{
-    $inputData = [];
+    public function fields(): array
+    {
+        $inputData = [];
 
-    $inputData['doctor_id'] = $this->input('doctor_id');
-    $inputData['day_of_week'] = $this->input('day_of_week'); // array
+        $inputData['doctor_id'] = $this->input('doctor_id');
+        $inputData['day_of_week'] = $this->input('day_of_week'); // array
 
-    $startTimes = $this->input('start_time', []);
-    $endTimes   = $this->input('end_time', []);
+        $startTimes = $this->input('start_time', []);
+        $endTimes   = $this->input('end_time', []);
 
-    $convertedStart = [];
-    $convertedEnd   = [];
+        $convertedStart = [];
+        $convertedEnd   = [];
 
-    foreach ($startTimes as $key => $time) {
-        // null check removed, empty string will throw exception if format wrong
-        $convertedStart[$key] = Carbon::createFromFormat('h:i A', $time)->format('H:i:s');
-    }
+        foreach ($startTimes as $key => $time) {
+            // null check removed, empty string will throw exception if format wrong
+            $convertedStart[$key] = Carbon::createFromFormat('h:i A', $time)->format('H:i:s');
+        }
 
-    foreach ($endTimes as $key => $time) {
-        $convertedEnd[$key] = Carbon::createFromFormat('h:i A', $time)->format('H:i:s');
-    }
+        foreach ($endTimes as $key => $time) {
+            $convertedEnd[$key] = Carbon::createFromFormat('h:i A', $time)->format('H:i:s');
+        }
 
-    $inputData['start_time'] = $convertedStart;
-    $inputData['end_time']   = $convertedEnd;
+        $inputData['start_time'] = $convertedStart;
+        $inputData['end_time']   = $convertedEnd;
 
-    $inputData['slot_duration_minutes'] = $this->input('slot_duration_minutes'); // array
+        $inputData['slot_duration_minutes'] = $this->input('slot_duration_minutes'); // array
 
-    if ($this->input('schedule_id')) {
+        $inputData['schedule_id'] = $this->input('schedule_id') ?? null;
+
         $inputData['updated_by'] = loggedInUserId();
         $inputData['updated_at'] = createdAtDateConvertToDB();
-    } else {
+
         $inputData['created_by'] = loggedInUserId();
         $inputData['created_at'] = createdAtDateConvertToDB();
+
+
+        return $inputData;
     }
-
-    return $inputData;
-}
-
 }

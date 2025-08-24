@@ -52,22 +52,22 @@ class DoctorScheduleController extends Controller
         }
     }
 
-    public function edit(int $scheduleId): View
+    public function edit(int $doctorId): View
     {
-        $data['editModeData'] = $this->doctorScheduleService->getScheduleById($scheduleId);
+        $data['editModeData'] = $this->doctorScheduleService->getScheduleByDoctorId($doctorId);
 
         $data['days'] = ScheduleConstant::DAYS;
 
-        $data['doctorInfos'] = Doctor::query()->where('status', 'Active')->get(['doctor_id', 'title', 'name']);
+        $data['doctorInfo'] = Doctor::query()->with('department')->where('doctor_id', $doctorId)->first();
 
         return view('doctor.schedule.edit', $data);
     }
 
-    public function update(DoctorScheduleRequest $request, int $scheduleId): RedirectResponse
+    public function update(DoctorScheduleRequest $request): RedirectResponse
     {
         try {
 
-            $this->doctorScheduleService->updateSchedule($request->fields(), $scheduleId);
+            $this->doctorScheduleService->updateSchedule($request->fields());
             return to_route('schedule.index')->with('success', 'Schedule updated successfully!');
         } catch (Exception $e) {
             return back()->with('general', $e->getMessage());

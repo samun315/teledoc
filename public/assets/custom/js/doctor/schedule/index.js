@@ -98,3 +98,42 @@ let table = $("#kt_schedule_table").DataTable({
 search.keyup(function () {
     table.draw();
 });
+
+
+$(document).on("click", '.showDetailsBtn', function () {
+    let doctor = $(this).data('doctor');
+    let schedules = $(this).data('schedules').split(';;');
+    let html = `<div class="row g-3">`; // ekbar row start
+    let count = 1;
+
+    schedules.forEach(s => {
+        if (s.trim() === "") return;
+        let [day, start, end, minutes] = s.split('||');
+        let startTime = moment(start, "HH:mm:ss").format("h:mm A");
+        let endTime = moment(end, "HH:mm:ss").format("h:mm A");
+        let slotText = minutes < 60 ? `${minutes} minutes` :
+            `${Math.floor(minutes / 60)} hr ${minutes % 60 > 0 ? minutes % 60 + ' min' : ''}`;
+
+        html += `
+        <div class="col-md-4 position-relative">
+            <div class="card shadow-sm">
+                <div class="position-absolute top-0 end-0 p-2 badge bg-success">Schedule: ${count}</div>
+                <div class="card-body p-3">
+                    <p class="mb-1"><strong>Day:</strong> ${day}</p>
+                    <p class="mb-1"><strong>Start:</strong> <span class="text-primary">${startTime}</span></p>
+                    <p class="mb-1"><strong>End:</strong> <span class="text-danger">${endTime}</span></p>
+                    <p class="mb-0"><strong>Slot:</strong> <span class="text-success">${slotText}</span></p>
+                </div>
+            </div>
+        </div>`;
+
+        count++;
+    });
+
+    html += `</div>`; // row close
+
+    $('#showScheduleDetailsModal .modal-title .modal-span').text(doctor);
+    $("#showScheduleDetailsModal .modal-body").html(html);
+    $("#showScheduleDetailsModal").modal("show");
+});
+

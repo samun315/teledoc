@@ -82,7 +82,7 @@
                                     <tr>
                                         <td>
                                             <select name="day_of_week[]" class="form-select form-select-light dayOfWeek"
-                                                data-control="select2" data-placeholder="Select Doctor">
+                                                data-control="select2" data-placeholder="Select Day">
                                                 <option value=""></option>
                                                 @foreach ($days as $day)
                                                     <option value="{{ $day }}"
@@ -109,7 +109,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <input type="number" name="slot_duration_minutes[]"
+                                            <input type="number" name="slot_duration_minutes[]" min="1"
                                                 class="form-control form-control-light slotTime"
                                                 placeholder="Slot Duration (Minute)">
                                         </td>
@@ -181,7 +181,7 @@
                 <tr>
                     <td>
                         <select name="day_of_week[]" class="form-select form-select-light dayOfWeek"
-                            data-control="select2" data-placeholder="Select Doctor">
+                            data-control="select2" data-placeholder="Select Day">
                             <option value=""></option>
                             @foreach ($days as $day)
                                 <option value="{{ $day }}"
@@ -210,7 +210,7 @@
                     <td>
                        <input type="number" name="slot_duration_minutes[]"
                         class="form-control form-control-light slotTime"
-                        placeholder="Slot Duration (Minute)">
+                        placeholder="Slot Duration (Minute)" min="1">
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm removeScheduleRow"><i class="fas fa-times"></i></button>
@@ -352,6 +352,20 @@
                 return false;
             }
         });
+
+           $(document).on("input", 'input[type="number"]', function () {
+        let value = parseFloat($(this).val());
+        if (value < 0) {
+            $(this).val(Math.abs(value));
+        }
+    });
+
+    // Optional: Prevent typing minus key
+    $(document).on("keypress", 'input[type="number"]', function (e) {
+        if (e.key === "-" || e.keyCode === 45) {
+            e.preventDefault();
+        }
+    });
     </script>
 
 @endsection
