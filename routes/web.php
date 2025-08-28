@@ -26,5 +26,6 @@ Route::middleware(['preventBackHistory', 'user'])->group(function () {
 });
 
 Route::get('/welcome', [FrontendController::class, 'homePage'])->name('welcome');
+Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome2');
 
 

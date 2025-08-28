@@ -11,4 +11,9 @@ class FrontendController extends Controller
         //dd('test');
         return view('frontend.welcomePage');
     }
+
+    function homePage2(){
+        //dd('test');
+        return view('frontend.welcomePage2');
+    }
 }
