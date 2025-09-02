@@ -86,7 +86,7 @@
 
     <!-- Patient Info Horizontal -->
     <div class="patient-info">
-        <div><b>Name:</b> Mrs. Jesica</div>
+        <div><b>Name:</b> Mrs. Y</div>
         <div><b>Age:</b> 28 Yrs</div>
         <div><b>Weight:</b> 70 kg</div>
         <div><b>Blood Group:</b> O+</div>
