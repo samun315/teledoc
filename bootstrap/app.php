@@ -97,6 +97,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/payment/adjustBalance.php'));
             //End Balance adjust Route
 
+            //Start Blog Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('blog')
+                ->name('blog.')
+                ->group(base_path('routes/blog/blog.php'));
+            //End blog Route
+
             //****Start Api Route******//
             Route::middleware(['api'])
                 ->prefix('api')
