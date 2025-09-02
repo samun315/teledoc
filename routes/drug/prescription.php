@@ -27,4 +27,7 @@ Route::group(['prefix' => 'prescription'], function () {
 
      Route::get('/get-doctor-prescriptions/{doctor_id}/{patient_id}', [PrescriptionController::class,  'getDoctorPrescriptionList'])->name('getDoctorPrescriptionList');
      Route::get('/get-old-prescriptions/{prescription_id}', [PrescriptionController::class,  'getOldPrescriptionList'])->name('getOldPrescriptionList');
+
+     Route::get('/prescriptions/print/{prescription_id}', [PrescriptionController::class, 'printPrescription'])->name('print');
+
 });

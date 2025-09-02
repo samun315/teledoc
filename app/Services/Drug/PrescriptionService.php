@@ -76,10 +76,10 @@ class PrescriptionService
 
                 $editBtn = '<a href="' . route('drug.prescription.edit', $row->prescription_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
-                $excelBtn = '<button type="button" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></button>';
+                $printBtn = '<a href="' . route('drug.prescription.print', $row->prescription_id) . '" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></a>';
                 $button = '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
-                            ' . $excelBtn . '
+                            ' . $printBtn . '
                             </div>';
                 return $button;
             })

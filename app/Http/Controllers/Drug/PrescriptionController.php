@@ -134,4 +134,12 @@ class PrescriptionController extends Controller
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }
     }
+
+    public function printPrescription($prescriptionId)
+    {
+        $prescription = Prescription::with('medication','clinicalRecord')->findOrFail($prescriptionId);
+        $patient = $prescription->patient;
+
+        return view('drugs.prescription.print-prescription', compact('prescription', 'patient'));
+    }
 }
