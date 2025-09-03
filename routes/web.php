@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Frontend\FrontendController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('showLoginForm');
@@ -24,6 +25,8 @@ Route::middleware(['preventBackHistory', 'user'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 });
+
+Route::post('/store/upload-image', [UploadController::class, 'upload'])->name('ckeditor.upload');
 
 Route::get('/welcome', [FrontendController::class, 'homePage'])->name('welcome');
 Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome2');

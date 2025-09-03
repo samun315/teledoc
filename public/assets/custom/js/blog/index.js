@@ -9,7 +9,7 @@ $(document).ready(function() {
         const title = $(this).data('title');
 
         $('#blogTitle').text(title);
-        $('#deleteForm').attr('action', `${BASE_URL}/${id}`);
+        $('#deleteForm').attr('action', `${BASE_URL}/delete/${id}`);
         $('#deleteModal').modal('show');
     });
 });

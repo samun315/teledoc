@@ -165,3 +165,108 @@ featuredImageInput.on('change', function() {
         }
     }
 });
+
+
+// Initialize CKEditor
+// document.addEventListener("DOMContentLoaded", () => {
+//     console.log('test');
+
+//     const termsElements = document.querySelectorAll("#content");
+//     console.log(termsElements);
+
+//     if (termsElements.length > 0) {
+//         termsElements.forEach((element, index) => {
+//             ClassicEditor.create(element, {
+//                 styleNonce: "{{ $cspNonce }}",
+//             })
+//                 .then((editor) => {
+//                     editorInstance = editor;
+//                 })
+//                 .catch((error) => {
+//                     console.error(
+//                         `Error initializing editor for element ${index + 1}:`,
+//                         error
+//                     );
+//                 });
+
+//         });
+//     } else {
+//         console.warn(
+//             "No elements with the class '.terms_and_conditions' found."
+//         );
+//     }
+// });
+
+function MyUploadAdapter(loader) {
+    this.loader = loader;
+}
+
+MyUploadAdapter.prototype.upload = function() {
+    return this.loader.file.then(file => new Promise((resolve, reject) => {
+        const data = new FormData();
+        data.append('upload', file);
+
+        fetch(`/store/upload-image`, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            resolve({ default: result.url }); // return uploaded file URL
+        })
+        .catch(err => reject(err));
+    }));
+};
+
+function MyCustomUploadAdapterPlugin(editor) {
+    editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+        return new MyUploadAdapter(loader);
+    };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const contentElement = document.querySelector("#content");
+    let editorInstance;
+
+    if (contentElement) {
+        ClassicEditor.create(contentElement, {
+            styleNonce: "{{ $cspNonce }}",
+            extraPlugins: [ MyCustomUploadAdapterPlugin ],
+            plugins: [ Image, ImageResize ],
+            image: {
+                resizeUnit: 'px',
+                toolbar: [ 'resizeImage:25', 'resizeImage:50', 'resizeImage:75', 'resizeImage:original' ]
+            }
+        })
+            .then((editor) => {
+                editorInstance = editor;
+            })
+            .catch((error) => {
+                console.error("Error initializing CKEditor:", error);
+            });
+
+        // Form submit validation
+        // $("#submitBtn").on("click", function (e) {
+        //     if (editorInstance) {
+        //         let terms = editorInstance.getData().trim(); // Get editor content
+
+        //         if (terms === "" || terms === "<p><br></p>") {
+        //             $(".terms_error")
+        //                 .text("Terms & Conditions field is required.")
+        //                 .css("color", "red");
+        //             e.preventDefault(); // Stop form submission
+        //         } else {
+        //             $(".terms_error").text(""); // Clear error if valid
+        //         }
+        //     } else {
+        //         console.error("CKEditor not initialized.");
+        //         e.preventDefault(); // Prevent submission if editor failed
+        //     }
+        // });
+    } else {
+        console.warn("No element with id '#content' found.");
+    }
+});

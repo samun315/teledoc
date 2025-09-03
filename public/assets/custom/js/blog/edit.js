@@ -183,3 +183,56 @@ $('.delete-blog-btn').on('click', function() {
         });
     }
 });
+
+
+function MyUploadAdapter(loader) {
+    this.loader = loader;
+}
+
+MyUploadAdapter.prototype.upload = function() {
+    return this.loader.file.then(file => new Promise((resolve, reject) => {
+        const data = new FormData();
+        data.append('upload', file);
+
+        fetch(`/store/upload-image`, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            resolve({ default: result.url }); // return uploaded file URL
+        })
+        .catch(err => reject(err));
+    }));
+};
+
+function MyCustomUploadAdapterPlugin(editor) {
+    editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+        return new MyUploadAdapter(loader);
+    };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const contentElement = document.querySelector("#content");
+    let editorInstance;
+
+    if (contentElement) {
+        ClassicEditor.create(contentElement, {
+            styleNonce: "{{ $cspNonce }}",
+            extraPlugins: [ MyCustomUploadAdapterPlugin ]
+        })
+            .then((editor) => {
+                editorInstance = editor;
+            })
+            .catch((error) => {
+                console.error("Error initializing CKEditor:", error);
+            });
+
+
+    } else {
+        console.warn("No element with id '#content' found.");
+    }
+});

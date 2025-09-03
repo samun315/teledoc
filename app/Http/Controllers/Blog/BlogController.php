@@ -67,9 +67,9 @@ class BlogController extends Controller
     {
         try {
             $this->blogService->updateBlog($blog_id, $request->validated());
-            return redirect()->route('blog.blog.index')->with('success', 'Blog post updated successfully');
+            return sendSuccessResponse(201, 'Blog post created successfully.');
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Failed to update blog post: ' . $e->getMessage());
+            return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }
     }
 
