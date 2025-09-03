@@ -52,13 +52,15 @@ class PrescriptionController extends Controller
     }
 
 
-    public function store(PrescriptionRequest $request): RedirectResponse
+    public function store(PrescriptionRequest $request): RedirectResponse|bool
     {
         try {
 
-            $this->prescriptionService->createPrescription($request->fields());
-
-            return to_route('drug.prescription.index')->with('success', 'Prescription created successfully.');
+            $prescription = $this->prescriptionService->createPrescription($request->fields());
+            if (!empty($prescription)) {
+                return to_route('drug.prescription.print', $prescription->prescription_id);
+            }
+            return true;
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -133,5 +135,23 @@ class PrescriptionController extends Controller
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }
+    }
+
+    public function printPrescription($prescriptionId)
+    {
+        $data['prescription'] = Prescription::with([
+            'doctor.degrees',
+            'doctor.schedules',
+            'patient',
+            'medication.drugType',
+            'medication.drug',
+            'medication.drugStrength',
+            'medication.drugDuration',
+            'medication.drugDose',
+            'medication.drugAdvice',
+            'clinicalRecord.subscriptionType'
+        ])->findOrFail($prescriptionId);
+
+        return view('drugs.prescription.print-prescription', $data);
     }
 }

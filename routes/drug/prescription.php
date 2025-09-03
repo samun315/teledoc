@@ -32,4 +32,6 @@ Route::group(['prefix' => 'prescription'], function () {
     Route::get('/preview', function () {
         return view('drug.preview');
     })->name('preview');
+     Route::get('/prescriptions/print/{prescription_id}', [PrescriptionController::class, 'printPrescription'])->name('print');
+
 });
