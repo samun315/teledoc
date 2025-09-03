@@ -1,84 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Prescription</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 13px; }
-        .header-bar {
-            background: #c80000;
-            color: #fff;
-            padding: 6px 10px;
-            font-weight: bold;
-            font-size: 14px;
-            text-align: center;
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>Prescription</title>
+    <style nonce="{{ $cspNonce }}">
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 13px;
+            margin-bottom: 100px;
         }
-        .doctor-info {
-            font-size: 12px;
-            line-height: 1.4;
-        }
+
         .patient-info {
             font-size: 13px;
             white-space: nowrap;
-            overflow-x: auto;
             margin-bottom: 15px;
         }
+
         .patient-info div {
             display: inline-block;
             margin-right: 20px;
         }
+
         .rx-title {
             font-weight: bold;
             font-size: 16px;
             margin-top: 10px;
             color: #000;
         }
+
         .medicine-list {
-            margin: 0;
+            list-style: decimal;
+            /* normal numbers */
             padding-left: 20px;
-            text-align: left; /* <-- changed from right to left */
-            list-style-position: inside;
         }
+
+        .medicine-list li {
+            font-weight: normal;
+            /* keep content normal */
+        }
+
+        .medicine-list li::marker {
+            font-weight: bold;
+            /* only numbers bold */
+        }
+
+
         .history-section div {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
-        .advice-list {
-            margin-top: 10px;
-            padding-left: 20px;
-        }
+
         .footer-bar {
-            background: #006400;
-            color: #fff;
+            background: #defce5;
+            color: #eb0707;
             padding: 10px;
             font-size: 11px;
-            margin-top: 30px;
+            font-weight: bolder;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
         }
-        .footer-bar .left { float: left; width: 50%; }
-        .footer-bar .right { float: right; width: 50%; text-align: right; }
-        .clearfix { clear: both; }
+
+        .footer-bar .left {
+            float: left;
+            width: 50%;
+        }
+
+        .footer-bar .right {
+            float: right;
+            width: 50%;
+            text-align: right;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .bg-danger {
+                background-color: #dc3545 !important;
+                color: #fff !important;
+            }
+
+            .footer-bar {
+                background: #defce5 !important;
+                color: #eb0707 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
+
 <body class="p-4">
 
     <!-- Red Header -->
-    <div class="header-bar">
+    <div class="bg-danger text-center text-white p-2 fw-bold">
         ডাক্তার এর পরামর্শ ছাড়া কোন ঔষধ খাওয়া বা ব্যবহার করা রোগীর জন্য ঝুঁকিপূর্ণ
     </div>
 
     <!-- Doctor Info -->
     <div class="row mt-2">
-        <div class="col-8 doctor-info">
-            <strong>Dr. Monowara Begum</strong><br>
-            MBBS, DGO, FCPS (Obs & Gynae)<br>
-            FCPS (Gynaecological Oncology)<br>
-            Advanced Training in Laparoscopic Surgery,<br>
-            Hysteroscopy, Gynae Oncology
+        <div class="col-8 col-md-6">
+            <span class="text-info doctor-name">{{ $prescription?->doctor->title }}
+                {{ $prescription?->doctor->name }}</span><br>
+            <span class="doctor-degree">
+                @if ($prescription->doctor->degrees && $prescription->doctor->degrees->count())
+                    @foreach ($prescription->doctor->degrees as $deg)
+                        <div>
+                            {{ $deg->degree_title }} - {{ $deg->degree_description }}
+                        </div>
+                    @endforeach
+                @endif
+            </span>
         </div>
-        <div class="col-4 text-end doctor-info">
-            Asst. Professor (Obs & Gynae Oncology)<br>
-            Bangabandhu Sheikh Mujib Medical University<br>
-            Reg: BMC-12345
+        <div class="col-4 col-md-6 text-end">
+            <a class="btn btn-sm btn-success text-nowrap no-print" href="{{ route('drug.prescription.index') }}">
+                <i class="fas fa-list"></i> Prescription List
+            </a>
         </div>
     </div>
 
@@ -86,75 +135,88 @@
 
     <!-- Patient Info Horizontal -->
     <div class="patient-info">
-        <div><b>Name:</b> Mrs. Y</div>
-        <div><b>Age:</b> 28 Yrs</div>
-        <div><b>Weight:</b> 70 kg</div>
-        <div><b>Blood Group:</b> O+</div>
-        <div><b>Date:</b> 24.04.2025</div>
-        <div><b>Follow up:</b> After 1 Month</div>
+        <div><b>Name:</b> {{ $prescription->patient->name ?? '' }}</div>
+        <div><b>Age:</b> {{ $prescription->patient->age ?? '' }} Yrs</div>
+        <div><b>Weight:</b> {{ $prescription->patient->weight ?? '' }} kg</div>
+        <div><b>Blood Group:</b> {{ $prescription->patient->blood_group ?? '' }}</div>
+        <div><b>Date:</b> {{ $prescription->created_at->format('d.m.Y') }}</div>
     </div>
-
+    <hr>
     <!-- Main Content Row -->
     <div class="row mt-3">
-        <!-- Left Side: C/C, History, Dx, Advice -->
+        <!-- Left Side: Subscription Type + Details -->
         <div class="col-6 history-section">
-            <div>
-                <b>C/C:</b>
-                <ul>
-                    <li>Irregular menses</li>
-                    <li>Fatigue</li>
-                </ul>
-            </div>
-            <div>
-                <b>Present History:</b>
-                Patient reports irregular cycles for the last 6 months.
-            </div>
-            <div>
-                <b>Past History:</b>
-                No significant past illness.
-            </div>
-            <div>
-                <b>Dx:</b>
-                Hypothyroidism
-            </div>
-            <div class="advice-section">
-                <b>Advice:</b>
-                <ul class="advice-list">
-                    <li>TVS</li>
-                    <li>FSH + FT4</li>
-                    <li>FSH + LH</li>
-                    <li>Prolactin</li>
-                    <li>AMH</li>
-                    <li>Pl. do count 20%</li>
-                </ul>
-            </div>
+            @foreach ($prescription->clinicalRecord ?? [] as $record)
+                @if ($record->subscriptionType)
+                    <div>
+                        <strong>{{ $record->subscriptionType->subscription_type }}</strong>
+                        <ul>
+                            <li>{{ $record->subscription_details }}</li>
+                        </ul>
+                    </div>
+                @endif
+            @endforeach
         </div>
 
-        <!-- Right Side: Rx (Left-aligned now) -->
+        <!-- Right Side: Rx -->
         <div class="col-6">
             <div class="rx-title">Rx</div>
-            <ul class="medicine-list">
-                <li>Thyrox (25 mcg) — 1+0+0 (3 Months)</li>
-                <li>Metfo (500 mg) — 0+1+0 (6 Months)</li>
-                <li>Folic-3 — 0+1+0 (6 Months)</li>
-            </ul>
+            <ol class="medicine-list">
+                @foreach ($prescription->medication ?? [] as $m)
+                    <li>
+                        <strong>{{ $m->drugType->drug_type ?? '' }}</strong>.
+                        <strong>{{ $m->drug->trade_name ?? '' }} </strong>
+                        <strong>{{ $m->drugStrength->drug_strength ?? '' }}</strong><br>
+                        {{ $m->drugDose->drug_dose ?? '' }}
+                        <strong> {{ $m->drugDuration->drug_duration ?? '' }}</strong> <br>
+                        <strong>Advice:</strong> {{ $m->drugAdvice->drug_advice ?? '' }}
+                    </li>
+                @endforeach
+            </ol>
         </div>
+
     </div>
 
     <!-- Footer -->
-    <div class="footer-bar mt-5">
+    <div class="footer-bar">
         <div class="left">
-            <b>Hospital Name</b><br>
-            Address: 123, Green Road, Dhaka<br>
-            Phone: +8801XXXXXXXXX
+            <b>{{ $prescription->doctor->hospital_name ?? 'Hospital Name' }}</b><br>
+            Address: {{ $prescription->doctor->hospital_address ?? 'N/A' }}<br>
+            Phone: {{ $prescription->doctor->hospital_phone ?? '' }}
         </div>
         <div class="right">
-            <b>Chamber Time:</b><br>
-            Sat - Thu: 5:00 PM – 9:00 PM<br>
-            Friday: Closed
+            <b class="text-success">রোগী দেখার সময় :</b><br>
+            @php
+                // Group schedules by day
+                $groupedSchedules = $prescription->doctor->schedules->groupBy('day_of_week');
+            @endphp
+
+            @foreach ($groupedSchedules as $day => $schedules)
+                <div>
+                    <strong>{{ $day }}:</strong>
+                    @foreach ($schedules as $index => $sch)
+                        @php
+                            $start = \Carbon\Carbon::parse($sch->start_time)->format('g:i A');
+                            $end = \Carbon\Carbon::parse($sch->end_time)->format('g:i A');
+                        @endphp
+                        <span class="text-success">{{ $start }} to {{ $end }}@if (!$loop->last)
+                                ,</span>
+                    @endif
+            @endforeach
         </div>
-        <div class="clearfix"></div>
+        @endforeach
     </div>
 
+    <div class="clearfix"></div>
+    </div>
+
+    <!-- CSP-safe Auto Print -->
+    <script nonce="{{ $cspNonce }}">
+        document.addEventListener("DOMContentLoaded", function() {
+            window.print();
+        });
+    </script>
+
 </body>
+
 </html>

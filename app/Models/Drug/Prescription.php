@@ -2,8 +2,11 @@
 
 namespace App\Models\Drug;
 
+use App\Models\Doctor\Doctor;
+use App\Models\Patient\Patient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Prescription extends Model
@@ -30,11 +33,21 @@ class Prescription extends Model
 
     public function medication(): HasMany
     {
-        return $this->hasMany(PrescriptionMedication::class, 'prescription_id','prescription_id');
+        return $this->hasMany(PrescriptionMedication::class, 'prescription_id', 'prescription_id');
     }
 
     public function clinicalRecord(): HasMany
     {
-        return $this->hasMany(PrescriptionClinicalRecord::class, 'prescription_id','prescription_id');
+        return $this->hasMany(PrescriptionClinicalRecord::class, 'prescription_id', 'prescription_id');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 }

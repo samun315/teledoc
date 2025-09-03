@@ -76,7 +76,7 @@ class PrescriptionService
 
                 $editBtn = '<a href="' . route('drug.prescription.edit', $row->prescription_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
-                $printBtn = '<a href="' . route('drug.prescription.print', $row->prescription_id) . '" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></a>';
+                $printBtn = '<a href="' . route('drug.prescription.print', $row->prescription_id) . '" target="_blank" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></a>';
                 $button = '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
                             ' . $printBtn . '
