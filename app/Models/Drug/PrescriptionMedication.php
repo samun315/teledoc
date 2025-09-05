@@ -37,7 +37,7 @@ class PrescriptionMedication extends Model
 
     public function drug(): HasOne
     {
-        return $this->hasOne(Drug::class, 'drug_id','drug_id');
+        return $this->hasOne(Drug::class, 'drug_id', 'drug_id');
     }
 
     public function drugStrength(): HasOne

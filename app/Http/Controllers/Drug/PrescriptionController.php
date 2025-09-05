@@ -20,6 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class PrescriptionController extends Controller
 {
@@ -126,16 +127,22 @@ class PrescriptionController extends Controller
         return view('drugs.prescription.edit', $data);
     }
 
-    public function update(PrescriptionRequest $request, int $subscriptionId): JsonResponse
+    public function update(PrescriptionRequest $request, int $prescriptionId): RedirectResponse
     {
         try {
+            $prescription = $this->prescriptionService->updateSubscription($request->fields(), $prescriptionId);
 
-            $this->prescriptionService->updateSubscription($request->fields(), $subscriptionId);
-            return sendSuccessResponse(201, 'Subscription updated successfully.');
-        } catch (Exception $e) {
-            return sendErrorResponse('Internal Server Error: ', $e->getMessage());
+            if (!empty($prescription)) {
+                return to_route('drug.prescription.index')
+                    ->with('success', 'Prescription updated successfully!');
+            }
+
+            return back()->with('error', 'Prescription update failed!');
+        } catch (Throwable $e) {
+            return back()->with('error', $e->getMessage());
         }
     }
+
 
     public function printPrescription($prescriptionId)
     {

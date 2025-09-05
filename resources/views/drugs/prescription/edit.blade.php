@@ -214,7 +214,7 @@
                                         <label class="fs-6 fw-bold mb-2">Ready Treatment</label>
                                         <select id="kt_doctor_id" name="doctor_id"
                                             class="form-select form-select-light @error('doctor_id') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Ready Treatment">
+                                            data-control="select2" data-placeholder="Ready Treatment" disabled>
                                             <option value=""></option>
                                             @foreach ($doctorInfos as $doctorInfo)
                                                 <option @if (old('doctor_id', $prescriptionInfo->doctor_id ?? null) == $doctorInfo->doctor_id) selected @endif
@@ -222,6 +222,8 @@
                                                     {{ $doctorInfo->title }} {{ $doctorInfo->name }}</option>
                                             @endforeach
                                         </select>
+                                        <input type="text" hidden name="doctor_id"
+                                            value="{{ $prescriptionInfo->doctor_id }}">
                                         @error('doctor_id')
                                             <div class="text-danger mt-2">{{ $message }}</div>
                                         @enderror
@@ -268,7 +270,7 @@
                     <!--end::Card body-->
 
                     <div class="submit-btn-wrapper text-end">
-                        <button type="submit" class="btn btn-success btn-sm" id="btnPrescriptionSubmit">Submit</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="btnPrescriptionSubmit">Update</button>
                     </div>
                 </form>
             </div>
