@@ -13,7 +13,7 @@
         ['label' => 'Prescription', 'url' => route('drug.prescription.index')],
         ['label' => 'Prescription Edit', 'active' => true],
     ]" actionUrl="{{ route('drug.prescription.index') }}"
-        actionIcon="fas fa-plus-circle" actionLabel="Prescription List" />
+        actionIcon="fas fa-list" actionLabel="Prescription List" />
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <!--begin::Container-->
         <div id="kt_content_container" class="container-fluid">
@@ -214,14 +214,16 @@
                                         <label class="fs-6 fw-bold mb-2">Ready Treatment</label>
                                         <select id="kt_doctor_id" name="doctor_id"
                                             class="form-select form-select-light @error('doctor_id') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Ready Treatment">
+                                            data-control="select2" data-placeholder="Ready Treatment" disabled>
                                             <option value=""></option>
                                             @foreach ($doctorInfos as $doctorInfo)
-                                                <option {{ old('doctor_id') ? 'selected' : '' }}
+                                                <option @if (old('doctor_id', $prescriptionInfo->doctor_id ?? null) == $doctorInfo->doctor_id) selected @endif
                                                     value="{{ $doctorInfo->doctor_id ?? old('doctor_id') }}">
                                                     {{ $doctorInfo->title }} {{ $doctorInfo->name }}</option>
                                             @endforeach
                                         </select>
+                                        <input type="text" hidden name="doctor_id"
+                                            value="{{ $prescriptionInfo->doctor_id }}">
                                         @error('doctor_id')
                                             <div class="text-danger mt-2">{{ $message }}</div>
                                         @enderror
@@ -234,13 +236,13 @@
                                             data-control="select2" data-placeholder="Old Prescription">
                                             <option value=""></option>
                                             @foreach ($oldPrescriptionInfos as $oldPrescription)
-                                                <option
-                                                    {{ old('prescription_id') == $oldPrescription->prescription_id ? 'selected' : '' }}
+                                                <option @if (old('prescription_id', $prescriptionInfo->prescription_id ?? null) == $oldPrescription->prescription_id) selected @endif
                                                     value="{{ $oldPrescription->prescription_id }}">
                                                     {{ $oldPrescription->prescription_number }}
                                                     ({{ \Carbon\Carbon::parse($oldPrescription->created_at)->format('Y-m-d') }})
                                                 </option>
                                             @endforeach
+
                                         </select>
                                     </div>
                                 </div>
@@ -268,7 +270,7 @@
                     <!--end::Card body-->
 
                     <div class="submit-btn-wrapper text-end">
-                        <button type="submit" class="btn btn-success btn-sm" id="btnPrescriptionSubmit">Submit</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="btnPrescriptionSubmit">Update</button>
                     </div>
                 </form>
             </div>
@@ -285,6 +287,11 @@
 
 @section('page_script')
 
+    <script nonce="{{ $cspNonce }}">
+        @isset($prescriptionInfo)
+            let prescriptionData = <?php echo $prescriptionInfo; ?>
+        @endisset
+    </script>
     <!-- begin::Page Custom Stylesheets(used by this page) -->
     <script src="{{ asset('assets/custom/js/drugs/prescription/edit.js') }}"
         {{ Sri::html('assets/custom/js/drugs/prescription/edit.js') }}></script>

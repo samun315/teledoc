@@ -79,9 +79,9 @@
         <!--end::Container-->
     </div>
 
-    {{--start:: NEW PRESCRIPTION ADD MODAL --}}
+    {{-- start:: NEW PRESCRIPTION ADD MODAL --}}
     @include('drugs.prescription.modal.selectPatientModal')
-    {{--end:: NEW PRESCRIPTION ADD MODAL --}}
+    {{-- end:: NEW PRESCRIPTION ADD MODAL --}}
 
 @endsection
 

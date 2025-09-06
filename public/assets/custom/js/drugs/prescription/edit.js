@@ -2,6 +2,12 @@
 const BASE_URL = window.location.origin + "/drug/prescription";
 const ORIGIN_URL = window.location.origin;
 
+let prescription_id;
+if (typeof prescriptionData != "undefined") {
+    prescription_id = prescriptionData.prescription_id;
+
+    getOldPrescriptionList(prescription_id);
+}
 
 // SUBSCRIPTION TYPE AND DETAILS ADD
 let selectedSubscriptionTypeId = null;
@@ -366,7 +372,10 @@ $("#dateIcon").on("click", function () {
 // GET OLD PRESCRIPTION LIST
 $('#kt_prescription_id').on('change', function () {
     let prescriptionId = $(this).val();
+    getOldPrescriptionList(prescriptionId);
+});
 
+function getOldPrescriptionList(prescriptionId) {
     $.ajax({
         url: BASE_URL + '/get-old-prescriptions/' + prescriptionId,
         method: 'GET',
@@ -435,7 +444,7 @@ $('#kt_prescription_id').on('change', function () {
             $('#drugListWrapper').html('<p class="text-danger">Error loading prescriptions.</p>');
         }
     });
-});
+}
 
 // form submit validation
 $('#prescriptionForm').on('submit', function (e) {

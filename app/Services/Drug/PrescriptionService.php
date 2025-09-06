@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 use Yajra\DataTables\DataTables;
 
 class PrescriptionService
@@ -261,8 +263,127 @@ class PrescriptionService
 
     public function updateSubscription(array $updateData, int $prescriptionId): int
     {
-        $subscription = $this->getPrescriptionInfoById($prescriptionId);
+        DB::beginTransaction();
 
-        return $subscription->update($updateData);
+        try {
+            // 1️⃣ Prescription update
+            $prescription = $this->getPrescriptionInfoById($prescriptionId);
+
+            $prescription->update([
+                'updated_by' => $updateData['updated_by'],
+                'updated_at' => $updateData['updated_at'],
+            ]);
+
+            // 2️⃣ Handle Clinical Records
+            $existingClinical = $prescription->clinicalRecord()
+                ->pluck('prescription_clinical_record_id', 'subscription_type_id')
+                ->toArray();
+
+            $newClinical = $updateData['subscription_type_id'] ?? [];
+            $processedClinicalIds = [];
+
+            foreach ($newClinical as $index => $subscriptionTypeId) {
+                $details = trim($updateData['subscription_details'][$index] ?? '');
+
+                // ❌ যদি details ফাঁকা হয় → skip / delete
+                if ($details == '' || $details == null) {
+                    if (isset($existingClinical[$subscriptionTypeId])) {
+                        // আগে DB তে ছিল → delete করে দেবে
+                        $recordId = $existingClinical[$subscriptionTypeId];
+                        $prescription->clinicalRecord()
+                            ->where('prescription_clinical_record_id', $recordId)
+                            ->delete();
+                    }
+                    continue; // নতুন কিছু insert হবে না
+                }
+
+                $data = [
+                    'subscription_type_id' => $subscriptionTypeId,
+                    'subscription_details' => $details,
+                    'created_by'           => $updateData['created_by'] ?? null,
+                    'updated_by'           => $updateData['updated_by'] ?? null,
+                    'created_at'           => $updateData['created_at'] ?? now(),
+                    'updated_at'           => $updateData['updated_at'] ?? now(),
+                ];
+
+                if (isset($existingClinical[$subscriptionTypeId])) {
+                    // Update existing
+                    $recordId = $existingClinical[$subscriptionTypeId];
+                    $prescription->clinicalRecord()
+                        ->where('prescription_clinical_record_id', $recordId)
+                        ->update($data);
+                    $processedClinicalIds[] = $recordId;
+                } else {
+                    // Insert new
+                    $record = $prescription->clinicalRecord()->create($data);
+                    $processedClinicalIds[] = $record->prescription_clinical_record_id;
+                }
+            }
+
+            // ✅ শেষের দিকে শুধু যেগুলো processed হয়নি, সেগুলো delete হবে
+            if (!empty($processedClinicalIds)) {
+                $prescription->clinicalRecord()
+                    ->whereNotIn('prescription_clinical_record_id', $processedClinicalIds)
+                    ->delete();
+            }
+
+            // 3️⃣ Handle Medication
+            $existingMedications = $prescription->medication()
+                ->pluck('prescription_medication_id')
+                ->toArray();
+
+            $formMedications = $updateData['drug_type_id'] ?? [];
+            $processedMedIds = [];
+
+            foreach ($formMedications as $index => $drugTypeId) {
+                $data = [
+                    'drug_type_id'     => $drugTypeId,
+                    'drug_id'          => $updateData['drug_id'][$index] ?? null,
+                    'drug_strength_id' => $updateData['drug_strength_id'][$index] ?? null,
+                    'drug_dose_id'     => $updateData['drug_dose_id'][$index] ?? null,
+                    'drug_duration_id' => $updateData['drug_duration_id'][$index] ?? null,
+                    'drug_advice_id'   => $updateData['drug_advice_id'][$index] ?? null,
+                    'created_by'       => $updateData['created_by'] ?? null,
+                    'updated_by'       => $updateData['updated_by'] ?? null,
+                    'created_at'       => $updateData['created_at'] ?? now(),
+                    'updated_at'       => $updateData['updated_at'] ?? now(),
+                ];
+
+                if (!empty($existingMedications[$index])) {
+                    // Update existing
+                    $medId = $existingMedications[$index];
+                    $prescription->medication()
+                        ->where('prescription_medication_id', $medId)
+                        ->update($data);
+                    $processedMedIds[] = $medId;
+                } else {
+                    // Insert new
+                    $record = $prescription->medication()->create($data);
+                    $processedMedIds[] = $record->prescription_medication_id;
+                }
+            }
+
+            // Delete removed medications
+            if (!empty($processedMedIds)) {
+                $prescription->medication()
+                    ->whereNotIn('prescription_medication_id', $processedMedIds)
+                    ->delete();
+            }
+
+            // সবকিছু সফল হলে commit হবে
+            DB::commit();
+            return 1;
+        } catch (Throwable $e) {
+            // 🛑 কোনো error হলে rollback হবে
+            DB::rollBack();
+
+            Log::error('Prescription update failed', [
+                'error' => $e->getMessage(),
+                'line'  => $e->getLine(),
+                'file'  => $e->getFile(),
+            ]);
+
+            return 0;
+        }
     }
 }

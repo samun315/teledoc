@@ -48,6 +48,8 @@ class PrescriptionRequest extends FormRequest
 
         $inputData['created_by'] = loggedInUserId();
         $inputData['created_at'] = createdAtDateConvertToDB();
+        $inputData['updated_by'] = loggedInUserId();
+        $inputData['updated_at'] = createdAtDateConvertToDB();
 
         return $inputData;
     }
