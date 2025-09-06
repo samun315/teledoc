@@ -25,7 +25,6 @@ Route::group(['prefix' => 'prescription'], function () {
     Route::get('/get-subscriptions/{subscription_type_id}', [PrescriptionController::class,  'getSubscriptionList'])->name('getSubscriptionList');
     Route::post('/create-subscription/{subscription_type_id}', [PrescriptionController::class,  'createSubscription'])->name('createSubscription');
 
-<<<<<<< HEAD
      Route::get('/get-doctor-prescriptions/{doctor_id}/{patient_id}', [PrescriptionController::class,  'getDoctorPrescriptionList'])->name('getDoctorPrescriptionList');
      Route::get('/get-old-prescriptions/{prescription_id}', [PrescriptionController::class,  'getOldPrescriptionList'])->name('getOldPrescriptionList');
 
@@ -34,10 +33,8 @@ Route::group(['prefix' => 'prescription'], function () {
         return view('drug.preview');
     })->name('preview');
      Route::get('/prescriptions/print/{prescription_id}', [PrescriptionController::class, 'printPrescription'])->name('print');
-=======
     Route::get('/get-doctor-prescriptions/{doctor_id}/{patient_id}', [PrescriptionController::class,  'getDoctorPrescriptionList'])->name('getDoctorPrescriptionList');
     Route::get('/get-old-prescriptions/{prescription_id}', [PrescriptionController::class,  'getOldPrescriptionList'])->name('getOldPrescriptionList');
->>>>>>> e7cbd17e76ebb4f7a012f70d490b1ec20857c701
 
     Route::get('/prescriptions/print/{prescription_id}', [PrescriptionController::class, 'printPrescription'])->name('print');
 });
