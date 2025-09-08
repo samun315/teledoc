@@ -73,8 +73,8 @@
                 <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a href="#" class="nav-link dropdown-toggle active">Home</a>
-                            <ul class="dropdown-menu">
+                            <a href="{{ route('home') }}" class="nav-link">Home</a>
+                            {{-- <ul class="dropdown-menu">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link active">Home Page 1</a>
                                 </li>
@@ -90,12 +90,16 @@
                                 <li class="nav-item">
                                     <a href="index-5.html" class="nav-link">Home Page 5</a>
                                 </li>
-                            </ul>
+                            </ul> --}}
                         </li>
                         <li class="nav-item">
-                            <a href="about.html" class="nav-link">About</a>
+                            <a href="{{ route('about') }}" class="nav-link">About</a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('blog') }}" class="nav-link">Blog</a>
+                        </li>
+
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link dropdown-toggle">Pages</a>
                             <ul class="dropdown-menu">
                                 <li class="nav-item">
@@ -129,30 +133,30 @@
                                     <a href="coming-soon.html" class="nav-link">Coming Soon</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
-                            <a href="#" class="nav-link dropdown-toggle">Services</a>
-                            <ul class="dropdown-menu">
+                            <a href="#" class="nav-link">Services</a>
+                            {{-- <ul class="dropdown-menu">
                                 <li class="nav-item">
                                     <a href="service.html" class="nav-link">Service</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="service-details.html" class="nav-link">Service Details</a>
                                 </li>
-                            </ul>
+                            </ul> --}}
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link dropdown-toggle">Doctor</a>
-                            <ul class="dropdown-menu">
+                            <a href="#" class="nav-link ">Doctor</a>
+                            {{-- <ul class="dropdown-menu">
                                 <li class="nav-item">
                                     <a href="doctor.html" class="nav-link">Doctor</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="doctor-details.html" class="nav-link">Doctor Details</a>
                                 </li>
-                            </ul>
+                            </ul> --}}
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link dropdown-toggle">Blog</a>
                             <ul class="dropdown-menu">
                                 <li class="nav-item">
@@ -162,9 +166,9 @@
                                     <a href="blog-details.html" class="nav-link">Blog Details</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
-                            <a href="contact.html" class="nav-link">Contact Us</a>
+                            <a href="{{ route('contact-us') }}" class="nav-link">Contact Us</a>
                         </li>
                     </ul>
                     <div class="nav-srh">

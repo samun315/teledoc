@@ -16,4 +16,16 @@ class FrontendController extends Controller
         //dd('test');
         return view('frontend.welcomePage2');
     }
+
+    function contactUs(){
+        return view('frontend.contactUs');
+    }
+
+    function about(){
+        return view('frontend.about');
+    }
+
+    function blog(){
+        return view('frontend.blog');
+    }
 }
