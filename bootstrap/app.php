@@ -83,6 +83,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/doctor/schedule.php'));
             //End Schedule Route
 
+            //Start Appointment Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('appointment')
+                ->name('appointment.')
+                ->group(base_path('routes/doctor/appointment.php'));
+            //End Appointment Route
+
             //Start Payment Gateway Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
                 ->prefix('payment')
