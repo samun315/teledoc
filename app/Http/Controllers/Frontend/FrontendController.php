@@ -9,7 +9,7 @@ class FrontendController extends Controller
 {
     function homePage(){
         //dd('test');
-        return view('frontend.welcomePage');
+        return view('frontend.home');
     }
 
     function homePage2(){

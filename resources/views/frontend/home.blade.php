@@ -64,7 +64,7 @@
                         <div class="col-lg-6">
                             <div class="about-item about-right">
                                 <img src="frontend/assets/img/home-one/5.png" alt="About">
-                                <h2>About Our Hospital</h2>
+                                <h2>About </h2>
                                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
                                     ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo
                                     viverra maecenas accumsan lacus vel facilisis. </p>
@@ -94,7 +94,7 @@
             <section class="services-area pb-70">
                 <div class="container">
                     <div class="section-title">
-                        <h2>Our Hospital Services</h2>
+                        <h2>Our Services</h2>
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".3s">
@@ -284,7 +284,7 @@
             <!-- End Expertise -->
 
             <!-- Video -->
-            <div class="video-wrap">
+            {{-- <div class="video-wrap">
                 <div class="container-fluid p-0">
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
@@ -433,7 +433,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> --}}
             <!-- End Video -->
 
             <!-- Doctors -->
