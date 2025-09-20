@@ -158,6 +158,7 @@ $(document).ready(function () {
     });
 });
 
+$(".scheduleSlots").hide();
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('appointmentCalendar');
     var selectedDateEl = null;
@@ -182,6 +183,14 @@ document.addEventListener('DOMContentLoaded', function () {
             // Only allow clicks on valid dates
             if (info.dateStr < today) return;
 
+            // Check doctor_id
+            let doctorId = document.getElementById('kt_doctor_id')?.value; // ধরা যাক doctor select box এর id হচ্ছে doctor_id
+
+            if (!doctorId) {
+                toastr.warning("Please select a doctor first!");
+                return;
+            }
+
             // Remove previous selection
             if (selectedDateEl) {
                 selectedDateEl.classList.remove('fc-day-selected');
@@ -192,9 +201,66 @@ document.addEventListener('DOMContentLoaded', function () {
             dayNumber.classList.add('fc-day-selected');
             selectedDateEl = dayNumber;
 
-            console.log("Selected date: " + info.dateStr);
+            console.log("Selected date: " + info.dateStr + " | Doctor ID: " + doctorId);
+
+            // Load schedule slots via AJAX
+            $.ajax({
+                url: BASE_URL + '/generate-daily-slots/' + doctorId + '/' + info.dateStr,
+                method: 'GET',
+                beforeSend: function () {
+                    $(".scheduleSlots").show();
+                    $('#scheduleSlots').html('<p class="text-muted">Loading slots...</p>');
+                },
+                success: function (response) {
+                    if (response.success && response.slots.length > 0) {
+                        let html = '<div class="d-flex flex-wrap gap-2">';
+
+                        response.slots.forEach(function (slot, index) {
+                            // Convert 24h -> 12h with AM/PM
+                            let time = new Date("1970-01-01T" + slot.start + ":00");
+                            let formatted = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                            html += `
+                            <label class="slot-box border rounded p-2 text-center bg-light">
+                                <input type="radio" name="selected_slot" value="${slot.slot_id}" data-time="${slot.start}" class="d-none">
+                                <span>${formatted}</span>
+                            </label>
+                          `;
+                        });
+
+                        html += '</div>';
+                        // Hidden input যেখানে select হওয়া slot id রাখা হবে
+                        html += `<input type="hidden" id="selectedSlotId" name="slot_id" value="">`;
+                        html += `<input type="hidden" id="selectedSlotTime" name="slot_time" value="">`;
+
+                        $('#scheduleSlots').html(html);
+
+                        // Add highlight effect + hidden input set
+                        $(document).on('change', 'input[name="selected_slot"]', function () {
+                            // আগের সব থেকে info highlight class সরানো
+                            $('.slot-box').removeClass('bg-info text-white border-info');
+
+                            // যেটা select হলো সেখানে info color লাগানো
+                            $(this).closest('.slot-box').addClass('bg-info text-white border-info');
+
+                            // Hidden input update
+                            $('#selectedSlotId').val($(this).val());           // slot_id
+                            $('#selectedSlotTime').val($(this).data('time'));  // start time
+                        });
+
+                    } else {
+                        $('#scheduleSlots').html('<p class="text-danger">No available slots for this date.</p>');
+                    }
+                },
+                error: function () {
+                    $(".scheduleSlots").show();
+                    $('#scheduleSlots').html('<p class="text-danger">Failed to load schedule slots.</p>');
+                }
+            });
+
         }
     });
 
     calendar.render();
 });
+

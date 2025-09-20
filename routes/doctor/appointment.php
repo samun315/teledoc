@@ -13,3 +13,4 @@ use Illuminate\Support\Facades\Route;
     Route::post('/store', [DoctorAppointmentController::class, 'store'])->name('store');
     Route::get('/edit/{doctor_id}', [DoctorAppointmentController::class, 'edit'])->name('edit');
     Route::put('/update', [DoctorAppointmentController::class, 'update'])->name('update');
+    Route::get('/generate-daily-slots/{doctor_id}/{date}',[DoctorAppointmentController::class,'generateDailySlots']);

@@ -51,6 +51,27 @@
             cursor: pointer;
             z-index: 1;
         }
+
+        /* Slot box default */
+        .slot-box {
+            width: 90px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Hover effect */
+        .slot-box:hover {
+            background-color: #f0f8ff;
+            /* হালকা নীল */
+        }
+
+        /* Selected state */
+        .slot-box.active {
+            background-color: #412147;
+            /* Bootstrap primary */
+            color: #fff;
+            border-color: #5e6877;
+        }
     </style>
 @endsection
 @section('content')
@@ -75,7 +96,7 @@
                     <div class="row p-3 mb-5">
                         <!-- Doctor Info Card -->
                         <div class="col-md-4">
-                            <div class="card shadow-sm text-center p-3 h-350px">
+                            <div class="card shadow-sm text-center p-3 h-375px">
                                 <label class="fs-5 fw-bold mb-2">Doctor</label>
                                 <select id="kt_doctor_id" name="doctor_id"
                                     class="form-select form-select-light @error('doctor_id') is-invalid @enderror"
@@ -111,15 +132,21 @@
 
                         <!-- Calendar -->
                         <div class="col-md-5">
-                            <div class="card shadow-sm text-center p-3 h-350px">
+                            <div class="card shadow-sm text-center p-3 h-375px">
                                 <div id="appointmentCalendar" class="mt-3">
+                                </div>
+                            </div>
+
+                            <div class="card shadow-sm text-center p-3 mt-10 scheduleSlots">
+                                <div id="scheduleSlots">
+
                                 </div>
                             </div>
                         </div>
 
                         <!-- Patient Selection -->
                         <div class="col-md-3">
-                            <div class="card shadow-sm text-center p-3  h-350px">
+                            <div class="card shadow-sm text-center p-3  h-375px">
                                 <label class="fs-5 fw-bold mb-2">Patient</label>
                                 <select id="kt_patient_id" name="patient_id"
                                     class="form-select form-select-light @error('patient_id') is-invalid @enderror"

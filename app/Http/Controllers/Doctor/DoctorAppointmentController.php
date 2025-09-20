@@ -6,8 +6,10 @@ use App\Constant\Schedule\ScheduleConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\DoctorAppointmentRequest;
 use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorSchedule;
 use App\Models\Patient\Patient;
 use App\Services\Doctor\DoctorAppointmentService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -78,4 +80,54 @@ class DoctorAppointmentController extends Controller
             return back()->with('general', $e->getMessage());
         }
     }
+
+ public function generateDailySlots(int $doctorId, string $date): JsonResponse
+{
+    $dayOfWeek = Carbon::parse($date)->format('l');
+
+    // Get all schedules for that doctor on the given day
+    $schedules = DoctorSchedule::where('doctor_id', $doctorId)
+        ->where('day_of_week', $dayOfWeek)
+        ->where('status', 'Active')
+        ->get();
+
+    if ($schedules->isEmpty()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No schedules available for this doctor on ' . $dayOfWeek,
+            'slots' => []
+        ]);
+    }
+
+    $slots = [];
+    $slotId = 1;
+
+    foreach ($schedules as $schedule) {
+        $start = Carbon::parse($schedule->start_time);
+        $end = Carbon::parse($schedule->end_time);
+        $duration = $schedule->slot_duration_minutes;
+
+        while ($start->lt($end)) {
+            $slotEnd = (clone $start)->addMinutes($duration);
+
+            if ($slotEnd->lte($end)) {
+                $slots[] = [
+                    'slot_id' => $slotId,
+                    'start'   => $start->format('H:i'),
+                    'end'     => $slotEnd->format('H:i'),
+                ];
+                $slotId++;
+            }
+
+            $start->addMinutes($duration);
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'date'    => $date,
+        'doctor_id' => $doctorId,
+        'slots'   => $slots
+    ]);
+}
 }
