@@ -2,6 +2,7 @@
 
 namespace App\Models\Doctor;
 
+use App\Models\Patient\Patient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,16 +13,16 @@ class DoctorAppointment extends Model
 
     protected $primaryKey = 'appointment_id';
 
-    protected $table = 'doctor_weekly_schedule';
+    protected $table = 'appointments';
 
     protected $fillable = [
         'appointment_id',
         'doctor_id',
-        'day_of_week',
-        'start_time',
-        'end_time',
-        'slot_duration_minutes',
-        'status',
+        'patient_id',
+        'appointment_code',
+        'slot_time',
+        'payment_status',
+        'appointment_status',
         'created_by',
         'updated_by',
         'created_at',
@@ -30,6 +31,11 @@ class DoctorAppointment extends Model
 
     public function doctor(): BelongsTo
     {
-        return $this->belongsTo(Doctor::class,'doctor_id','doctor_id');
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'doctor_id');
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class, 'patient_id');
     }
 }

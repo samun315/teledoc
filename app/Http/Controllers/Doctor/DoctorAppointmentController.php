@@ -6,6 +6,7 @@ use App\Constant\Schedule\ScheduleConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\DoctorAppointmentRequest;
 use App\Models\Doctor\Doctor;
+use App\Models\Patient\Patient;
 use App\Services\Doctor\DoctorAppointmentService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -23,15 +24,15 @@ class DoctorAppointmentController extends Controller
             return $this->doctorAppointmentService->getAppointmentList($request);
         }
 
-        return view('doctor.schedule.index');
+        return view('doctor.appointment.index');
     }
 
     public function create(): View
     {
-        $data['days'] = ScheduleConstant::DAYS;
         $data['doctorInfos'] = Doctor::query()->where('status', 'Active')->get(['doctor_id', 'title', 'name']);
+        $data['patientInfos'] = Patient::query()->where('active', 'YES')->get(['patient_id', 'name']);
 
-        return view('doctor.schedule.create', $data);
+        return view('doctor.appointment.create', $data);
     }
 
     public function getDoctorInfoById(int $doctorId): JsonResponse
@@ -39,7 +40,11 @@ class DoctorAppointmentController extends Controller
         $data = $this->doctorAppointmentService->getDoctorInfoById($doctorId);
         return sendSuccessResponse(200, '', 'data', $data);
     }
-
+    public function getPatientInfoById(int $patientId): JsonResponse
+    {
+        $data = $this->doctorAppointmentService->getPatientInfoById($patientId);
+        return sendSuccessResponse(200, '', 'data', $data);
+    }
 
     public function store(DoctorAppointmentRequest $request): RedirectResponse
     {

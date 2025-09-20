@@ -3,8 +3,10 @@
 namespace App\Services\Doctor;
 
 use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorAppointment;
 use App\Models\Doctor\DoctorSchedule;
 use App\Models\Drug\DrugType;
+use App\Models\Patient\Patient;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,66 +22,66 @@ class DoctorAppointmentService
     public function getAppointmentList(Request $request): JsonResponse|Model|Builder
     {
         $searchKeyword = $request->input('search');
-        $query = DoctorSchedule::query()
-            ->leftJoin('doctors', 'doctor_weekly_schedule.doctor_id', '=', 'doctors.doctor_id')
-            ->leftJoin('departments', 'doctors.department_id', '=', 'departments.department_id')
-            ->select(
-                'doctor_weekly_schedule.doctor_id',
-                'doctors.title',
-                'doctors.name',
-                'doctors.phone',
-                'departments.department_name',
-                DB::raw("GROUP_CONCAT(DISTINCT doctor_weekly_schedule.day_of_week ORDER BY FIELD(doctor_weekly_schedule.day_of_week,'Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday')) as days"),
-                DB::raw("GROUP_CONCAT(
-            CONCAT(
-                doctor_weekly_schedule.day_of_week, '||',
-                doctor_weekly_schedule.start_time, '||',
-                doctor_weekly_schedule.end_time, '||',
-                doctor_weekly_schedule.slot_duration_minutes
-            ) ORDER BY doctor_weekly_schedule.schedule_id ASC SEPARATOR ';;'
-        ) as schedule_details")
-            )
-            ->groupBy(
-                'doctor_weekly_schedule.doctor_id',
-                'doctors.title',
-                'doctors.name',
-                'doctors.phone',
-                'departments.department_name'
-            );
+        $query = DoctorAppointment::query()
+            ->leftJoin('doctors', 'appointments.doctor_id', '=', 'doctors.doctor_id')
+            ->leftJoin('patients', 'appointments.patient_id', '=', 'patients.patient_id')
+            ->select('appointments.*', 'patients.name as patient_name', 'patients.email as patient_email', 'patients.phone as patient_phone', 'patients.date_of_birth as patient_dob', 'patients.photo as patient_photo', 'patients.gender as patient_gender', 'patients.blood_group as patient_blood_group', 'patients.marital_status as patient_marital_status', 'doctors.name as doctor_name')->latest();
 
         if ($searchKeyword) {
-            $query->where('doctors.name', 'like', '%' . $searchKeyword . '%');
+            $query->where('patients.name', 'like', '%' . $searchKeyword . '%')
+                ->orWhere('appointments.appointment_status', 'like', '%' . $searchKeyword . '%')
+                ->orWhere('doctors.name', 'like', '%' . $searchKeyword . '%');
         }
 
-        return DataTables::of($query)
+
+        // $query->orderBy('orders');
+
+        return Datatables::of($query)
             ->addIndexColumn()
-            ->addColumn('contact_info', function ($row) {
-                return "
-            <i class='fas fa-user text-primary'></i> : {$row->title} {$row->name}<br>
-            <i class='fas fa-phone text-dark'></i> : {$row->phone}<br>
-            <p class='badge badge-info'>{$row->department_name}</p>
-        ";
-            })
-            ->addColumn('days', function ($row) {
-                $days = explode(',', $row->days ?? '');
-                $badges = '';
-                foreach ($days as $d) {
-                    $badges .= "<span class='badge badge-light-info me-1'>{$d}</span>";
-                }
-                return $badges;
+            ->addColumn('patient_info', function ($row) {
+                $photoPath = !empty($row->patient_photo)
+                    ? 'uploads/patient/' . $row->patient_photo
+                    : 'assets/media/avatars/blank.png';
+
+                $photo = '<img src="' . $photoPath . '" alt="Patient" class="rounded-circle me-2" width="60" height="60">';
+
+                $name = $row->patient_name ?? '';
+                $gender = $row->patient_gender ?? '';
+                $blood_group = $row->patient_blood_group ?? '';
+                $marital_status = $row->patient_marital_status ?? '';
+                $dob = $row->patient_dob ?? '';
+                $email = $row->patient_email ?? '';
+                $phone = $row->patient_phone ?? '';
+
+                $info = '
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            ' . $photo . '
+                        </div>
+                        <div>
+                            <div><i class="fas fa-venus-mars text-danger"></i> :' . $gender . ',
+                            <i class="fas fa-tint text-danger ms-1"></i> :' . $blood_group . '</div>
+                            <div><i class="fas fa-ring text-warning"></i> :' . $marital_status . '</div>
+                            <div><i class="fas fa-calendar-day text-success"></i> :' . $dob . '</div>
+                            <div><i class="fas fa-envelope text-primary"></i> :' . $email . '</div>
+                            <div><i class="fas fa-phone text-dark"></i> :' . $phone . '</div>
+                        </div>
+                    </div>';
+
+                return $info;
             })
             ->addColumn('action', function ($row) {
-                $editBtn = '<a href="' . route('schedule.edit', $row->doctor_id) . '" class="btn btn-info text-white btn-sm">Edit</a>';
 
-                $detailsBtn = '<button 
-            class="btn btn-primary btn-sm showDetailsBtn ms-2" 
-            data-schedules="' . e($row->schedule_details) . '"
-            data-doctor="' . e($row->title . ' ' . $row->name) . '"
-        >Details</button>';
+                $editBtn = '<a href="' . route('appointment.edit', $row->prescription_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
-                return '<div class="btn-group" role="group">' . $editBtn . $detailsBtn . '</div>';
+                $printBtn = '<a href="' . route('appointment.print', $row->prescription_id) . '" target="_blank" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></a>';
+                $button = '<div class="btn-group" role="group" aria-label="Basic example">
+                            ' . $editBtn . '
+                            ' . $printBtn . '
+                            </div>';
+                return $button;
             })
-            ->rawColumns(['contact_info', 'days', 'action'])
+            ->rawColumns(['patient_info', 'action'])
             ->make(true);
     }
 
@@ -140,6 +142,11 @@ class DoctorAppointmentService
     public function getDoctorInfoById(int $doctorId): Model|Builder
     {
         return Doctor::query()->with('department')->find($doctorId);
+    }
+
+    public function getPatientInfoById(int $patientId): Model|Builder
+    {
+        return Patient::query()->find($patientId);
     }
 
     public function getAppointmentByDoctorId(int $doctorId): Model|Builder|Collection
