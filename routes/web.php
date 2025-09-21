@@ -26,7 +26,7 @@ Route::middleware(['preventBackHistory', 'user'])->group(function () {
 
 });
 
-Route::post('/store/upload-image', [UploadController::class, 'upload'])->name('ckeditor.upload');
+Route::post('/store/upload-image', [UploadController::class, 'upload'])->name('admin.summernote.uploadImage');
 
 Route::get('/home', [FrontendController::class, 'homePage'])->name('home');
 Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome2');

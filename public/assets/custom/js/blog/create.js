@@ -13,6 +13,8 @@ let metaDescriptionInput = $("#meta_description");
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/blog/blog";
 
+let IRLS = [];
+
 // Form validation
 let validate = blogForm.validate({
     rules: {
@@ -59,6 +61,27 @@ $(document).ready(function() {
 
     // Initialize character counts
     updateCharacterCount('#meta_description', metaDescriptionInput.val().length, 160);
+
+    $('#content').summernote({
+        placeholder: 'Write here...',
+        tabsize: 2,
+        height: 400,
+        callbacks: {
+            onImageUpload: function (image) {
+                sendFile(image[0]);
+            },
+            onMediaDelete: function (target) {
+                removeFile(target[0].src)
+            },
+        }
+    });
+
+    // sendFile function is now defined in the Blade template to handle route URLs properly
+
+    function removeFile(file, editor, welEditable) {
+        IRLS.push(file)
+    }
+
 });
 
 // Update character count display
@@ -227,46 +250,56 @@ function MyCustomUploadAdapterPlugin(editor) {
     };
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const contentElement = document.querySelector("#content");
-    let editorInstance;
+// document.addEventListener("DOMContentLoaded", () => {
+//     const contentElement = document.querySelector("#content");
+//     let editorInstance;
 
-    if (contentElement) {
-        ClassicEditor.create(contentElement, {
-            styleNonce: "{{ $cspNonce }}",
-            extraPlugins: [ MyCustomUploadAdapterPlugin ],
-            plugins: [ Image, ImageResize ],
-            image: {
-                resizeUnit: 'px',
-                toolbar: [ 'resizeImage:25', 'resizeImage:50', 'resizeImage:75', 'resizeImage:original' ]
-            }
-        })
-            .then((editor) => {
-                editorInstance = editor;
-            })
-            .catch((error) => {
-                console.error("Error initializing CKEditor:", error);
-            });
 
-        // Form submit validation
-        // $("#submitBtn").on("click", function (e) {
-        //     if (editorInstance) {
-        //         let terms = editorInstance.getData().trim(); // Get editor content
 
-        //         if (terms === "" || terms === "<p><br></p>") {
-        //             $(".terms_error")
-        //                 .text("Terms & Conditions field is required.")
-        //                 .css("color", "red");
-        //             e.preventDefault(); // Stop form submission
-        //         } else {
-        //             $(".terms_error").text(""); // Clear error if valid
-        //         }
-        //     } else {
-        //         console.error("CKEditor not initialized.");
-        //         e.preventDefault(); // Prevent submission if editor failed
-        //     }
-        // });
-    } else {
-        console.warn("No element with id '#content' found.");
-    }
-});
+
+//     if (contentElement) {
+//         ClassicEditor.create(contentElement, {
+//             styleNonce: "{{ $cspNonce }}",
+//             extraPlugins: [ MyCustomUploadAdapterPlugin ],
+//             plugins: [ Image, ImageResize ],
+//             image: {
+//                 resizeUnit: 'px',
+//                 toolbar: [ 'resizeImage:25', 'resizeImage:50', 'resizeImage:75', 'resizeImage:original' ]
+//             }
+//         })
+//             .then((editor) => {
+//                 editorInstance = editor;
+//             })
+//             .catch((error) => {
+//                 console.error("Error initializing CKEditor:", error);
+//             });
+
+//         // Form submit validation
+//         // $("#submitBtn").on("click", function (e) {
+//         //     if (editorInstance) {
+//         //         let terms = editorInstance.getData().trim(); // Get editor content
+
+//         //         if (terms === "" || terms === "<p><br></p>") {
+//         //             $(".terms_error")
+//         //                 .text("Terms & Conditions field is required.")
+//         //                 .css("color", "red");
+//         //             e.preventDefault(); // Stop form submission
+//         //         } else {
+//         //             $(".terms_error").text(""); // Clear error if valid
+//         //         }
+//         //     } else {
+//         //         console.error("CKEditor not initialized.");
+//         //         e.preventDefault(); // Prevent submission if editor failed
+//         //     }
+//         // });
+//     } else {
+//         console.warn("No element with id '#content' found.");
+//     }
+// });
+
+
+// let IRLS = [];
+// $(document).ready(function () {
+
+
+// });

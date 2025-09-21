@@ -9,12 +9,15 @@ class UploadController extends Controller
 {
     public function upload(Request $request)
     {
-        if ($request->hasFile('upload')) {
-            $file = $request->file('upload');
+        // Handle both 'upload' (CKEditor format) and 'file' (Summernote format)
+        $fileKey = $request->hasFile('upload') ? 'upload' : 'file';
+        
+        if ($request->hasFile($fileKey)) {
+            $file = $request->file($fileKey);
 
             // Validate file
             $request->validate([
-                'upload' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+                $fileKey => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             // Generate unique filename
