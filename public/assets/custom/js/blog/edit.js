@@ -13,6 +13,7 @@ let metaDescriptionInput = $("#meta_description");
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/blog/blog";
 const BLOG_ID = window.location.pathname.split('/').pop(); // Get blog ID from URL
+let IRLS = [];
 
 // Form validation
 let validate = blogForm.validate({
@@ -58,6 +59,21 @@ $(document).ready(function() {
 
     // Initialize character counts
     updateCharacterCount('#meta_description', metaDescriptionInput.val().length, 160);
+
+    $('#content').summernote({
+        placeholder: 'Write here...',
+        tabsize: 2,
+        height: 400,
+        callbacks: {
+            onImageUpload: function (image) {
+                sendFile(image[0]);
+            },
+            onMediaDelete: function (target) {
+                removeFile(target[0].src)
+            },
+        }
+    });
+
 });
 
 // Update character count display
@@ -215,24 +231,24 @@ function MyCustomUploadAdapterPlugin(editor) {
     };
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const contentElement = document.querySelector("#content");
-    let editorInstance;
+// document.addEventListener("DOMContentLoaded", () => {
+//     const contentElement = document.querySelector("#content");
+//     let editorInstance;
 
-    if (contentElement) {
-        ClassicEditor.create(contentElement, {
-            styleNonce: "{{ $cspNonce }}",
-            extraPlugins: [ MyCustomUploadAdapterPlugin ]
-        })
-            .then((editor) => {
-                editorInstance = editor;
-            })
-            .catch((error) => {
-                console.error("Error initializing CKEditor:", error);
-            });
+//     if (contentElement) {
+//         ClassicEditor.create(contentElement, {
+//             styleNonce: "{{ $cspNonce }}",
+//             extraPlugins: [ MyCustomUploadAdapterPlugin ]
+//         })
+//             .then((editor) => {
+//                 editorInstance = editor;
+//             })
+//             .catch((error) => {
+//                 console.error("Error initializing CKEditor:", error);
+//             });
 
 
-    } else {
-        console.warn("No element with id '#content' found.");
-    }
-});
+//     } else {
+//         console.warn("No element with id '#content' found.");
+//     }
+// });

@@ -2,6 +2,10 @@
 
 @section('title', 'Edit Blog Post')
 
+@section('page_css')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/custom/summernote/summernote-bs4.css') }}">
+@endsection
+
 @section('content')
     <x-toolbar-component title="Edit Blog Post" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
@@ -188,10 +192,35 @@
 @endsection
 
 @section('page_script')
-<script src="{{ asset('assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"
-{{ Sri::html('assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}></script>
+<script src="{{ asset('assets/plugins/custom/summernote/summernote-bs4.js') }}"
+    {{ Sri::html('assets/plugins/custom/summernote/summernote-bs4.js') }}></script>
     <!-- begin::Page Custom Stylesheets(used by this page) -->
     <script src="{{ asset('assets/custom/js/blog/edit.js') }}" {{ Sri::html('assets/custom/js/blog/edit.js') }}>
+    </script>
+    <!--end::Page Custom Stylesheets(used by this page)-->
+
+    <script nonce="{{ $cspNonce }}">
+        // Override the sendFile function with proper route URL
+        function sendFile(file, editor, welEditable) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            data = new FormData();
+            data.append("file", file);
+            $.ajax({
+                data: data,
+                type: "POST",
+                url: "{{ route('admin.summernote.uploadImage') . '?_token=' . csrf_token() }}",
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $('#content').summernote('editor.insertImage', data.url);
+                }
+            });
+        }
     </script>
     <!--end::Page Custom Stylesheets(used by this page)-->
 @endsection
