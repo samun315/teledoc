@@ -115,7 +115,7 @@ class DoctorAppointmentService
                             </div>';
                 return $button;
             })
-            ->rawColumns(['date_of_appointment','doctor_info', 'patient_info', 'action'])
+            ->rawColumns(['date_of_appointment', 'doctor_info', 'patient_info', 'action'])
             ->make(true);
     }
 
@@ -127,22 +127,13 @@ class DoctorAppointmentService
             // 1. Doctor-slot-date overlap check
             $doctorSlotExists = DoctorAppointment::query()
                 ->where('doctor_id', $data['doctor_id'])
+                ->where('patient_id', $data['patient_id'])
                 ->where('appointment_date', $data['appointment_date'])
                 ->where('slot_id', $data['slot_id'])
                 ->exists();
 
             if ($doctorSlotExists) {
                 throw new Exception("This slot is already booked for the selected doctor on {$data['appointment_date']}.");
-            }
-
-            // 2. Patient already booked same date check
-            $patientExists = DoctorAppointment::query()
-                ->where('patient_id', $data['patient_id'])
-                ->where('appointment_date', $data['appointment_date'])
-                ->exists();
-
-            if ($patientExists) {
-                throw new Exception("This patient already has an appointment on {$data['appointment_date']}.");
             }
 
             $data['appointment_code'] = $this->generateAppointmentCode('appointments');
@@ -194,77 +185,62 @@ class DoctorAppointmentService
         return Patient::query()->find($patientId);
     }
 
-    public function getAppointmentByDoctorId(int $appointmentId): Model|Builder|Collection
+    public function getAppointmentById(int $appointmentId): Model|Builder|Collection
     {
-        return DoctorAppointment::query()->with('doctor.patient')->where('appointment_id', $appointmentId)->get();
+        return DoctorAppointment::query()->with('doctor', 'patient')->where('appointment_id', $appointmentId)->first();
     }
 
-    public function updateAppointment(array $updateData): bool
+    public function updateAppointment(array $data, int $appointmentId): DoctorAppointment
     {
-        $doctorId = $updateData['doctor_id'];
+        DB::beginTransaction();
 
-        // 1️⃣ Delete removed schedules
-        $existingIds = DoctorSchedule::where('doctor_id', $doctorId)->pluck('schedule_id')->toArray();
-        $submittedIds = $updateData['schedule_id'] ?? [];
-        $toDelete = array_diff($existingIds, $submittedIds);
-        if (!empty($toDelete)) {
-            DoctorSchedule::whereIn('schedule_id', $toDelete)->delete();
+        try {
+
+            // overlap check (নিজের ছাড়া)
+            $doctorSlotExists = DoctorAppointment::query()
+                ->where('doctor_id', $data['doctor_id'])
+                ->where('patient_id', $data['patient_id'])
+                ->where('appointment_date', $data['appointment_date'])
+                ->where('slot_id', $data['slot_id'])
+                ->where('appointment_id', '!=', $appointmentId)
+                ->exists();
+
+            if ($doctorSlotExists) {
+                throw new Exception("This slot is already booked for the selected doctor on {$data['appointment_date']}.");
+            }
+
+            // বর্তমান appointment বের করা
+            $appointment = DoctorAppointment::findOrFail($appointmentId);
+
+            // ✅ check same info (কোনো পরিবর্তন নাই কিনা)
+            $sameData =
+                $appointment->doctor_id == $data['doctor_id'] &&
+                $appointment->patient_id == $data['patient_id'] &&
+                $appointment->appointment_date == $data['appointment_date'] &&
+                $appointment->slot_id == $data['slot_id'] &&
+                $appointment->slot_time == $data['slot_time'];
+
+            if ($sameData) {
+                throw new Exception("No changes found. Appointment is already booked with the same details.");
+            }
+
+            // update data
+            $appointment->update([
+                'doctor_id'       => $data['doctor_id'],
+                'patient_id'      => $data['patient_id'],
+                'appointment_date' => $data['appointment_date'],
+                'slot_id'         => $data['slot_id'],
+                'slot_time'       => $data['slot_time'],
+                'updated_by'      => $data['updated_by'] ?? null,
+                'updated_at'      => now(),
+            ]);
+
+            DB::commit();
+
+            return $appointment;
+        } catch (Exception $exception) {
+            DB::rollBack();
+            throw $exception;
         }
-
-        // 2️⃣ Update/Create schedules
-        foreach ($updateData['day_of_week'] as $index => $dayOfWeek) {
-            $startTime = $updateData['start_time'][$index];
-            $endTime   = $updateData['end_time'][$index];
-            $slotDuration = $updateData['slot_duration_minutes'][$index];
-
-            // Overlap check
-            $query = DoctorSchedule::query()
-                ->where('doctor_id', $doctorId)
-                ->where('day_of_week', $dayOfWeek);
-
-            if (!empty($updateData['schedule_id'][$index])) {
-                $scheduleId = $updateData['schedule_id'][$index];
-                $query->where('schedule_id', '!=', $scheduleId);
-            }
-
-            $overlapExists = $query->where(function ($q) use ($startTime, $endTime) {
-                $q->whereBetween('start_time', [$startTime, $endTime])
-                    ->orWhereBetween('end_time', [$startTime, $endTime])
-                    ->orWhere(function ($qq) use ($startTime, $endTime) {
-                        $qq->where('start_time', '<=', $startTime)
-                            ->where('end_time', '>=', $endTime);
-                    });
-            })->exists();
-
-            if ($overlapExists) {
-                throw new Exception("Schedule conflicted with schedule time range for $dayOfWeek.");
-            }
-
-            // Update or Create
-            if (!empty($updateData['schedule_id'][$index])) {
-                DoctorSchedule::where('schedule_id', $updateData['schedule_id'][$index])->update([
-                    'day_of_week' => $dayOfWeek,
-                    'start_time' => $startTime,
-                    'end_time' => $endTime,
-                    'slot_duration_minutes' => $slotDuration,
-                    'updated_by' => $updateData['updated_by'],
-                    'updated_at' => $updateData['updated_at'],
-                ]);
-            } else {
-                DoctorSchedule::create([
-                    'doctor_id' => $doctorId,
-                    'day_of_week' => $dayOfWeek,
-                    'start_time' => $startTime,
-                    'end_time' => $endTime,
-                    'slot_duration_minutes' => $slotDuration,
-                    'created_by' => $updateData['created_by'],
-                    'updated_by' =>  $updateData['updated_by'],
-                    'created_at' => $updateData['created_at'],
-                    'updated_at' => $updateData['updated_at'],
-                ]);
-            }
-        }
-
-        return true;
     }
 }

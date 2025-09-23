@@ -62,23 +62,22 @@ class DoctorAppointmentController extends Controller
 
     public function edit(int $appointmentId): View
     {
-        $data['editModeData'] = $this->doctorAppointmentService->getAppointmentByDoctorId($appointmentId);
+        $data['editModeData'] = $this->doctorAppointmentService->getAppointmentById($appointmentId);
 
-        $data['days'] = ScheduleConstant::DAYS;
-
-        $data['doctorInfo'] = Doctor::query()->with('department')->where('doctor_id', $appointmentId)->first();
-
+        $data['doctorInfos'] = Doctor::query()->where('status', 'Active')->get(['doctor_id', 'title', 'name']);
+        $data['patientInfos'] = Patient::query()->where('active', 'YES')->get(['patient_id', 'name']);
+        // dd($data);
         return view('doctor.appointment.edit', $data);
     }
 
-    public function update(DoctorAppointmentRequest $request): RedirectResponse
+    public function update(DoctorAppointmentRequest $request, int $appointmentId): RedirectResponse
     {
         try {
 
-            $this->doctorAppointmentService->updateAppointment($request->fields());
-            return to_route('schedule.index')->with('success', 'Schedule updated successfully!');
+            $this->doctorAppointmentService->updateAppointment($request->fields(),$appointmentId);
+            return to_route('appointment.index')->with('success', 'Appointment updated successfully!');
         } catch (Exception $e) {
-            return back()->with('general', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -142,6 +141,93 @@ class DoctorAppointmentController extends Controller
             'date'      => $date,
             'doctor_id' => $doctorId,
             'slots'     => $slots
+        ]);
+    }
+
+    public function getPreviousSlot(int $doctorId, string $date, ?int $appointmentId = null): JsonResponse
+    {
+        $dayOfWeek = Carbon::parse($date)->format('l');
+
+        // ওই দিনের schedule গুলো
+        $schedules = DoctorSchedule::where('doctor_id', $doctorId)
+            ->where('day_of_week', $dayOfWeek)
+            ->where('status', 'Active')
+            ->get();
+
+        if ($schedules->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No schedules available',
+                'slots'   => []
+            ]);
+        }
+
+        // ওই date এর সব booked slot id গুলো (edit করা appointment বাদে)
+        $bookedSlotIds = DoctorAppointment::where('doctor_id', $doctorId)
+            ->where('appointment_date', $date)
+            ->when($appointmentId, function ($q) use ($appointmentId) {
+                // edited appointment বাদ দিয়ে অন্য সব বুকড slot নেবে
+                $q->where('appointment_id', '!=', $appointmentId);
+            })
+            ->pluck('slot_id')
+            ->toArray();
+
+        // selected appointment (doctor + patient + date + appointment id)
+        $selectedSlotId   = null;
+        $selectedSlotTime = null;
+
+        if ($appointmentId) {
+            $appointment = DoctorAppointment::where('appointment_id', $appointmentId)
+                ->where('doctor_id', $doctorId)
+                ->where('appointment_date', $date)
+                ->where('patient_id', request()->get('patient_id')) // ✅ patient check
+                ->first();
+
+            if ($appointment) {
+                $selectedSlotId   = $appointment->slot_id;
+                $selectedSlotTime = $appointment->slot_time;
+            }
+        }
+
+        // slot generate
+        $slots   = [];
+        $slotId  = 1;
+
+        foreach ($schedules as $schedule) {
+            $start    = Carbon::parse($schedule->start_time);
+            $end      = Carbon::parse($schedule->end_time);
+            $duration = $schedule->slot_duration_minutes;
+
+            while ($start->lt($end)) {
+                $slotEnd = (clone $start)->addMinutes($duration);
+
+                if ($slotEnd->lte($end)) {
+                    // check booked (edit করা slot বাদ যাবে না)
+                    if (in_array($slotId, $bookedSlotIds)) {
+                        $slotId++;
+                        $start->addMinutes($duration);
+                        continue;
+                    }
+
+                    $slots[] = [
+                        'slot_id' => $slotId,
+                        'start'   => $start->format('H:i'),
+                        'end'     => $slotEnd->format('H:i'),
+                    ];
+                    $slotId++;
+                }
+
+                $start->addMinutes($duration);
+            }
+        }
+
+        return response()->json([
+            'success'             => true,
+            'doctor_id'           => $doctorId,
+            'date'                => $date,
+            'slots'               => $slots,
+            'selected_slot_id'    => $selectedSlotId,
+            'selected_slot_time'  => $selectedSlotTime,
         ]);
     }
 }

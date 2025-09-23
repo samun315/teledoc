@@ -1,18 +1,8 @@
-// Select the form element with the id attribute "submitForm"
-let selectedForm = $("#submitForm");
-
 let search = $("#search");
 
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/appointment";
 const ORIGIN_URL = window.location.origin;
-
-let validate = selectedForm.validate({
-    rules: {
-        name: "required",
-    },
-    onsubmit: true,
-});
 
 const formatDate = (data) => {
     if (!data) return "";
