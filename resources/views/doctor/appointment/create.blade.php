@@ -11,6 +11,8 @@
             width: 100%;
             max-width: 100%;
             margin: 0 auto;
+            overflow: hidden;
+            /* prevent horizontal scroll */
         }
 
         /* Remove borders */
@@ -135,6 +137,7 @@
                             <div class="card shadow-sm text-center p-3 h-375px">
                                 <div id="appointmentCalendar" class="mt-3">
                                 </div>
+                                <input type="hidden" name="appointment_date" id="selectedAppointmentDate">
                             </div>
 
                             <div class="card shadow-sm text-center p-3 mt-10 scheduleSlots">

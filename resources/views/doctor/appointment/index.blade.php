@@ -35,7 +35,8 @@
                                 <tr class="text-start text-muted text-uppercase fw-bolder fs-7 gs-0">
                                     <th>#</th>
                                     <th>Appointment Id</th>
-                                    <th>Date</th>
+                                    <th>Appointment Date</th>
+                                    <th>Doctor</th>
                                     <th>Patient</th>
                                     <th>Status</th>
                                     <th>Action</th>

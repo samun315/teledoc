@@ -6,6 +6,7 @@ use App\Constant\Schedule\ScheduleConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\DoctorAppointmentRequest;
 use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorAppointment;
 use App\Models\Doctor\DoctorSchedule;
 use App\Models\Patient\Patient;
 use App\Services\Doctor\DoctorAppointmentService;
@@ -53,21 +54,21 @@ class DoctorAppointmentController extends Controller
         try {
 
             $this->doctorAppointmentService->createDoctorAppointment($request->fields());
-            return to_route('schedule.index')->with('success', 'Schedule created successfully!');
+            return to_route('appointment.index')->with('success', 'Appointment created successfully!');
         } catch (Exception $e) {
-            return back()->with('general', $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
-    public function edit(int $doctorId): View
+    public function edit(int $appointmentId): View
     {
-        $data['editModeData'] = $this->doctorAppointmentService->getAppointmentByDoctorId($doctorId);
+        $data['editModeData'] = $this->doctorAppointmentService->getAppointmentByDoctorId($appointmentId);
 
         $data['days'] = ScheduleConstant::DAYS;
 
-        $data['doctorInfo'] = Doctor::query()->with('department')->where('doctor_id', $doctorId)->first();
+        $data['doctorInfo'] = Doctor::query()->with('department')->where('doctor_id', $appointmentId)->first();
 
-        return view('doctor.schedule.edit', $data);
+        return view('doctor.appointment.edit', $data);
     }
 
     public function update(DoctorAppointmentRequest $request): RedirectResponse
@@ -81,53 +82,66 @@ class DoctorAppointmentController extends Controller
         }
     }
 
- public function generateDailySlots(int $doctorId, string $date): JsonResponse
-{
-    $dayOfWeek = Carbon::parse($date)->format('l');
+    public function generateDailySlots(int $doctorId, string $date): JsonResponse
+    {
+        $dayOfWeek = Carbon::parse($date)->format('l');
 
-    // Get all schedules for that doctor on the given day
-    $schedules = DoctorSchedule::where('doctor_id', $doctorId)
-        ->where('day_of_week', $dayOfWeek)
-        ->where('status', 'Active')
-        ->get();
+        // Get all schedules for that doctor on the given day
+        $schedules = DoctorSchedule::where('doctor_id', $doctorId)
+            ->where('day_of_week', $dayOfWeek)
+            ->where('status', 'Active')
+            ->get();
 
-    if ($schedules->isEmpty()) {
+        if ($schedules->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No schedules available for this doctor on ' . $dayOfWeek,
+                'slots' => []
+            ]);
+        }
+
+        // Get all booked slot IDs for this doctor on this date
+        $bookedSlotIds = DoctorAppointment::where('doctor_id', $doctorId)
+            ->where('appointment_date', $date)
+            ->pluck('slot_id') // get array of booked slot ids
+            ->toArray();
+
+        $slots = [];
+        $slotId = 1;
+
+        foreach ($schedules as $schedule) {
+            $start = Carbon::parse($schedule->start_time);
+            $end = Carbon::parse($schedule->end_time);
+            $duration = $schedule->slot_duration_minutes;
+
+            while ($start->lt($end)) {
+                $slotEnd = (clone $start)->addMinutes($duration);
+
+                if ($slotEnd->lte($end)) {
+                    // যদি এই slot booked থাকে, skip
+                    if (in_array($slotId, $bookedSlotIds)) {
+                        $slotId++;
+                        $start->addMinutes($duration);
+                        continue;
+                    }
+
+                    $slots[] = [
+                        'slot_id' => $slotId,
+                        'start'   => $start->format('H:i'),
+                        'end'     => $slotEnd->format('H:i'),
+                    ];
+                    $slotId++;
+                }
+
+                $start->addMinutes($duration);
+            }
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'No schedules available for this doctor on ' . $dayOfWeek,
-            'slots' => []
+            'success'   => true,
+            'date'      => $date,
+            'doctor_id' => $doctorId,
+            'slots'     => $slots
         ]);
     }
-
-    $slots = [];
-    $slotId = 1;
-
-    foreach ($schedules as $schedule) {
-        $start = Carbon::parse($schedule->start_time);
-        $end = Carbon::parse($schedule->end_time);
-        $duration = $schedule->slot_duration_minutes;
-
-        while ($start->lt($end)) {
-            $slotEnd = (clone $start)->addMinutes($duration);
-
-            if ($slotEnd->lte($end)) {
-                $slots[] = [
-                    'slot_id' => $slotId,
-                    'start'   => $start->format('H:i'),
-                    'end'     => $slotEnd->format('H:i'),
-                ];
-                $slotId++;
-            }
-
-            $start->addMinutes($duration);
-        }
-    }
-
-    return response()->json([
-        'success' => true,
-        'date'    => $date,
-        'doctor_id' => $doctorId,
-        'slots'   => $slots
-    ]);
-}
 }

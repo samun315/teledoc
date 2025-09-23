@@ -24,8 +24,23 @@ class DoctorAppointmentService
         $searchKeyword = $request->input('search');
         $query = DoctorAppointment::query()
             ->leftJoin('doctors', 'appointments.doctor_id', '=', 'doctors.doctor_id')
+            ->leftJoin('departments', 'doctors.department_id', '=', 'departments.department_id')
             ->leftJoin('patients', 'appointments.patient_id', '=', 'patients.patient_id')
-            ->select('appointments.*', 'patients.name as patient_name', 'patients.email as patient_email', 'patients.phone as patient_phone', 'patients.date_of_birth as patient_dob', 'patients.photo as patient_photo', 'patients.gender as patient_gender', 'patients.blood_group as patient_blood_group', 'patients.marital_status as patient_marital_status', 'doctors.name as doctor_name')->latest();
+            ->select(
+                'appointments.*',
+                'patients.name as patient_name',
+                'patients.email as patient_email',
+                'patients.phone as patient_phone',
+                'patients.date_of_birth as patient_dob',
+                'patients.photo as patient_photo',
+                'patients.gender as patient_gender',
+                'patients.blood_group as patient_blood_group',
+                'patients.marital_status as patient_marital_status',
+                'doctors.name as doctor_name',
+                'doctors.title as doctor_title',
+                'doctors.phone as doctor_phone',
+                'departments.department_name',
+            )->latest();
 
         if ($searchKeyword) {
             $query->where('patients.name', 'like', '%' . $searchKeyword . '%')
@@ -38,6 +53,27 @@ class DoctorAppointmentService
 
         return Datatables::of($query)
             ->addIndexColumn()
+            ->addColumn('date_of_appointment', function ($row) {
+                if (!$row->appointment_date || !$row->slot_time) {
+                    return '-';
+                }
+
+                // Convert slot_time to 12-hour format with AM/PM
+                $slotTime = Carbon::createFromFormat('H:i', $row->slot_time)->format('h:i A');
+
+                // Wrap slot time in a badge
+                $slotBadge = '<span class="badge bg-success ms-2">' . $slotTime . '</span>';
+
+                // Concatenate appointment_date and slot badge
+                return '<strong>' . $row->appointment_date . '</strong> ' . $slotBadge;
+            })
+            ->addColumn('doctor_info', function ($row) {
+                return "
+                <i class='fas fa-user text-primary'></i> : {$row->doctor_title} {$row->doctor_name}<br>
+                <i class='fas fa-phone text-dark'></i> : {$row->doctor_phone}<br>
+                <p class='badge badge-info'>{$row->department_name}</p>
+                ";
+            })
             ->addColumn('patient_info', function ($row) {
                 $photoPath = !empty($row->patient_photo)
                     ? 'uploads/patient/' . $row->patient_photo
@@ -72,72 +108,81 @@ class DoctorAppointmentService
             })
             ->addColumn('action', function ($row) {
 
-                $editBtn = '<a href="' . route('appointment.edit', $row->prescription_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
+                $editBtn = '<a href="' . route('appointment.edit', $row->appointment_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
-                $printBtn = '<a href="' . route('appointment.print', $row->prescription_id) . '" target="_blank" class="btn btn-icon btn-sm ms-2 btn-success"><i class="fas fa-print"></i></a>';
                 $button = '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
-                            ' . $printBtn . '
                             </div>';
                 return $button;
             })
-            ->rawColumns(['patient_info', 'action'])
+            ->rawColumns(['date_of_appointment','doctor_info', 'patient_info', 'action'])
             ->make(true);
     }
 
-
-    public function createDoctorAppointment(array $data): Model|Builder|bool
+    public function createDoctorAppointment(array $data): Model|Builder
     {
         DB::beginTransaction();
+
         try {
-            $makeScheduleData = [];
+            // 1. Doctor-slot-date overlap check
+            $doctorSlotExists = DoctorAppointment::query()
+                ->where('doctor_id', $data['doctor_id'])
+                ->where('appointment_date', $data['appointment_date'])
+                ->where('slot_id', $data['slot_id'])
+                ->exists();
 
-            if (!empty($data['day_of_week'])) {
-                foreach ($data['day_of_week'] as $index => $dayOfWeek) {
-
-                    $startTime = $data['start_time'][$index]; // already 24-hour format
-                    $endTime   = $data['end_time'][$index];
-
-                    // Check for overlap with existing schedules
-                    $overlapExists = DoctorSchedule::query()
-                        ->where('doctor_id', $data['doctor_id'])
-                        ->where('day_of_week', $dayOfWeek)
-                        ->where(function ($query) use ($startTime, $endTime) {
-                            $query->whereBetween('start_time', [$startTime, $endTime])
-                                ->orWhereBetween('end_time', [$startTime, $endTime])
-                                ->orWhere(function ($q) use ($startTime, $endTime) {
-                                    $q->where('start_time', '<=', $startTime)
-                                        ->where('end_time', '>=', $endTime);
-                                });
-                        })
-                        ->exists();
-
-                    if ($overlapExists) {
-                        throw new Exception("Schedule already created for {$dayOfWeek} at {$startTime} - {$endTime}");
-                    }
-
-                    $makeScheduleData[$index] = [
-                        'doctor_id' => $data['doctor_id'],
-                        'day_of_week' => $dayOfWeek,
-                        'start_time' => $startTime,
-                        'end_time' => $endTime,
-                        'slot_duration_minutes' => $data['slot_duration_minutes'][$index],
-                        'created_by' => loggedInUserId(),
-                        'created_at' => createdAtDateConvertToDB(),
-                    ];
-                }
+            if ($doctorSlotExists) {
+                throw new Exception("This slot is already booked for the selected doctor on {$data['appointment_date']}.");
             }
 
-            $schedule = DoctorSchedule::query()->insert($makeScheduleData);
+            // 2. Patient already booked same date check
+            $patientExists = DoctorAppointment::query()
+                ->where('patient_id', $data['patient_id'])
+                ->where('appointment_date', $data['appointment_date'])
+                ->exists();
+
+            if ($patientExists) {
+                throw new Exception("This patient already has an appointment on {$data['appointment_date']}.");
+            }
+
+            $data['appointment_code'] = $this->generateAppointmentCode('appointments');
+            // Create appointment
+            $appointment = DoctorAppointment::query()->create([
+                'doctor_id'        => $data['doctor_id'],
+                'patient_id'       => $data['patient_id'],
+                'appointment_code' => $data['appointment_code'],
+                'appointment_date' => $data['appointment_date'],
+                'slot_id'          => $data['slot_id'],
+                'slot_time'        => $data['slot_time'],
+                'created_by'       => $data['created_by'],
+                'created_at'       => $data['created_at'],
+            ]);
+
             DB::commit();
 
-            return $schedule;
+            return $appointment;
         } catch (Exception $exception) {
             DB::rollBack();
             throw $exception;
         }
     }
 
+    public function generateAppointmentCode(string $tableName)
+    {
+        // আজকের তারিখ YYMMDD format
+        $date = Carbon::now()->format('ymd'); // e.g., 250914
+
+        // আজকের ticket এর সংখ্যা
+        $countToday = DB::table($tableName)
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+
+        // Incremental number (start from 1 every day)
+        $incremental = str_pad($countToday + 1, 3, '0', STR_PAD_LEFT); // 001, 002, ...
+
+        // Final ticket number
+        return 'A-' . $date . '-' . $incremental;
+    }
 
     public function getDoctorInfoById(int $doctorId): Model|Builder
     {
@@ -149,9 +194,9 @@ class DoctorAppointmentService
         return Patient::query()->find($patientId);
     }
 
-    public function getAppointmentByDoctorId(int $doctorId): Model|Builder|Collection
+    public function getAppointmentByDoctorId(int $appointmentId): Model|Builder|Collection
     {
-        return DoctorSchedule::query()->with('doctor.department')->where('doctor_id', $doctorId)->get();
+        return DoctorAppointment::query()->with('doctor.patient')->where('appointment_id', $appointmentId)->get();
     }
 
     public function updateAppointment(array $updateData): bool

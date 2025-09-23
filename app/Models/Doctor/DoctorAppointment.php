@@ -20,6 +20,8 @@ class DoctorAppointment extends Model
         'doctor_id',
         'patient_id',
         'appointment_code',
+        'appointment_date',
+        'slot_id',
         'slot_time',
         'payment_status',
         'appointment_status',
