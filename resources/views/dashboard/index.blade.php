@@ -36,7 +36,7 @@
                                         </g>
                                     </svg><!--end::Svg Icon--></span>
                                 <!--end::Svg Icon-->
-                                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Pending Order</div>
+                                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Total Patient</div>
                                 <div class="fw-bold text-white">00</div>
                             </div>
                             <!--end::Body-->
@@ -67,7 +67,7 @@
                                         </g>
                                     </svg><!--end::Svg Icon--></span>
                                 <!--end::Svg Icon-->
-                                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Pending Request</div>
+                                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Pending Appointment</div>
                                 <div class="fw-bold text-white">00</div>
                             </div>
                             <!--end::Body-->
@@ -100,7 +100,7 @@
                                         </g>
                                     </svg><!--end::Svg Icon--></span>
                                 <!--end::Svg Icon-->
-                                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Pending Transfer</div>
+                                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Total Doctor</div>
                                 <div class="fw-bold text-white">0</div>
                             </div>
                             <!--end::Body-->
