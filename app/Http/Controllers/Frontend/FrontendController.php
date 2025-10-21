@@ -10,8 +10,13 @@ use Illuminate\Http\Request;
 class FrontendController extends Controller
 {
     function homePage(){
-        //dd('test');
-        return view('frontend.home');
+        // Fetch 3 latest published blogs for home page
+        $latestBlogs = Blog::where('status', 'Published')
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+        
+        return view('frontend.home', compact('latestBlogs'));
     }
 
     function homePage2(){
