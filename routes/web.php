@@ -33,5 +33,6 @@ Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome
 Route::get('/contact-us', [FrontendController::class, 'contactUs'])->name('contact-us');
 Route::get('/about', [FrontendController::class, 'about'])->name('about');
 Route::get('/blog', [FrontendController::class, 'blog'])->name('blog');
+Route::get('/blog-details/{slug}', [FrontendController::class, 'blogDetails'])->name('blog-details');
 
 
