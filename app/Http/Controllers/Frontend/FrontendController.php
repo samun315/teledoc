@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Blog\Blog;
 use App\Models\Blog\BlogCategory;
+use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorDepartment;
 use App\Models\Slider\Slider;
 use App\Models\Service\Service;
 use App\Models\Speciality\Speciality;
@@ -30,7 +32,14 @@ class FrontendController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        return view('frontend.home', compact('sliders', 'latestBlogs', 'services'));
+        // Fetch 3 active doctors for home page
+        $doctors = Doctor::with(['department', 'degrees'])
+            ->where('status', 'Active')
+            ->inRandomOrder()
+            ->take(3)
+            ->get();
+
+        return view('frontend.home', compact('sliders', 'latestBlogs', 'services', 'doctors'));
     }
 
     function homePage2(){
@@ -128,11 +137,63 @@ class FrontendController extends Controller
         return view('frontend.faq', compact('faqs'));
     }
 
-    public function doctors(){
-        return view('frontend.doctors');
+    public function doctors(Request $request){
+        // Get search and filter parameters
+        $searchKeyword = $request->input('search');
+        $departmentId = $request->input('department_id');
+
+        // Query active doctors with relationships
+        $query = Doctor::with(['department', 'degrees'])
+            ->where('status', 'Active');
+
+        // Apply search filter
+        if ($searchKeyword) {
+            $query->where(function ($q) use ($searchKeyword) {
+                $q->where('name', 'like', "%{$searchKeyword}%")
+                    ->orWhere('title', 'like', "%{$searchKeyword}%")
+                    ->orWhere('email', 'like', "%{$searchKeyword}%");
+            });
+        }
+
+        // Apply department filter
+        if ($departmentId) {
+            $query->where('department_id', $departmentId);
+        }
+
+        // Get paginated doctors
+        $doctors = $query->orderBy('name', 'asc')->paginate(12);
+
+        // Get all active departments for filter dropdown
+        $departments = DoctorDepartment::where('status', 'Active')
+            ->orderBy('department_name', 'asc')
+            ->get(['department_id', 'department_name']);
+
+        return view('frontend.doctors', compact('doctors', 'departments'));
     }
 
     public function doctorDetails($id){
-        return view('frontend.doctorDetails');
+        // Fetch doctor with relationships
+        $doctor = Doctor::with(['department', 'degrees', 'schedules' => function($query) {
+            $query->where('status', 'Active')->orderBy('start_time', 'asc');
+        }])
+        ->where('doctor_id', $id)
+        ->where('status', 'Active')
+        ->firstOrFail();
+
+        // Group schedules by day of week
+        $schedulesByDay = $doctor->schedules->groupBy('day_of_week');
+
+        // Define day order
+        $dayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        // Sort days according to week order
+        $orderedSchedules = collect();
+        foreach ($dayOrder as $day) {
+            if ($schedulesByDay->has($day)) {
+                $orderedSchedules->put($day, $schedulesByDay->get($day));
+            }
+        }
+
+        return view('frontend.doctorDetails', compact('doctor', 'orderedSchedules'));
     }
 }

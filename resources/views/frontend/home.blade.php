@@ -344,51 +344,34 @@
                         <h2>Meet Our Doctors</h2>
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay=".3s">
-                            <div class="doctor-item">
-                                <div class="doctor-top">
-                                    <img src="frontend/assets/img/home-one/doctor/1.jpg" alt="Doctor">
-                                    <a href="appointment.html">Get Appointment</a>
-                                </div>
-                                <div class="doctor-bottom">
-                                    <h3>
-                                        <a href="doctor-details.html">Dr. Babatunde</a>
-                                    </h3>
-                                    <span>Neurosurgeon</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay=".5s">
-                            <div class="doctor-item">
-                                <div class="doctor-top">
-                                    <img src="frontend/assets/img/home-one/doctor/2.jpg" alt="Doctor">
-                                    <a href="appointment.html">Get Appointment</a>
-                                </div>
-                                <div class="doctor-bottom">
-                                    <h3>
-                                        <a href="doctor-details.html">Dr. Addision Smith</a>
-                                    </h3>
-                                    <span>Neurosurgeon</span>
+                        @forelse($doctors as $index => $doctor)
+                            @php
+                                $delays = ['.3s', '.5s', '.7s'];
+                                $delay = $delays[$index % 3];
+                                $photoPath = $doctor->photo ? asset('uploads/doctor/' . $doctor->photo) : asset('frontend/assets/img/home-one/doctor/1.jpg');
+                            @endphp
+                            <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay="{{ $delay }}">
+                                <div class="doctor-item">
+                                    <div class="doctor-top">
+                                        <img src="{{ $photoPath }}" alt="{{ $doctor->name }}" style="width: 100%; height: 350px; object-fit: cover;">
+                                        <a href="{{ route('appointment.create') }}?doctor_id={{ $doctor->doctor_id }}">Get Appointment</a>
+                                    </div>
+                                    <div class="doctor-bottom">
+                                        <h3>
+                                            <a href="{{ route('doctor-details', $doctor->doctor_id) }}">{{ $doctor->title }} {{ $doctor->name }}</a>
+                                        </h3>
+                                        <span>{{ $doctor->department->department_name ?? 'General' }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-sm-6   col-lg-4 wow fadeInUp" data-wow-delay=".7s">
-                            <div class="doctor-item">
-                                <div class="doctor-top">
-                                    <img src="frontend/assets/img/home-one/doctor/3.jpg" alt="Doctor">
-                                    <a href="appointment.html">Get Appointment</a>
-                                </div>
-                                <div class="doctor-bottom">
-                                    <h3>
-                                        <a href="doctor-details.html">Dr. Sarah Tylor</a>
-                                    </h3>
-                                    <span>Dental Surgeon</span>
-                                </div>
+                        @empty
+                            <div class="col-12 text-center py-5">
+                                <p class="text-muted">No doctors available at the moment.</p>
                             </div>
-                        </div>
+                        @endforelse
                     </div>
                     <div class="doctor-btn">
-                        <a href="doctor.html">See All</a>
+                        <a href="{{ route('doctors') }}">See All</a>
                     </div>
                 </div>
             </section>
