@@ -117,34 +117,19 @@
                         </div>
                         <div class="speciality-item">
                             <div class="row m-0">
-                                <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".3s">
+                                @forelse($specialities as $index => $speciality)
+                                <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".{{ 3 + ($index % 2) * 2 }}s">
                                     <div class="speciality-inner">
-                                        <i class="icofont-check-circled"></i>
-                                        <h3>Child Care</h3>
-                                        <p>Lorem ipsum dolor sit amet, is consectetur adipiscing</p>
+                                        <i class="{{ $speciality->icon ?? 'icofont-check-circled' }}"></i>
+                                        <h3>{{ $speciality->title }}</h3>
+                                        <p>{{ $speciality->description }}</p>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".5s">
-                                    <div class="speciality-inner">
-                                        <i class="icofont-check-circled"></i>
-                                        <h3>More Stuff</h3>
-                                        <p>Lorem ipsum dolor sit amet, is consectetur adipiscing</p>
-                                    </div>
+                                @empty
+                                <div class="col-12 text-center py-5">
+                                    <p class="text-muted">No specialities available at the moment.</p>
                                 </div>
-                                <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".3s">
-                                    <div class="speciality-inner">
-                                        <i class="icofont-check-circled"></i>
-                                        <h3>Enough Lab</h3>
-                                        <p>Lorem ipsum dolor sit amet, is consectetur adipiscing</p>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".5s">
-                                    <div class="speciality-inner">
-                                        <i class="icofont-check-circled"></i>
-                                        <h3>24 Hour Doctor</h3>
-                                        <p>Lorem ipsum dolor sit amet, is consectetur adipiscing</p>
-                                    </div>
-                                </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -174,158 +159,27 @@
                 <h2>Our Hospital Services</h2>
             </div>
             <div class="row justify-content-center">
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".3s">
+                @forelse($services as $index => $service)
+                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".{{ 3 + ($index % 4) * 2 }}s">
                     <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-doctor"></i>
-                                    <h3>Expert Doctor</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-doctor"></i>
-                                    <h3>Expert Doctor</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
+                        <div class="service-front">
+                            <i class="{{ $service->icon ?? 'icofont-cog' }}"></i>
+                            <h3>{{ $service->title }}</h3>
+                            <p>{{ Str::limit($service->short_description, 70) }}</p>
+                        </div>
+                        <div class="service-end">
+                            <i class="{{ $service->icon ?? 'icofont-cog' }}"></i>
+                            <h3>{{ $service->title }}</h3>
+                            <p>{{ Str::limit($service->short_description, 70) }}</p>
+                            <a href="{{ route('service-details', $service->service_id) }}">Read More</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".5s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-prescription"></i>
-                                    <h3>Diagnosis</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-prescription"></i>
-                                    <h3>Diagnosis</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                @empty
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No services available at the moment.</p>
                 </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".7s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-patient-file"></i>
-                                    <h3>Pathology</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-patient-file"></i>
-                                    <h3>Pathology</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".9s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-tooth"></i>
-                                    <h3>Dental Care</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-tooth"></i>
-                                    <h3>Dental Care</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".3s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-heart-beat-alt"></i>
-                                    <h3>Cardiology</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-heart-beat-alt"></i>
-                                    <h3>Cardiology</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".5s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-drug"></i>
-                                    <h3>Medicine</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-drug"></i>
-                                    <h3>Medicine</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".7s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-dna-alt-1"></i>
-                                    <h3>Neurology</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-dna-alt-1"></i>
-                                    <h3>Neurology</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".9s">
-                    <div class="service-item">
-                        <div class="d-table">
-                            <div class="d-table-cell">
-                                <div class="service-front">
-                                    <i class="icofont-ambulance-cross"></i>
-                                    <h3>Ambulance</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                </div>
-                                <div class="service-end">
-                                    <i class="icofont-ambulance-cross"></i>
-                                    <h3>Ambulance</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod</p>
-                                    <a href="service-details.html">Read More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -338,21 +192,33 @@
                 <h2>What our patient say</h2>
 
                 <div class="testimonial-slider owl-theme owl-carousel">
-                    <div class="testimonial-item">
-                        <img src="assets/img/home-three/7.png" alt="Testimonial">
-                        <h3>John Mic</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam id labore vitae cupiditate dolorum voluptates dicta delectus quibusdam excepturi, veniam deserunt magni ipsam mollitia optio, quas quis rem non reprehenderit.</p>
-                    </div>
-                    <div class="testimonial-item">
-                        <img src="assets/img/home-three/8.png" alt="Testimonial">
-                        <h3>Adam Smith</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam id labore vitae cupiditate dolorum voluptates dicta delectus quibusdam excepturi, veniam deserunt magni ipsam mollitia optio, quas quis rem non reprehenderit.</p>
-                    </div>
-                    <div class="testimonial-item">
-                        <img src="assets/img/home-three/9.png" alt="Testimonial">
-                        <h3>Jac Jacson</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam id labore vitae cupiditate dolorum voluptates dicta delectus quibusdam excepturi, veniam deserunt magni ipsam mollitia optio, quas quis rem non reprehenderit.</p>
-                    </div>
+                    @forelse($testimonials as $testimonial)
+                        <div class="testimonial-item">
+                            @if($testimonial->patient_image)
+                                <img src="{{ asset('storage/' . $testimonial->patient_image) }}" alt="{{ $testimonial->patient_name }}">
+                            @else
+                                <img src="{{ asset('assets/img/home-three/7.png') }}" alt="{{ $testimonial->patient_name }}">
+                            @endif
+                            <h3>{{ $testimonial->patient_name }}</h3>
+                            @if($testimonial->patient_designation)
+                                <span class="designation">{{ $testimonial->patient_designation }}</span>
+                            @endif
+                            @if($testimonial->rating)
+                                <div class="rating">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="icofont-star {{ $i <= $testimonial->rating ? 'text-warning' : 'text-muted' }}"></i>
+                                    @endfor
+                                </div>
+                            @endif
+                            <p>{{ $testimonial->testimonial_text }}</p>
+                        </div>
+                    @empty
+                        <div class="testimonial-item">
+                            <img src="{{ asset('assets/img/home-three/7.png') }}" alt="Testimonial">
+                            <h3>No Testimonials Yet</h3>
+                            <p>We are collecting patient testimonials. Check back soon!</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -367,87 +233,41 @@
                 <h2>Our latest blogs</h2>
             </div>
             <div class="row justify-content-center">
-                <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay=".3s">
+                @forelse($latestBlogs as $index => $latestBlog)
+                <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay="{{ .3 + ($index * 0.2) }}s">
                     <div class="blog-item">
                         <div class="blog-top">
-                            <a href="blog-details.html">
-                                <img src="assets/img/home-one/11.jpg" alt="Blog">
+                            <a href="{{ route('blog-details', $latestBlog->slug) }}">
+                                <img src="{{ $latestBlog->banner_image ? asset('storage/' . $latestBlog->banner_image) : asset('assets/img/home-one/11.jpg') }}" alt="{{ $latestBlog->title }}">
                             </a>
                         </div>
                         <div class="blog-bottom">
                             <h3>
-                                <a href="blog-details.html">In this hospital there are special surgeon.</a>
+                                <a href="{{ route('blog-details', $latestBlog->slug) }}">
+                                    {{ $latestBlog->title }}
+                                </a>
                             </h3>
-                            <p>Lorem ipsum is  dolor sit amet, csectetur adipiscing elit, dolore smod tempor incididunt ut labore et....</p>
+                            <p>{{ Str::limit(strip_tags($latestBlog->content), 100, '....') }}</p>
                             <ul>
                                 <li>
-                                    <a href="blog-details.html">
+                                    <a href="{{ route('blog-details', $latestBlog->slug) }}">
                                         Read More
                                         <i class="icofont-long-arrow-right"></i>
                                     </a>
                                 </li>
                                 <li>
                                     <i class="icofont-calendar"></i>
-                                    Jan 03, 2024
+                                    {{ $latestBlog->published_at ? $latestBlog->published_at->format('M d, Y') : $latestBlog->created_at->format('M d, Y') }}
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay=".5s">
-                    <div class="blog-item">
-                        <div class="blog-top">
-                            <a href="blog-details.html">
-                                <img src="assets/img/home-one/12.jpg" alt="Blog">
-                            </a>
-                        </div>
-                        <div class="blog-bottom">
-                            <h3>
-                                <a href="blog-details.html">World AIDS Day, designated on 1 December.</a>
-                            </h3>
-                            <p>Lorem ipsum is  dolor sit amet, csectetur adipiscing elit, dolore smod tempor incididunt ut labore et....</p>
-                            <ul>
-                                <li>
-                                    <a href="blog-details.html">
-                                        Read More
-                                        <i class="icofont-long-arrow-right"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="icofont-calendar"></i>
-                                    Jan 03, 2024
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                @empty
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No recent blogs available</p>
                 </div>
-                <div class="col-sm-6   col-lg-4 wow fadeInUp" data-wow-delay=".7s">
-                    <div class="blog-item">
-                        <div class="blog-top">
-                            <a href="blog-details.html">
-                                <img src="assets/img/home-one/13.jpg" alt="Blog">
-                            </a>
-                        </div>
-                        <div class="blog-bottom">
-                            <h3>
-                                <a href="blog-details.html">More than 80 clinical trials launch to test coronavirus.</a>
-                            </h3>
-                            <p>Lorem ipsum is  dolor sit amet, csectetur adipiscing elit, dolore smod tempor incididunt ut labore et....</p>
-                            <ul>
-                                <li>
-                                    <a href="blog-details.html">
-                                        Read More
-                                        <i class="icofont-long-arrow-right"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="icofont-calendar"></i>
-                                    Jan 03, 2024
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>

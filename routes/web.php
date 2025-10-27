@@ -34,5 +34,10 @@ Route::get('/contact-us', [FrontendController::class, 'contactUs'])->name('conta
 Route::get('/about', [FrontendController::class, 'about'])->name('about');
 Route::get('/blog', [FrontendController::class, 'blog'])->name('blog');
 Route::get('/blog-details/{slug}', [FrontendController::class, 'blogDetails'])->name('blog-details');
+Route::get('/service', [FrontendController::class, 'service'])->name('service');
+Route::get('/service-details/{id}', [FrontendController::class, 'serviceDetails'])->name('service-details');
+Route::get('/faqs', [FrontendController::class, 'faqs'])->name('faqs');
+Route::get('/doctors', [FrontendController::class, 'doctors'])->name('doctors');
+Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])->name('doctor-details');
 
 
