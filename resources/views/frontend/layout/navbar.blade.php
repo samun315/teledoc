@@ -146,7 +146,7 @@
                             </ul> --}}
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link ">Doctor</a>
+                            <a href="{{ route('doctors') }}" class="nav-link ">Doctor</a>
                             {{-- <ul class="dropdown-menu">
                                 <li class="nav-item">
                                     <a href="doctor.html" class="nav-link">Doctor</a>
