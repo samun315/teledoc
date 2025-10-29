@@ -26,6 +26,14 @@
         <!-- Theme Dark CSS -->
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/theme-dark.css') }}">
 
-        <title>Medsev - Healthcare Clinic & Doctor HTML Template</title>
+        <title>{{ $siteSettings['site_name'] ?? 'Medsev' }} - {{ $siteSettings['site_tagline'] ?? 'Healthcare Clinic & Doctor' }}</title>
 
-        <link rel="icon" type="image/png" href="{{ asset('frontend/assets/img/favicon.png') }}">
+        @if(!empty($siteSettings['meta_description']))
+        <meta name="description" content="{{ $siteSettings['meta_description'] }}">
+        @endif
+
+        @if(!empty($siteSettings['meta_keywords']))
+        <meta name="keywords" content="{{ $siteSettings['meta_keywords'] }}">
+        @endif
+
+        <link rel="icon" type="image/png" href="{{ $favicon }}">

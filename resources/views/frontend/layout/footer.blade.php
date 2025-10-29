@@ -38,20 +38,38 @@
                             <div class="footer-contact">
                                 <h3>Contact Us</h3>
                                 <ul>
+                                    @if(!empty($siteSettings['contact_email_1']) || !empty($siteSettings['contact_email_2']))
                                     <li>
                                         <i class="icofont-ui-message"></i>
-                                        <a href="/cdn-cgi/l/email-protection#533a3d353c133e36373a2036257d303c3e"><span class="__cf_email__" data-cfemail="85ecebe3eac5e8e0e1ecf6e0f3abe6eae8">[email&#160;protected]</span></a>
-                                        <a href="/cdn-cgi/l/email-protection#19717c75757659747c7d706a7c6f377a7674"><span class="__cf_email__" data-cfemail="2c44494040436c414948455f495a024f4341">[email&#160;protected]</span></a>
+                                        @if(!empty($siteSettings['contact_email_1']))
+                                        <a href="mailto:{{ $siteSettings['contact_email_1'] }}">{{ $siteSettings['contact_email_1'] }}</a>
+                                        @endif
+                                        @if(!empty($siteSettings['contact_email_2']))
+                                        <a href="mailto:{{ $siteSettings['contact_email_2'] }}">{{ $siteSettings['contact_email_2'] }}</a>
+                                        @endif
                                     </li>
+                                    @endif
+                                    @if(!empty($siteSettings['contact_phone_1']) || !empty($siteSettings['contact_phone_2']))
                                     <li>
                                         <i class="icofont-stock-mobile"></i>
-                                        <a href="tel:+07554332322">Call: +07 554 332 322</a>
-                                        <a href="tel:+236256256365">Call: +236 256 256 365</a>
+                                        @if(!empty($siteSettings['contact_phone_1']))
+                                        <a href="tel:{{ $siteSettings['contact_phone_1'] }}">Call: {{ $siteSettings['contact_phone_1'] }}</a>
+                                        @endif
+                                        @if(!empty($siteSettings['contact_phone_2']))
+                                        <a href="tel:{{ $siteSettings['contact_phone_2'] }}">Call: {{ $siteSettings['contact_phone_2'] }}</a>
+                                        @endif
                                     </li>
+                                    @endif
+                                    @if(!empty($siteSettings['contact_address_1']))
                                     <li>
                                         <i class="icofont-location-pin"></i>
-                                        210-27 Quadra, Market Street,<br> Victoria Canada
+                                        {{ $siteSettings['contact_address_1'] }}
+                                        @if(!empty($siteSettings['contact_city']) || !empty($siteSettings['contact_country']))
+                                        <br>
+                                        {{ $siteSettings['contact_city'] ?? '' }} {{ $siteSettings['contact_country'] ?? '' }}
+                                        @endif
                                     </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -61,24 +79,21 @@
                             <div class="footer-quick">
                                 <h3>Quick Links</h3>
                                 <ul>
+                                    @forelse($footerQuickLinks as $link)
                                     <li>
-                                        <a href="about.html">About us</a>
+                                        <a href="{{ $link->url }}" target="{{ $link->target }}">
+                                            @if($link->icon)
+                                            <i class="{{ $link->icon }}"></i>
+                                            @endif
+                                            {{ $link->title }}
+                                        </a>
                                     </li>
-                                    <li>
-                                        <a href="blog.html">Blog</a>
-                                    </li>
-                                    <li>
-                                        <a href="blog-details.html">Our Expertise</a>
-                                    </li>
-                                    <li>
-                                        <a href="faq.html">Faq</a>
-                                    </li>
-                                    <li>
-                                        <a href="doctor.html">Doctors</a>
-                                    </li>
-                                    <li>
-                                        <a href="contact.html">Contact us</a>
-                                    </li>
+                                    @empty
+                                    <li><a href="{{ route('about') }}">About us</a></li>
+                                    <li><a href="{{ route('blog') }}">Blog</a></li>
+                                    <li><a href="{{ route('doctors') }}">Doctors</a></li>
+                                    <li><a href="{{ route('contact-us') }}">Contact us</a></li>
+                                    @endforelse
                                 </ul>
                             </div>
                         </div>
@@ -88,24 +103,18 @@
                             <div class="footer-quick">
                                 <h3>Our Services</h3>
                                 <ul>
+                                    @forelse($footerServiceLinks as $link)
                                     <li>
-                                        <a href="service-details.html">Dental Care</a>
+                                        <a href="{{ $link->url }}" target="{{ $link->target }}">
+                                            @if($link->icon)
+                                            <i class="{{ $link->icon }}"></i>
+                                            @endif
+                                            {{ $link->title }}
+                                        </a>
                                     </li>
-                                    <li>
-                                        <a href="service-details.html">Cardiology</a>
-                                    </li>
-                                    <li>
-                                        <a href="service-details.html">Hijama Therapy</a>
-                                    </li>
-                                    <li>
-                                        <a href="service-details.html">Massage Therapy</a>
-                                    </li>
-                                    <li>
-                                        <a href="service-details.html">Ambluance Sevices</a>
-                                    </li>
-                                    <li>
-                                        <a href="service-details.html">Medicine</a>
-                                    </li>
+                                    @empty
+                                    <li><a href="{{ route('service') }}">View All Services</a></li>
+                                    @endforelse
                                 </ul>
                             </div>
                         </div>
@@ -140,7 +149,7 @@
         <div class="copyright-area">
             <div class="container">
                 <div class="copyright-item">
-                    <p>© <span>Medsev</span> is Proudly Owned by <a href="https://hibootstrap.com/" target="_blank">HiBoostrap</a></p>
+                    <p>{{ $siteSettings['copyright_text'] ?? '© ' . ($siteSettings['site_name'] ?? 'Medsev') . ' ' . date('Y') . '. All rights reserved.' }}</p>
                 </div>
             </div>
         </div>

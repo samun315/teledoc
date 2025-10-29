@@ -40,4 +40,6 @@ Route::get('/faqs', [FrontendController::class, 'faqs'])->name('faqs');
 Route::get('/doctors', [FrontendController::class, 'doctors'])->name('doctors');
 Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])->name('doctor-details');
 
+// Include Settings Routes
+require __DIR__.'/settings.php';
 
