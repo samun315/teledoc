@@ -69,19 +69,19 @@
     font-weight: bold; /* make bold when floating */
 }
 
-.prescription-form-container {
-        max-height: 80vh; /* or any height depending on your layout */
+/* .prescription-form-container {
+        max-height: 80vh; 
         overflow-y: auto;
-        padding-top: 10px; /* space for fixed button */
-        padding-bottom: 80px; /* space for fixed button */
+        padding-top: 10px;
+        padding-bottom: 80px;
         position: relative;
-    }
+    } */
 
-    .submit-btn-wrapper {
+    /* .submit-btn-wrapper {
         position: sticky;
         bottom: 0;
         background: #fff;
         padding: 15px 20px;
         border-top: 1px solid #eee;
         z-index: 10;
-    }
+    } */
