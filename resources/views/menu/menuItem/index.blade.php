@@ -186,9 +186,9 @@
             var updateOutput = function(e) {
                 var list = e.length ? e : $(e.target),
                     output = list.data('output');
-                if (window.JSON) {
+                if (output && output.length && window.JSON) {
                     output.val(window.JSON.stringify(list.nestable('serialize'))); //, null, 2));
-                } else {
+                } else if (output && output.length) {
                     output.val('JSON browser support required for this demo.');
                 }
             };
@@ -198,16 +198,6 @@
                     group: 1
                 })
                 .on('change', updateOutput);
-
-            // activate Nestable for list 2
-            $('#nestable2').nestable({
-                    group: 1
-                })
-                .on('change', updateOutput);
-
-            // output initial serialised data
-            updateOutput($('#nestable').data('output', $('#nestable-output')));
-            updateOutput($('#nestable2').data('output', $('#nestable2-output')));
 
             $('#nestable-menu').on('click', function(e) {
                 var target = $(e.target),
