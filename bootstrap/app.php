@@ -83,6 +83,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/doctor/schedule.php'));
             //End Schedule Route
 
+            //Start Appointment Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('appointment')
+                ->name('appointment.')
+                ->group(base_path('routes/doctor/appointment.php'));
+            //End Appointment Route
+
             //Start Payment Gateway Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
                 ->prefix('payment')
@@ -96,6 +103,48 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('payment.adjust.balance.')
                 ->group(base_path('routes/payment/adjustBalance.php'));
             //End Balance adjust Route
+
+            //Start Blog Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('blog')
+                ->name('blog.')
+                ->group(base_path('routes/blog/blog.php'));
+            //End blog Route
+
+            //Start Slider Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('slider')
+                ->name('slider.')
+                ->group(base_path('routes/slider/slider.php'));
+            //End Slider Route
+
+            //Start Service Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('service')
+                ->name('service.')
+                ->group(base_path('routes/service/service.php'));
+            //End Service Route
+
+            //Start Speciality Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('speciality')
+                ->name('speciality.')
+                ->group(base_path('routes/speciality/speciality.php'));
+            //End Speciality Route
+
+            //Start Testimonial Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('testimonial')
+                ->name('testimonial.')
+                ->group(base_path('routes/testimonial/testimonial.php'));
+            //End Testimonial Route
+
+            //Start FAQ Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('faq-management')
+                ->name('faq.')
+                ->group(base_path('routes/faq/faq.php'));
+            //End FAQ Route
 
             //****Start Api Route******//
             Route::middleware(['api'])

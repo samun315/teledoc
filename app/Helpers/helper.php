@@ -103,4 +103,43 @@ if (!function_exists('getLoggedInUserInfo')) {
     }
 }
 
+/**
+ * Get site setting value by key
+ */
+if (!function_exists('siteSetting')) {
+    function siteSetting(string $key, $default = null)
+    {
+        return app(\App\Services\SiteSettingService::class)->get($key, $default);
+    }
+}
+
+/**
+ * Get social media links
+ */
+if (!function_exists('socialMediaLinks')) {
+    function socialMediaLinks(string $location = 'header')
+    {
+        return app(\App\Services\SocialMediaService::class)->getByLocation($location);
+    }
+}
+
+/**
+ * Get footer links by section
+ */
+if (!function_exists('footerLinks')) {
+    function footerLinks(string $section = 'quick_links')
+    {
+        return app(\App\Services\FooterLinkService::class)->getBySection($section);
+    }
+}
+
+/**
+ * Get logo by type
+ */
+if (!function_exists('siteLogo')) {
+    function siteLogo(string $type = 'main')
+    {
+        return app(\App\Services\SiteLogoService::class)->getByType($type);
+    }
+}
 

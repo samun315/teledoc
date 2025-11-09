@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Frontend\FrontendController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('showLoginForm');
@@ -25,7 +26,20 @@ Route::middleware(['preventBackHistory', 'user'])->group(function () {
 
 });
 
-Route::get('/welcome', [FrontendController::class, 'homePage'])->name('welcome');
-Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome2');
+Route::post('/store/upload-image', [UploadController::class, 'upload'])->name('admin.summernote.uploadImage');
 
+Route::get('/home', [FrontendController::class, 'homePage'])->name('home');
+Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome2');
+Route::get('/contact-us', [FrontendController::class, 'contactUs'])->name('contact-us');
+Route::get('/about', [FrontendController::class, 'about'])->name('about');
+Route::get('/blog', [FrontendController::class, 'blog'])->name('blog');
+Route::get('/blog-details/{slug}', [FrontendController::class, 'blogDetails'])->name('blog-details');
+Route::get('/service', [FrontendController::class, 'service'])->name('service');
+Route::get('/service-details/{id}', [FrontendController::class, 'serviceDetails'])->name('service-details');
+Route::get('/faqs', [FrontendController::class, 'faqs'])->name('faqs');
+Route::get('/doctors', [FrontendController::class, 'doctors'])->name('doctors');
+Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])->name('doctor-details');
+
+// Include Settings Routes
+require __DIR__.'/settings.php';
 

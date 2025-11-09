@@ -9,7 +9,7 @@ use App\Http\Controllers\Drug\PrescriptionController;
 use App\Http\Controllers\Drug\SubscriptionTypeController;
 use Illuminate\Support\Facades\Route;
 
-// prescription 
+// prescription
 // name route  drug.prescription.index
 // url /drug/prescription
 Route::group(['prefix' => 'prescription'], function () {
@@ -28,5 +28,9 @@ Route::group(['prefix' => 'prescription'], function () {
     Route::get('/get-doctor-prescriptions/{doctor_id}/{patient_id}', [PrescriptionController::class,  'getDoctorPrescriptionList'])->name('getDoctorPrescriptionList');
     Route::get('/get-old-prescriptions/{prescription_id}', [PrescriptionController::class,  'getOldPrescriptionList'])->name('getOldPrescriptionList');
 
+    // Prescription Preview Route
+    Route::get('/preview', function () {
+        return view('drug.preview');
+    })->name('preview');
     Route::get('/prescriptions/print/{prescription_id}', [PrescriptionController::class, 'printPrescription'])->name('print');
 });
