@@ -55,8 +55,6 @@
 
 <script nonce="{{ $cspNonce }}">
     $(document).ready(function() {
-        console.log('Initializing menu...');
-
         // Set active menu first
         $(".menu .menu-item a").each(function () {
             var pageUrl = window.location.href.split(/[?#]/)[0];
@@ -71,8 +69,6 @@
         // Wait for DOM to be fully ready, then initialize KTMenu
         setTimeout(function() {
             if (typeof KTMenu !== 'undefined') {
-                console.log('KTMenu found, creating instances...');
-
                 // Destroy existing instances first
                 var menuElements = document.querySelectorAll('[data-kt-menu="true"]');
                 menuElements.forEach(function(element) {
@@ -84,12 +80,10 @@
 
                 // Recreate instances
                 KTMenu.createInstances('[data-kt-menu="true"]');
-                console.log('KTMenu instances created successfully');
 
                 // Manual click handler to force submenu toggle
                 setTimeout(function() {
                     var triggers = document.querySelectorAll('[data-kt-menu-trigger="click"]');
-                    console.log('Adding manual toggle for', triggers.length, 'triggers');
 
                     triggers.forEach(function(trigger) {
                         // Remove any existing listeners by cloning
@@ -110,17 +104,13 @@
                                 // Toggle the submenu
                                 if (this.classList.contains('show')) {
                                     submenu.style.display = 'block';
-                                    console.log('Submenu opened');
                                 } else {
                                     submenu.style.display = 'none';
-                                    console.log('Submenu closed');
                                 }
                             }
                         });
                     });
                 }, 300);
-            } else {
-                console.error('KTMenu not defined!');
             }
         }, 100);
     });
