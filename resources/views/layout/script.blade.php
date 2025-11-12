@@ -54,14 +54,53 @@
     {{ Sri::html('assets/plugins/custom/draggable/jquery-nestable.js') }}></script>
 
 <script nonce="{{ $cspNonce }}">
-    $(".menu .menu-item a").each(function () {
-        var pageUrl = window.location.href.split(/[?#]/)[0];
+    $(document).ready(function() {
+        console.log('Initializing menu...');
 
-        if (this.href == pageUrl) {
-            $(this).addClass("active");
-            $(this).parent().parent().parent().addClass("here show"); // parent class add
-            $(this).parent().parent().parent().parent().parent().addClass("here show"); // parent class add
-        }
+        // Set active menu first
+        $(".menu .menu-item a").each(function () {
+            var pageUrl = window.location.href.split(/[?#]/)[0];
+
+            if (this.href == pageUrl) {
+                $(this).addClass("active");
+                $(this).parent().parent().parent().addClass("here show");
+                $(this).parent().parent().parent().parent().parent().addClass("here show");
+            }
+        });
+
+        // Wait for DOM to be fully ready, then initialize KTMenu
+        setTimeout(function() {
+            if (typeof KTMenu !== 'undefined') {
+                console.log('KTMenu found, creating instances...');
+
+                // Destroy existing instances first
+                var menuElements = document.querySelectorAll('[data-kt-menu="true"]');
+                menuElements.forEach(function(element) {
+                    var menuInstance = KTMenu.getInstance(element);
+                    if (menuInstance) {
+                        menuInstance.destroy();
+                    }
+                });
+
+                // Recreate instances
+                KTMenu.createInstances('[data-kt-menu="true"]');
+                console.log('KTMenu instances created successfully');
+
+                // Debug: Test click handler
+                setTimeout(function() {
+                    var triggers = document.querySelectorAll('[data-kt-menu-trigger="click"]');
+                    console.log('Setting up click handlers for', triggers.length, 'triggers');
+
+                    triggers.forEach(function(trigger, index) {
+                        trigger.addEventListener('click', function(e) {
+                            console.log('Menu item clicked:', index);
+                        });
+                    });
+                }, 200);
+            } else {
+                console.error('KTMenu not defined!');
+            }
+        }, 100);
     });
 </script>
 
