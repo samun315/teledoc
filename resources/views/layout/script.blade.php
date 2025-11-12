@@ -94,8 +94,25 @@
                     triggers.forEach(function(trigger, index) {
                         trigger.addEventListener('click', function(e) {
                             console.log('Menu item clicked:', index);
+
+                            // Check if submenu exists
+                            var submenu = this.querySelector('.menu-sub');
+                            if (submenu) {
+                                console.log('Submenu found, current display:', window.getComputedStyle(submenu).display);
+                                console.log('Parent has class "show":', this.classList.contains('show'));
+                            } else {
+                                console.log('No submenu found for this trigger');
+                            }
                         });
                     });
+
+                    // Force show submenus if sidebar is NOT minimized
+                    var body = document.body;
+                    if (!body.classList.contains('aside-minimize')) {
+                        console.log('Sidebar is expanded, ensuring submenus can be shown');
+                    } else {
+                        console.log('Sidebar is minimized');
+                    }
                 }, 200);
             } else {
                 console.error('KTMenu not defined!');
