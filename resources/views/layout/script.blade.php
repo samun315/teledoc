@@ -86,34 +86,39 @@
                 KTMenu.createInstances('[data-kt-menu="true"]');
                 console.log('KTMenu instances created successfully');
 
-                // Debug: Test click handler
+                // Manual click handler to force submenu toggle
                 setTimeout(function() {
                     var triggers = document.querySelectorAll('[data-kt-menu-trigger="click"]');
-                    console.log('Setting up click handlers for', triggers.length, 'triggers');
+                    console.log('Adding manual toggle for', triggers.length, 'triggers');
 
-                    triggers.forEach(function(trigger, index) {
-                        trigger.addEventListener('click', function(e) {
-                            console.log('Menu item clicked:', index);
+                    triggers.forEach(function(trigger) {
+                        // Remove any existing listeners by cloning
+                        var newTrigger = trigger.cloneNode(true);
+                        trigger.parentNode.replaceChild(newTrigger, trigger);
 
-                            // Check if submenu exists
+                        // Add our manual toggle
+                        newTrigger.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+
                             var submenu = this.querySelector('.menu-sub');
                             if (submenu) {
-                                console.log('Submenu found, current display:', window.getComputedStyle(submenu).display);
-                                console.log('Parent has class "show":', this.classList.contains('show'));
-                            } else {
-                                console.log('No submenu found for this trigger');
+                                // Toggle the parent
+                                this.classList.toggle('show');
+                                this.classList.toggle('here');
+
+                                // Toggle the submenu
+                                if (this.classList.contains('show')) {
+                                    submenu.style.display = 'block';
+                                    console.log('Submenu opened');
+                                } else {
+                                    submenu.style.display = 'none';
+                                    console.log('Submenu closed');
+                                }
                             }
                         });
                     });
-
-                    // Force show submenus if sidebar is NOT minimized
-                    var body = document.body;
-                    if (!body.classList.contains('aside-minimize')) {
-                        console.log('Sidebar is expanded, ensuring submenus can be shown');
-                    } else {
-                        console.log('Sidebar is minimized');
-                    }
-                }, 200);
+                }, 300);
             } else {
                 console.error('KTMenu not defined!');
             }
