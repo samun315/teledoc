@@ -54,59 +54,22 @@
     {{ Sri::html('assets/plugins/custom/draggable/jquery-nestable.js') }}></script>
 
 <script nonce="{{ $cspNonce }}">
-    $(document).ready(function() {
-        // Set active menu first
-        $(".menu .menu-item a").each(function () {
-            var pageUrl = window.location.href.split(/[?#]/)[0];
+    // Set active menu
+    $(".menu .menu-item a").each(function () {
+        var pageUrl = window.location.href.split(/[?#]/)[0];
 
-            if (this.href == pageUrl) {
-                $(this).addClass("active");
-                $(this).parent().parent().parent().addClass("here show");
-                $(this).parent().parent().parent().parent().parent().addClass("here show");
-            }
-        });
-
-        // Wait for DOM to be fully ready, then initialize KTMenu
-        setTimeout(function() {
-            if (typeof KTMenu !== 'undefined') {
-                // Destroy existing instances first
-                var menuElements = document.querySelectorAll('[data-kt-menu="true"]');
-                menuElements.forEach(function(element) {
-                    var menuInstance = KTMenu.getInstance(element);
-                    if (menuInstance) {
-                        menuInstance.destroy();
-                    }
-                });
-
-                // Recreate instances
-                KTMenu.createInstances('[data-kt-menu="true"]');
-
-                // Manual click handler to force submenu toggle
-                setTimeout(function() {
-                    // Use event delegation to avoid breaking DOM references
-                    $(document).off('click.menuToggle').on('click.menuToggle', '[data-kt-menu-trigger="click"]', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        var $this = $(this);
-                        var $submenu = $this.children('.menu-sub').first();
-
-                        if ($submenu.length) {
-                            // Toggle classes
-                            $this.toggleClass('show here');
-
-                            // Toggle submenu visibility
-                            if ($this.hasClass('show')) {
-                                $submenu.css('display', 'block');
-                            } else {
-                                $submenu.css('display', 'none');
-                            }
-                        }
-                    });
-                }, 300);
-            }
-        }, 100);
+        if (this.href == pageUrl) {
+            $(this).addClass("active");
+            $(this).parent().parent().parent().addClass("here show");
+            $(this).parent().parent().parent().parent().parent().addClass("here show");
+        }
     });
+
+    // Initialize KTMenu if not already initialized
+    if (typeof KTMenu !== 'undefined' && typeof KTMenu.createInstances === 'function') {
+        // Call initialization - scripts.bundle.js should have already loaded KTMenu
+        KTMenu.createInstances();
+    }
 </script>
 
 <!-- IziToast Js-->
