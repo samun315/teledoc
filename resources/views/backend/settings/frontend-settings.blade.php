@@ -104,12 +104,10 @@ $(document).ready(function() {
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         localStorage.setItem('frontendSettingsActiveTab', $(e.target).attr('href'));
     });
-});
-</script>
 
-<!-- Tab Scripts -->
-<script nonce="{{ $cspNonce }}">
-@include('backend.settings.partials.scripts')
+    // Tab Scripts
+    @include('backend.settings.partials.scripts')
+});
 </script>
 @endsection
 

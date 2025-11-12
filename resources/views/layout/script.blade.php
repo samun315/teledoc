@@ -83,32 +83,25 @@
 
                 // Manual click handler to force submenu toggle
                 setTimeout(function() {
-                    var triggers = document.querySelectorAll('[data-kt-menu-trigger="click"]');
+                    // Use event delegation to avoid breaking DOM references
+                    $(document).off('click.menuToggle').on('click.menuToggle', '[data-kt-menu-trigger="click"]', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                    triggers.forEach(function(trigger) {
-                        // Remove any existing listeners by cloning
-                        var newTrigger = trigger.cloneNode(true);
-                        trigger.parentNode.replaceChild(newTrigger, trigger);
+                        var $this = $(this);
+                        var $submenu = $this.children('.menu-sub').first();
 
-                        // Add our manual toggle
-                        newTrigger.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
+                        if ($submenu.length) {
+                            // Toggle classes
+                            $this.toggleClass('show here');
 
-                            var submenu = this.querySelector('.menu-sub');
-                            if (submenu) {
-                                // Toggle the parent
-                                this.classList.toggle('show');
-                                this.classList.toggle('here');
-
-                                // Toggle the submenu
-                                if (this.classList.contains('show')) {
-                                    submenu.style.display = 'block';
-                                } else {
-                                    submenu.style.display = 'none';
-                                }
+                            // Toggle submenu visibility
+                            if ($this.hasClass('show')) {
+                                $submenu.css('display', 'block');
+                            } else {
+                                $submenu.css('display', 'none');
                             }
-                        });
+                        }
                     });
                 }, 300);
             }
