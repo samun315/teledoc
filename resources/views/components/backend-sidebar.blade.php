@@ -16,7 +16,16 @@
                 </a>
             </div>
         @else
-            @if (empty($menuItem?->parent_id) && empty($menuItem?->url) && $menuItem?->type === 'menu_item' && $menuItem && $menuItem->children->isNotEmpty())
+            @php
+                $hasTopChildren = false;
+                if ($menuItem && method_exists($menuItem, 'relationLoaded') && $menuItem->relationLoaded('children')) {
+                    $hasTopChildren = $menuItem->children && $menuItem->children->isNotEmpty();
+                } elseif ($menuItem && method_exists($menuItem, 'children')) {
+                    // Fallback for environments where relations were not eager-loaded
+                    try { $hasTopChildren = $menuItem->children()->exists(); } catch (\Throwable $e) { $hasTopChildren = false; }
+                }
+            @endphp
+            @if (empty($menuItem?->parent_id) && empty($menuItem?->url) && $menuItem?->type === 'menu_item' && $hasTopChildren)
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -26,7 +35,12 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion menu-active-bg">
-                            @foreach ($menuItem?->children as $childData)
+                            @php
+                                $childrenList = ($menuItem && method_exists($menuItem, 'relationLoaded') && $menuItem->relationLoaded('children'))
+                                    ? $menuItem->children
+                                    : (method_exists($menuItem, 'children') ? $menuItem->children()->get() : collect());
+                            @endphp
+                            @foreach ($childrenList as $childData)
                                 {{-- Validate parent-child relationship and type --}}
                                 @if ($menuItem->menu_item_id === $childData?->parent_id && $menuItem->type === 'menu_item')
                                     {{-- Handle child menu item with URL --}}
@@ -42,7 +56,15 @@
                                             </div>
                                         @else
                                             {{-- Handle child menu item without URL --}}
-                                            @if ($childData && $childData->children->isNotEmpty())
+                                            @php
+                                                $childHasGrand = false;
+                                                if ($childData && method_exists($childData, 'relationLoaded') && $childData->relationLoaded('children')) {
+                                                    $childHasGrand = $childData->children && $childData->children->isNotEmpty();
+                                                } elseif ($childData && method_exists($childData, 'children')) {
+                                                    try { $childHasGrand = $childData->children()->exists(); } catch (\Throwable $e) { $childHasGrand = false; }
+                                                }
+                                            @endphp
+                                            @if ($childHasGrand)
                                             <div data-kt-menu-trigger="click" class="menu-item menu-accordion menu-active-bg">
                                                 <span class="menu-link">
                                                     <span class="menu-bullet">
@@ -52,7 +74,12 @@
                                                     <span class="menu-arrow"></span>
                                                 </span>
                                                 <div class="menu-sub menu-sub-accordion">
-                                                        @foreach ($childData->children as $grandChildData)
+                                                        @php
+                                                            $grandChildrenList = ($childData && method_exists($childData, 'relationLoaded') && $childData->relationLoaded('children'))
+                                                                ? $childData->children
+                                                                : (method_exists($childData, 'children') ? $childData->children()->get() : collect());
+                                                        @endphp
+                                                        @foreach ($grandChildrenList as $grandChildData)
                                                             {{-- Validate grandchild relationship and type --}}
                                                             @if ($childData->menu_item_id === $grandChildData?->parent_id && $grandChildData?->type === 'menu_item')
                                                                 <div class="menu-item">
