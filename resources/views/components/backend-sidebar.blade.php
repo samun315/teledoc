@@ -16,7 +16,7 @@
                 </a>
             </div>
         @else
-            @if (empty($menuItem?->parent_id) && empty($menuItem?->url) && $menuItem?->type === 'menu_item')
+            @if (empty($menuItem?->parent_id) && empty($menuItem?->url) && $menuItem?->type === 'menu_item' && $menuItem && $menuItem->children->isNotEmpty())
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -26,7 +26,6 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion menu-active-bg">
-                        @if ($menuItem && $menuItem->children->isNotEmpty())
                             @foreach ($menuItem?->children as $childData)
                                 {{-- Validate parent-child relationship and type --}}
                                 @if ($menuItem->menu_item_id === $childData?->parent_id && $menuItem->type === 'menu_item')
@@ -43,8 +42,8 @@
                                             </div>
                                         @else
                                             {{-- Handle child menu item without URL --}}
-                                            <div data-kt-menu-trigger="click"
-                                                class="menu-item menu-accordion menu-active-bg">
+                                            @if ($childData && $childData->children->isNotEmpty())
+                                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion menu-active-bg">
                                                 <span class="menu-link">
                                                     <span class="menu-bullet">
                                                         <span class="{{ $childData?->icon_class }} fs-3"></span>
@@ -53,7 +52,6 @@
                                                     <span class="menu-arrow"></span>
                                                 </span>
                                                 <div class="menu-sub menu-sub-accordion">
-                                                    @if ($childData && $childData->children->isNotEmpty())
                                                         @foreach ($childData->children as $grandChildData)
                                                             {{-- Validate grandchild relationship and type --}}
                                                             @if ($childData->menu_item_id === $grandChildData?->parent_id && $grandChildData?->type === 'menu_item')
@@ -70,15 +68,13 @@
                                                                 </div>
                                                             @endif
                                                         @endforeach
-                                                    @endif
                                                 </div>
                                             </div>
+                                            @endif
                                         @endif
                                     @endif
                                 @endif
                             @endforeach
-                        @endif
-
 
                     </div>
                 </div>
