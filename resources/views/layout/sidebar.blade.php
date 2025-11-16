@@ -1,12 +1,12 @@
 <div id="kt_aside" class="aside aside-light aside-hoverable" data-kt-drawer="true" data-kt-drawer-name="aside"
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
-    data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start"
+    data-kt-drawer-width="{default:'200px', lg: '250px'}" data-kt-drawer-direction="start"
     data-kt-drawer-toggle="#kt_aside_mobile_toggle">
     <!--begin::Brand-->
     <div class="aside-logo flex-column-auto" id="kt_aside_logo">
         <!--begin::Logo-->
-        <a href="/dashboard">
-            <img alt="Logo" src="{{ asset('assets/media/logos/logo-black-144×30.png') }}" class="h-35px logo" />
+        <a href="{{ url('/dashboard') }}">
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-black-144x30.png') }}" class="h-35px logo" />
         </a>
         <!--end::Logo-->
         <!--begin::Aside toggler-->

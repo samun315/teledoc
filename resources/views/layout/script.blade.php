@@ -27,11 +27,6 @@
     {{ Sri::html('assets/js/custom/utilities/modals/users-search.js') }}></script>
 <!--end::Page Custom Javascript-->
 
-<!-- DataTable js -->
-<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"
-    {{ Sri::html('assets/plugins/custom/datatables/datatables.bundle.js') }}></script>
-<!-- <script src="{{ asset('assets/js/pages/crud/datatables/extensions/buttons.js') }}"></script> -->
-
 <!-- Wait Me js -->
 <script src="{{ asset('assets/plugins/global/waitMe/waitMe.min.js') }}"
     {{ Sri::html('assets/plugins/global/waitMe/waitMe.min.js') }}></script>
