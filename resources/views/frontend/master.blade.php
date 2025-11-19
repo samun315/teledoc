@@ -21,7 +21,7 @@
     <!-- End Preloader -->
 
     <!-- Header Top -->
-    @include('frontend.layout.navbar');
+    @include('frontend.layout.navbar')
     <!-- End Header Top -->
 
 
