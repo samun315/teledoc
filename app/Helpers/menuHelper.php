@@ -18,26 +18,26 @@ if (!function_exists('menu')) {
 
     function menu($name): array|Collection
     {
-
         $role = User::query()->where('id', loggedInUserId())->first(['role_id']);
 
         $modules = [];
         if ($role) {
             $data = DB::select("
-        SELECT DISTINCT(mp.item_id)
-        FROM menu_role_permissions mrp
-        INNER JOIN menu_permissions mp ON mrp.menu_permission_id = mp.menu_permission_id
-        WHERE mrp.role_id = ?", [$role->role_id]);
+            SELECT DISTINCT(mp.item_id)
+            FROM menu_role_permissions mrp
+            INNER JOIN menu_permissions mp ON mrp.menu_permission_id = mp.menu_permission_id
+            WHERE mrp.role_id = ?", [$role->role_id]);
 
             foreach ($data as $value) {
                 $modules[] = $value->item_id;
             }
         }
 
+        $menuItems = collect(); // fallback
+
         $menu = Menu::query()->where('menu_name', $name)->first();
 
         if ($menu) {
-
             $parents = [];
             $permissionItems = [];
             $grandParentItems = [];
@@ -50,7 +50,6 @@ if (!function_exists('menu')) {
                 ->select('menu_item_id', 'parent_id')
                 ->distinct()
                 ->get();
-
 
             foreach ($parentItems as $val) {
                 $parents[] = $val->parent_id;
@@ -101,7 +100,26 @@ if (!function_exists('menu')) {
                 }])
                 ->orderBy('order')
                 ->get();
+
+            // 🧠 Recursive filter to clean 3rd layer+ children
+            $menuItems = filterMenuItems($menuItems, $allPermissionItems);
         }
+
         return $menuItems;
+    }
+
+    function filterMenuItems($items, $allowedIds)
+    {
+        return $items->map(function ($item) use ($allowedIds) {
+            if (!in_array($item->menu_item_id, $allowedIds)) {
+                return null;
+            }
+
+            if ($item->relationLoaded('children')) {
+                $item->children = filterMenuItems($item->children, $allowedIds)->values();
+            }
+
+            return $item;
+        })->filter()->values();
     }
 }

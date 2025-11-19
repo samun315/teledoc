@@ -16,16 +16,7 @@
                 </a>
             </div>
         @else
-            @php
-                $hasTopChildren = false;
-                if ($menuItem && method_exists($menuItem, 'relationLoaded') && $menuItem->relationLoaded('children')) {
-                    $hasTopChildren = $menuItem->children && $menuItem->children->isNotEmpty();
-                } elseif ($menuItem && method_exists($menuItem, 'children')) {
-                    // Fallback for environments where relations were not eager-loaded
-                    try { $hasTopChildren = $menuItem->children()->exists(); } catch (\Throwable $e) { $hasTopChildren = false; }
-                }
-            @endphp
-            @if (empty($menuItem?->parent_id) && empty($menuItem?->url) && $menuItem?->type === 'menu_item' && $hasTopChildren)
+            @if (empty($menuItem?->parent_id) && empty($menuItem?->url) && $menuItem?->type === 'menu_item')
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -35,42 +26,25 @@
                         <span class="menu-arrow"></span>
                     </span>
                     <div class="menu-sub menu-sub-accordion menu-active-bg">
-                            @php
-                                $childrenList = ($menuItem && method_exists($menuItem, 'relationLoaded') && $menuItem->relationLoaded('children'))
-                                    ? $menuItem->children
-                                    : (method_exists($menuItem, 'children') ? $menuItem->children()->get() : collect());
-                            @endphp
-                            @foreach ($childrenList as $childData)
-                                @if ($childData?->type === 'menu_item')
-                                    @if (!empty($childData?->url))
-                                        {{-- Child menu item with URL --}}
-                                        <div class="menu-item">
-                                            <a class="menu-link" href="{{ $childData?->url }}" target="{{ $childData?->target }}">
-                                                <span class="menu-bullet">
-                                                    <span class="{{ $childData?->icon_class }}"></span>
-                                                </span>
-                                                <span class="menu-title">{{ $childData?->menu_item_name }}</span>
-                                            </a>
-                                        </div>
-                                    @else
-                                        {{-- Child menu item without URL - check for grandchildren --}}
-                                        @php
-                                            $childHasGrand = false;
-                                            $grandChildrenList = collect();
-                                            if ($childData && method_exists($childData, 'relationLoaded') && $childData->relationLoaded('children')) {
-                                                $childHasGrand = $childData->children && $childData->children->isNotEmpty();
-                                                $grandChildrenList = $childData->children;
-                                            } elseif ($childData && method_exists($childData, 'children')) {
-                                                try {
-                                                    $grandChildrenList = $childData->children()->get();
-                                                    $childHasGrand = $grandChildrenList->isNotEmpty();
-                                                } catch (\Throwable $e) {
-                                                    $childHasGrand = false;
-                                                }
-                                            }
-                                        @endphp
-                                        @if ($childHasGrand)
-                                            <div data-kt-menu-trigger="click" class="menu-item menu-accordion menu-active-bg">
+                        @if ($menuItem && $menuItem->children->isNotEmpty())
+                            @foreach ($menuItem?->children as $childData)
+                                {{-- Validate parent-child relationship and type --}}
+                                @if ($menuItem->menu_item_id === $childData?->parent_id && $menuItem->type === 'menu_item')
+                                    {{-- Handle child menu item with URL --}}
+                                    @if ($childData?->type === 'menu_item' && !empty($childData?->parent_id))
+                                        @if (!empty($childData?->url))
+                                            <div class="menu-item">
+                                                <a class="menu-link" href="{{ $childData?->url }}" target="{{ $childData?->target }}">
+                                                    <span class="menu-bullet">
+                                                        <span class="{{ $childData?->icon_class }}"></span>
+                                                    </span>
+                                                    <span class="menu-title">{{ $childData?->menu_item_name }}</span>
+                                                </a>
+                                            </div>
+                                        @else
+                                            {{-- Handle child menu item without URL --}}
+                                            <div data-kt-menu-trigger="click"
+                                                class="menu-item menu-accordion menu-active-bg">
                                                 <span class="menu-link">
                                                     <span class="menu-bullet">
                                                         <span class="{{ $childData?->icon_class }} fs-3"></span>
@@ -79,24 +53,33 @@
                                                     <span class="menu-arrow"></span>
                                                 </span>
                                                 <div class="menu-sub menu-sub-accordion">
-                                                    @foreach ($grandChildrenList as $grandChildData)
-                                                        @if ($grandChildData?->type === 'menu_item' && !empty($grandChildData?->url))
-                                                            <div class="menu-item">
-                                                                <a class="menu-link" href="{{ $grandChildData?->url }}" target="{{ $grandChildData?->target }}">
-                                                                    <span class="menu-icon">
-                                                                        <i class="{{ $grandChildData?->icon_class }} fs-3"></i>
-                                                                    </span>
-                                                                    <span class="menu-title">{{ $grandChildData?->menu_item_name }}</span>
-                                                                </a>
-                                                            </div>
-                                                        @endif
-                                                    @endforeach
+                                                    @if ($childData && $childData->children->isNotEmpty())
+                                                        @foreach ($childData->children as $grandChildData)
+                                                            {{-- Validate grandchild relationship and type --}}
+                                                            @if ($childData->menu_item_id === $grandChildData?->parent_id && $grandChildData?->type === 'menu_item')
+                                                                <div class="menu-item">
+                                                                    <a class="menu-link"
+                                                                        href="{{ $grandChildData?->url }}" target="{{ $grandChildData?->target }}">
+                                                                        <span class="menu-icon">
+                                                                            <i
+                                                                                class="{{ $grandChildData?->icon_class }} fs-3"></i>
+                                                                        </span>
+                                                                        <span
+                                                                            class="menu-title">{{ $grandChildData?->menu_item_name }}</span>
+                                                                    </a>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                             </div>
                                         @endif
                                     @endif
                                 @endif
                             @endforeach
+                        @endif
+
+
                     </div>
                 </div>
             @else
