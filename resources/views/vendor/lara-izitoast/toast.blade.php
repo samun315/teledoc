@@ -1,4 +1,4 @@
-<script>
+<script nonce="{{ $cspNonce }}">
             @foreach( session('toasts', collect())->toArray() as $toast)
     var options = {
             title: '{{ $toast['title'] }}',
