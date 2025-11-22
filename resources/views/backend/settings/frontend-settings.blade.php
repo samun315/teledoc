@@ -105,7 +105,7 @@ $(document).ready(function() {
         localStorage.setItem('frontendSettingsActiveTab', $(e.target).attr('href'));
     });
 
-    // Load tab scripts
+    // Tab Scripts
     @include('backend.settings.partials.scripts')
 });
 </script>

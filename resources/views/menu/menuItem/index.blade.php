@@ -182,74 +182,67 @@
     <!--end::Page Custom Stylesheets(used by this page)-->
     <script nonce="{{ $cspNonce }}">
         $(document).ready(function() {
+            let updateTimeout;
 
             var updateOutput = function(e) {
                 var list = e.length ? e : $(e.target),
-                    output = list.data('output');
+                    output = list.data("output");
+
                 if (window.JSON) {
-                    output.val(window.JSON.stringify(list.nestable('serialize'))); //, null, 2));
+                    output.val(JSON.stringify(list.nestable("serialize")));
                 } else {
-                    output.val('JSON browser support required for this demo.');
+                    output.val("JSON browser support required for this demo.");
                 }
             };
 
-            // activate Nestable for list 1
-            $('#nestable').nestable({
-                    group: 1
-                })
-                .on('change', updateOutput);
+            // Activate Nestable
+            $("#nestable").nestable({
+                group: 1,
+                maxDepth: 3, // Set max depth
+            }).on("change", function() {
+                // Debounce AJAX request to avoid frequent updates
+                clearTimeout(updateTimeout);
+                updateTimeout = setTimeout(saveMenuOrder, 500);
+            });
 
-            // activate Nestable for list 2
-            $('#nestable2').nestable({
-                    group: 1
-                })
-                .on('change', updateOutput);
-
-            // output initial serialised data
-            updateOutput($('#nestable').data('output', $('#nestable-output')));
-            updateOutput($('#nestable2').data('output', $('#nestable2-output')));
-
-            $('#nestable-menu').on('click', function(e) {
-                var target = $(e.target),
-                    action = target.data('action');
-                if (action === 'expand-all') {
-                    $('.dd').nestable('expandAll');
+            // Expand/Collapse Menu
+            $("#nestable-menu").on("click", function(e) {
+                var action = $(e.target).data("action");
+                if (action === "expand-all") {
+                    $(".dd").nestable("expandAll");
                 }
-                if (action === 'collapse-all') {
-                    $('.dd').nestable('collapseAll');
+                if (action === "collapse-all") {
+                    $(".dd").nestable("collapseAll");
                 }
             });
 
-            $('#nestable3').nestable();
+            function saveMenuOrder() {
+                let orderData = JSON.stringify($("#nestable").nestable("serialize"));
 
-        });
-
-        $('.dd').nestable({
-            maxDepth: 3
-        });
-
-        $('.dd').on('change', function(e) {
-            console.log(JSON.stringify($('.dd').nestable('serialize')));
-
-            $.ajax({
-                type: "DELETE",
-                url: '{{ route('menu.menu.menuItem.order', $menuInfos?->menu_id) }}',
-                dataType: "JSON",
-                type: "POST",
-                data: {
-                    order: JSON.stringify($('.dd').nestable('serialize')),
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response?.statusCode === 200) {
-                        toastr.success(response?.message, "Success!");
-                    } else {
-                        toastr.error(
-                            "Could not delete parent, need to delete child first.'!"
-                        );
+                $.ajax({
+                    url: '{{ route('menu.menu.menuItem.order', $menuInfos?->menu_id) }}',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        order: orderData,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    beforeSend: function() {
+                        // toastr.info("Updating menu order...", "Processing...");
+                    },
+                    success: function(response) {
+                        if (response?.statusCode === 200) {
+                            toastr.success(response?.message, "Success!");
+                            window.location.reload();
+                        } else {
+                            toastr.error("Create child for parent!", "Error!");
+                        }
+                    },
+                    error: function() {
+                        toastr.error("Failed to update menu. Please try again.", "Error!");
                     }
-                }
-            });
+                });
+            }
         });
     </script>
 

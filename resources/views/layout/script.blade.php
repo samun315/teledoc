@@ -27,11 +27,6 @@
     {{ Sri::html('assets/js/custom/utilities/modals/users-search.js') }}></script>
 <!--end::Page Custom Javascript-->
 
-<!-- DataTable js -->
-<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"
-    {{ Sri::html('assets/plugins/custom/datatables/datatables.bundle.js') }}></script>
-<!-- <script src="{{ asset('assets/js/pages/crud/datatables/extensions/buttons.js') }}"></script> -->
-
 <!-- Wait Me js -->
 <script src="{{ asset('assets/plugins/global/waitMe/waitMe.min.js') }}"
     {{ Sri::html('assets/plugins/global/waitMe/waitMe.min.js') }}></script>
@@ -54,15 +49,22 @@
     {{ Sri::html('assets/plugins/custom/draggable/jquery-nestable.js') }}></script>
 
 <script nonce="{{ $cspNonce }}">
+    // Set active menu
     $(".menu .menu-item a").each(function () {
         var pageUrl = window.location.href.split(/[?#]/)[0];
 
         if (this.href == pageUrl) {
             $(this).addClass("active");
-            $(this).parent().parent().parent().addClass("here show"); // parent class add
-            $(this).parent().parent().parent().parent().parent().addClass("here show"); // parent class add
+            $(this).parent().parent().parent().addClass("here show");
+            $(this).parent().parent().parent().parent().parent().addClass("here show");
         }
     });
+
+    // Initialize KTMenu if not already initialized
+    if (typeof KTMenu !== 'undefined' && typeof KTMenu.createInstances === 'function') {
+        // Call initialization - scripts.bundle.js should have already loaded KTMenu
+        KTMenu.createInstances();
+    }
 </script>
 
 <!-- IziToast Js-->
