@@ -21,7 +21,7 @@
             <div class="card">
                 <!--begin::Card body-->
                 @include('message')
-                <div class="card-body">
+                <div class="card-body bg-light">
                     <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x border-transparent fs-4 fw-bold" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
@@ -299,15 +299,29 @@
                             <!--end::Card body-->
 
                             <div class="submit-btn-wrapper text-end">
-                                <a href="{{ route('drug.prescription.index') }}" class="btn btn-danger btn-sm"><i class="fas fa-arrow-left"></i>Back</a>
+                                <a href="{{ route('drug.prescription.index') }}" class="btn btn-danger btn-sm"><i
+                                        class="fas fa-arrow-left"></i>Back</a>
                                 <button type="submit" class="btn btn-success btn-sm m-5"
                                     id="btnPrescriptionSubmit">Submit</button>
                             </div>
                         </form>
                     </div>
                     <div class="tab-pane fade" id="appointment-history" role="tabpanel">
-                        appointment
+                        <div class="timeline">
+                            @foreach ($appointmentLists as $appointmentList)
+                                <div class="item">
+                                    <div class="title">
+                                        {{ \Carbon\Carbon::parse($appointmentList->appointment_date)->format('d M Y') }} -
+                                        {{ $appointmentList?->appointment_status }}</div>
+                                    <div class="status">Appointment with {{ $appointmentList?->doctor?->title }} {{ $appointmentList?->doctor?->name }}
+                                    </div>
+                                    <div class="time">At
+                                        {{ \Carbon\Carbon::parse($appointmentList->slot_time)->format('g:i A') }}</div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
+
                     <div class="tab-pane fade" id="image-and-documents" role="tabpanel">
                         image
                     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Drug;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Drug\PrescriptionRequest;
 use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorAppointment;
 use App\Models\Drug\Drug;
 use App\Models\Drug\DrugAdvice;
 use App\Models\Drug\DrugDoses;
@@ -48,6 +49,7 @@ class PrescriptionController extends Controller
         $data['doctorInfos'] = Doctor::query()->whereNot('status', 'Inactive')->get(['doctor_id', 'title', 'name']);
         $data['oldPrescriptionInfos'] = Prescription::query()->where('patient_id', $patientId)->get(['prescription_id', 'prescription_number', 'created_at']);
         $data['subscriptionTypes'] = SubscriptionType::query()->where('status', 'Active')->get(['subscription_type_id', 'subscription_type']);
+        $data['appointmentLists'] = DoctorAppointment::query()->with('doctor')->where('patient_id', $patientId)->get();
 
         return view('drugs.prescription.create', $data);
     }
