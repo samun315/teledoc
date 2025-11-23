@@ -313,7 +313,8 @@
                                     <div class="title">
                                         {{ \Carbon\Carbon::parse($appointmentList->appointment_date)->format('d M Y') }} -
                                         {{ $appointmentList?->appointment_status }}</div>
-                                    <div class="status">Appointment with {{ $appointmentList?->doctor?->title }} {{ $appointmentList?->doctor?->name }}
+                                    <div class="status">Appointment with {{ $appointmentList?->doctor?->title }}
+                                        {{ $appointmentList?->doctor?->name }}
                                     </div>
                                     <div class="time">At
                                         {{ \Carbon\Carbon::parse($appointmentList->slot_time)->format('g:i A') }}</div>
@@ -323,8 +324,39 @@
                     </div>
 
                     <div class="tab-pane fade" id="image-and-documents" role="tabpanel">
-                        image
+                        <div class="timeline timeline-with-btn">
+
+                            <!-- Upload Button - right corner -->
+                            <button class="upload-btn btn btn-sm btn-info">
+                                <i class="fa fa-upload"></i>
+                                <span>Upload</span>
+                            </button>
+                            <input type="file" id="file-input" style="display:none" />
+
+                            @forelse ($prescriptionDocs as $prescriptionDoc)
+                                <div class="item">
+                                    <div class="title">
+                                        <span
+                                            class="time">{{ \Carbon\Carbon::parse($prescriptionDoc->created_at)->format('d M Y') }}</span>
+
+                                        <div class="content">
+                                            <img src="{{ asset('uploads/prescription/' . $prescriptionDoc->attachment) }}"
+                                                alt="Not Found">
+                                            <p>{{ $prescriptionDoc->attachment }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="item">
+                                    <div class="title">
+                                        <h3>No Medical Document Found</h3>
+                                    </div>
+                                </div>
+                            @endforelse
+
+                        </div>
                     </div>
+
                     <div class="tab-pane fade" id="payment" role="tabpanel">
                         payment
                     </div>

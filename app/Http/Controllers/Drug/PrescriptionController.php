@@ -13,6 +13,7 @@ use App\Models\Drug\DrugDuration;
 use App\Models\Drug\DrugStrength;
 use App\Models\Drug\DrugType;
 use App\Models\Drug\Prescription;
+use App\Models\Drug\PrescriptionDocs;
 use App\Models\Drug\SubscriptionType;
 use App\Models\Patient\Patient;
 use App\Services\Drug\PrescriptionService;
@@ -50,6 +51,7 @@ class PrescriptionController extends Controller
         $data['oldPrescriptionInfos'] = Prescription::query()->where('patient_id', $patientId)->get(['prescription_id', 'prescription_number', 'created_at']);
         $data['subscriptionTypes'] = SubscriptionType::query()->where('status', 'Active')->get(['subscription_type_id', 'subscription_type']);
         $data['appointmentLists'] = DoctorAppointment::query()->with('doctor')->where('patient_id', $patientId)->get();
+        $data['prescriptionDocs'] = PrescriptionDocs::query()->where('patient_id', $patientId)->get();
 
         return view('drugs.prescription.create', $data);
     }

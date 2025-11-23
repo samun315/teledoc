@@ -762,3 +762,40 @@ $('#prescriptionForm').on('submit', function (e) {
 
 });
 
+
+// Prescription image/documents upload option
+
+document.getElementById('upload-btn').addEventListener('click', function() {
+    document.getElementById('file-input').click();
+});
+
+document.getElementById('file-input').addEventListener('change', function(e) {
+    let formData = new FormData();
+    formData.append('file', e.target.files[0]);
+
+    fetch('{{ route("prescription.upload") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            // Append new item to timeline
+            let timeline = document.querySelector('.timeline');
+            let item = document.createElement('div');
+            item.classList.add('item');
+            item.innerHTML = `
+                <div class="title">
+                    <span class="time">${data.date}</span>
+                    <div class="content">
+                        <img src="${data.url}" alt="Uploaded Image">
+                        <p>${data.filename}</p>
+                    </div>
+                </div>`;
+            timeline.appendChild(item);
+        }
+    });
+});

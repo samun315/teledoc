@@ -131,3 +131,17 @@
     color: black;
 }
 /* APPOINTMENT HISTORY STYLE END */
+
+/* PRESCRIPTION IMAGE/DOCUMENTS STYLE START */
+.timeline-with-btn {
+    position: relative;
+}
+
+.timeline-with-btn .upload-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 15px;
+    cursor: pointer;
+}
+/* PRESCRIPTION IMAGE/DOCUMENTS STYLE END */
