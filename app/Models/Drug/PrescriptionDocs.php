@@ -15,7 +15,6 @@ class PrescriptionDocs extends Model
 
     protected $fillable = [
         'doc_id',
-        'prescription_id',
         'patient_id',
         'attachment',
         'created_by',

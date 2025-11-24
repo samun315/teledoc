@@ -143,5 +143,56 @@
     right: 0;
     margin-right: 15px;
     cursor: pointer;
+    z-index: 99; /* Click guaranteed */
 }
+
+.dropzone {
+    border: 2px dashed #b7b7b7;
+    border-radius: 10px;
+    padding: 80px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.dropzone:hover {
+    border-color: #3b5bfd;
+}
+
+.dropzone.dragover {
+    border-color: #3b5bfd;
+    background: #f4f6ff;
+}
+
+.dropzone_message h3 {
+    font-weight: 600;
+    color: #333;
+}
+
+.dropzone_message p {
+    margin: 10px 0;
+}
+
+.bg-card-header {
+    background: #fff;
+}
+
+.prescription-thumb {
+    width: 250px; /* thumbnail width */
+    height: auto; /* aspect ratio ঠিক রাখতে */
+    object-fit: cover; /* cropping হলে proportion ঠিক থাকবে */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.prescription-thumb:hover {
+    transform: scale(1.05); /* hover effect */
+}
+
+.prescription-link {
+    display: inline-block;
+    text-decoration: none;
+}
+
 /* PRESCRIPTION IMAGE/DOCUMENTS STYLE END */

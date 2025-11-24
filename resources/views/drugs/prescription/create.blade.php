@@ -324,27 +324,33 @@
                     </div>
 
                     <div class="tab-pane fade" id="image-and-documents" role="tabpanel">
-                        <div class="timeline timeline-with-btn">
 
-                            <!-- Upload Button - right corner -->
+                        <!-- TIMELINE SECTION -->
+                        <div class="timeline timeline-with-btn timeline-wrapper">
+
+                            <!-- Upload Button -->
                             <button class="upload-btn btn btn-sm btn-info">
                                 <i class="fa fa-upload"></i>
                                 <span>Upload</span>
                             </button>
-                            <input type="file" id="file-input" style="display:none" />
 
                             @forelse ($prescriptionDocs as $prescriptionDoc)
                                 <div class="item">
                                     <div class="title">
-                                        <span
-                                            class="time">{{ \Carbon\Carbon::parse($prescriptionDoc->created_at)->format('d M Y') }}</span>
+                                        <span class="time">
+                                            {{ \Carbon\Carbon::parse($prescriptionDoc->created_at)->format('d M Y') }}
+                                        </span>
 
                                         <div class="content">
-                                            <img src="{{ asset('uploads/prescription/' . $prescriptionDoc->attachment) }}"
-                                                alt="Not Found">
+                                            <a href="{{ asset('uploads/prescription/' . $prescriptionDoc->attachment) }}"
+                                                target="_blank" class="prescription-link">
+                                                <img src="{{ asset('uploads/prescription/' . $prescriptionDoc->attachment) }}"
+                                                    alt="Not Found" class="prescription-thumb">
+                                            </a>
                                             <p>{{ $prescriptionDoc->attachment }}</p>
                                         </div>
                                     </div>
+
                                 </div>
                             @empty
                                 <div class="item">
@@ -353,9 +359,37 @@
                                     </div>
                                 </div>
                             @endforelse
-
                         </div>
+
+                        <!-- UPLOAD CARD (Initially Hidden) -->
+                        <div class="card mb-4 border-top-0 rounded-0 floating-margin upload-wrapper d-none">
+                            <div class="card-body bg-card-header">
+
+                                <button class="btn btn-primary mb-3 back-btn">
+                                    <i class="fa fa-arrow-left"></i> Back
+                                </button>
+
+                                <div class="dropzone" id="dropzone">
+                                    <div class="dropzone_message">
+                                        <h3>Drag and Drop File Here</h3>
+                                        <p>Or</p>
+                                        <label class="btn btn-primary" for="fileInput">Select File</label>
+                                        <input type="file" id="fileInput" class="d-none">
+                                    </div>
+                                </div>
+
+                                <div class="progress mt-5 d-none" id="uploadProgress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                        role="progressbar" style="width:0%">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
+
+
 
                     <div class="tab-pane fade" id="payment" role="tabpanel">
                         payment

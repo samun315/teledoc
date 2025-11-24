@@ -78,6 +78,17 @@ $(document).ready(function () {
             return;
         }
     });
+    // Show Upload Card
+    $(document).on('click', '.upload-btn', function () {
+        $('.timeline-wrapper').addClass('d-none');   // hide timeline
+        $('.upload-wrapper').removeClass('d-none');  // show upload area
+    });
+
+    // Back Button
+    $(document).on('click', '.back-btn', function () {
+        $('.upload-wrapper').addClass('d-none');      // hide upload card
+        $('.timeline-wrapper').removeClass('d-none'); // show timeline
+    });
 
 });
 
@@ -765,37 +776,105 @@ $('#prescriptionForm').on('submit', function (e) {
 
 // Prescription image/documents upload option
 
-document.getElementById('upload-btn').addEventListener('click', function() {
-    document.getElementById('file-input').click();
+let dropzone = document.getElementById("dropzone");
+let fileInput = document.getElementById("fileInput");
+let progressBar = document.querySelector(".progress-bar");
+let uploadProgress = document.getElementById("uploadProgress");
+let selectedFile = null;
+
+/* --------------------------
+     Select File Button
+--------------------------*/
+fileInput.addEventListener("change", function (e) {
+    selectedFile = e.target.files[0];
+    confirmUpload();
 });
 
-document.getElementById('file-input').addEventListener('change', function(e) {
-    let formData = new FormData();
-    formData.append('file', e.target.files[0]);
+/* --------------------------
+     Drag Over
+--------------------------*/
+dropzone.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+});
 
-    fetch('{{ route("prescription.upload") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            // Append new item to timeline
-            let timeline = document.querySelector('.timeline');
-            let item = document.createElement('div');
-            item.classList.add('item');
-            item.innerHTML = `
-                <div class="title">
-                    <span class="time">${data.date}</span>
-                    <div class="content">
-                        <img src="${data.url}" alt="Uploaded Image">
-                        <p>${data.filename}</p>
-                    </div>
-                </div>`;
-            timeline.appendChild(item);
+/* --------------------------
+     Drag Leave
+--------------------------*/
+dropzone.addEventListener("dragleave", function () {
+    dropzone.classList.remove("dragover");
+});
+
+/* --------------------------
+     Drop File
+--------------------------*/
+dropzone.addEventListener("drop", function (e) {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+
+    selectedFile = e.dataTransfer.files[0];
+    confirmUpload();
+});
+
+/* --------------------------
+     Confirmation Popup
+--------------------------*/
+function confirmUpload() {
+    Swal.fire({
+        title: "Upload this file?",
+        text: selectedFile.name,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Upload",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            uploadFile(selectedFile);
         }
     });
-});
+}
+
+/* --------------------------
+     Ajax Upload
+--------------------------*/
+function uploadFile(file) {
+    let formData = new FormData();
+    formData.append("attachment", file);
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // patient_id append করা
+    let patientId = document.getElementById("kt_patient_id").value;
+    formData.append("patient_id", patientId);
+    // formData.append("_token", "{{ csrf_token() }}");
+
+    uploadProgress.style.display = "block";
+
+    $.ajax({
+        url: BASE_URL + "/document/upload",
+        type: "POST",
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': csrfToken // token header হিসেবে পাঠানো হচ্ছে
+        },
+        processData: false,
+        contentType: false,
+        xhr: function () {
+            let xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function (e) {
+                if (e.lengthComputable) {
+                    let percent = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percent + "%";
+                }
+            });
+            return xhr;
+        },
+
+        success: function () {
+            Swal.fire("Uploaded!", "File uploaded successfully!", "success");
+            setTimeout(() => location.reload(), 800);
+        },
+
+        error: function () {
+            Swal.fire("Error!", "Upload failed!", "error");
+        }
+    });
+}

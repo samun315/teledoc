@@ -17,6 +17,7 @@ use App\Models\Drug\PrescriptionDocs;
 use App\Models\Drug\SubscriptionType;
 use App\Models\Patient\Patient;
 use App\Services\Drug\PrescriptionService;
+use App\Traits\FileUploader;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -26,6 +27,7 @@ use Throwable;
 
 class PrescriptionController extends Controller
 {
+    use FileUploader;
     public function __construct(protected PrescriptionService $prescriptionService) {}
 
     public function index(Request $request): View|JsonResponse
@@ -99,6 +101,28 @@ class PrescriptionController extends Controller
     {
         $data = $this->prescriptionService->getOldPrescriptionList($prescriptionId);
         return sendSuccessResponse(200, '', 'prescription', $data);
+    }
+
+    public function documentUpload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'attachment' => 'required|file|max:5120'
+        ]);
+
+        $patientId = $request->patient_id;
+
+        if (!empty($request->attachment)) {
+            $filename = $this->uploadMedia($request, 'attachment', 'prescription');
+        }
+
+        PrescriptionDocs::create([
+            'patient_id' => $patientId,
+            'attachment' => $filename,
+            'created_by' => loggedInUserId(),
+            'created_at' => createdAtDateConvertToDB(),
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
 

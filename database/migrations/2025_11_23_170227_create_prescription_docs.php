@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('prescription_docs', function (Blueprint $table) {
             $table->id('doc_id');
-            $table->unsignedBigInteger('prescription_id');
             $table->unsignedBigInteger('patient_id');
             $table->string('attachment');
             $table->unsignedBigInteger('created_by')->nullable();
