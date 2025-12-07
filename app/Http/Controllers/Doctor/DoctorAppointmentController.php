@@ -111,7 +111,7 @@ class DoctorAppointmentController extends Controller
         foreach ($schedules as $schedule) {
             $start = Carbon::parse($schedule->start_time);
             $end = Carbon::parse($schedule->end_time);
-            $duration = $schedule->slot_duration_minutes;
+            $duration = (int) $schedule->slot_duration_minutes;
 
             while ($start->lt($end)) {
                 $slotEnd = (clone $start)->addMinutes($duration);

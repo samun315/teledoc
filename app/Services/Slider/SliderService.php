@@ -113,8 +113,22 @@ class SliderService
      */
     private function uploadImage($image, $type = 'background')
     {
+        // Ensure the directory exists
+        $directory = 'sliders';
+        $storage = Storage::disk('public');
+
+        if (!$storage->exists($directory)) {
+            $storage->makeDirectory($directory, 0755, true);
+        }
+
         $filename = time() . '_' . $type . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-        $path = $image->storeAs('sliders', $filename, 'public');
+        $path = $image->storeAs($directory, $filename, 'public');
+
+        // Verify the file was actually saved
+        if (!$storage->exists($path)) {
+            throw new \Exception('Failed to save image file. Please check directory permissions.');
+        }
+
         return $path;
     }
 
