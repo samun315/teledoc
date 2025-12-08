@@ -42,7 +42,7 @@ class PrescriptionController extends Controller
     public function create(int $patientId): View
     {
         $data['drugTypes'] = DrugType::query()->whereNot('status', 'Inactive')->get(['drug_type_id', 'drug_type']);
-        $data['drugs'] = Drug::query()->whereNot('status', 'Inactive')->get(['drug_id', 'trade_name']);
+        $data['drugs'] = Drug::query()->whereNot('status', 'Inactive')->get(['drug_id', 'trade_name', 'generic_name']);
         $data['drugStrengths'] = DrugStrength::query()->whereNot('status', 'Inactive')->get(['drug_strength_id', 'drug_strength']);
         $data['drugDoses'] = DrugDoses::query()->whereNot('status', 'Inactive')->get(['drug_dose_id', 'drug_dose']);
         $data['drugDurations'] = DrugDuration::query()->whereNot('status', 'Inactive')->get(['drug_duration_id', 'drug_duration']);

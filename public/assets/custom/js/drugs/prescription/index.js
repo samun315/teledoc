@@ -434,11 +434,13 @@ $("#kt_drug_dose_id").empty();
 $(document).on('change', '#kt_drug_type_id', function () {
     const drugTypeId = $(this).val() // Corrected variable
 
-    getDrugDoseByDrugType(drugTypeId)
+    getDrugDoseByDrugType(drugTypeId, null)
 
 });
 
-function getDrugDoseByDrugType(drugTypeId) {
+function getDrugDoseByDrugType(drugTypeId, selectedDoseId = null) {
+    const $dose = $("#kt_drug_dose_id");
+
     if (drugTypeId) {
         $.ajax({
             url: BASE_URL + "/get-drug-dose/" + drugTypeId,
@@ -446,14 +448,12 @@ function getDrugDoseByDrugType(drugTypeId) {
             success: function (response) {
                 let data = response?.doses;
 
-                if (response?.success && response?.statusCode === 200 && data) {
-                    $("#kt_drug_dose_id").empty();
-                    $("#kt_drug_dose_id").append(
-                        '<option value="">Dose</option>'
-                    );
+                $dose.empty();
+                $dose.append('<option value="">Dose</option>');
 
+                if (response?.success && response?.statusCode === 200 && data) {
                     $.each(data, function (key, value) {
-                        $("#kt_drug_dose_id").append(
+                        $dose.append(
                             '<option value="' +
                             value?.drug_dose_id +
                             '">' +
@@ -462,15 +462,22 @@ function getDrugDoseByDrugType(drugTypeId) {
                         );
                     });
                 }
+
+                // ⭐ Select the dose if provided
+                if (selectedDoseId) {
+                    $dose.val(selectedDoseId).trigger("change");
+                } else {
+                    $dose.val("").trigger("change");
+                }
             },
         });
     } else {
-        $("#kt_drug_dose_id").empty();
-        $("#kt_drug_dose_id").append(
-            '<option value="">Dose</option>'
-        );
+        $dose.empty();
+        $dose.append('<option value="">Dose</option>');
+        $dose.val("").trigger("change");
     }
 }
+
 
 
 let editingDrugIndex = null;
@@ -517,12 +524,25 @@ $(document).on('click', '.edit-drug-btn', function () {
     const card = $(this).closest('.card');
     editingDrugIndex = card.data('drug-index');
 
-    $('#kt_drug_type_id').val(card.find('input[name="drug_type_id[]"]').val()).trigger('change');
-    $('#kt_drug_id').val(card.find('input[name="drug_id[]"]').val()).trigger('change');
-    $('#kt_drug_strength_id').val(card.find('input[name="drug_strength_id[]"]').val()).trigger('change');
-    $('#kt_drug_dose_id').val(card.find('input[name="drug_dose_id[]"]').val()).trigger('change');
-    $('#kt_drug_duration_id').val(card.find('input[name="drug_duration_id[]"]').val()).trigger('change');
-    $('#kt_drug_advice_id').val(card.find('input[name="drug_advice_id[]"]').val()).trigger('change');
+    const typeId = card.find('input[name="drug_type_id[]"]').val();
+    const drugId = card.find('input[name="drug_id[]"]').val();
+    const strengthId = card.find('input[name="drug_strength_id[]"]').val();
+    const doseId = card.find('input[name="drug_dose_id[]"]').val();
+    const durationId = card.find('input[name="drug_duration_id[]"]').val();
+    const adviceId = card.find('input[name="drug_advice_id[]"]').val();
+
+    // Independent selects
+    $('#kt_drug_type_id').val(typeId).trigger('change');
+    $('#kt_drug_id').val(drugId).trigger('change');
+    $('#kt_drug_strength_id').val(strengthId).trigger('change');
+    $('#kt_drug_duration_id').val(durationId).trigger('change');
+    $('#kt_drug_advice_id').val(adviceId).trigger('change');
+
+    // 🔥 Dependent dose load + set selected
+    // loadDose(typeId, function() {
+    //     $('#kt_drug_dose_id').val(doseId).trigger('change');
+    // });
+    getDrugDoseByDrugType(typeId, doseId);
 
     $('#btnUpdateDrug').removeClass('d-none');
     $('#btnUpdateDrug').addClass('d-block');
@@ -878,3 +898,119 @@ function uploadFile(file) {
         }
     });
 }
+
+// NEW MEDICINE ADD CODE
+
+let selectedForm = $("#submitForm");
+
+let validate = selectedForm.validate({
+    rules: {
+        name: "required",
+    },
+    onsubmit: true,
+});
+$(".formReset").on("click", function () {
+    formReset();
+});
+
+function formReset() {
+    $("#submitForm").trigger("reset");
+    $(".status").val("Active").trigger("change");
+}
+
+$("#openDrugModal").on("click", function () {
+    openDrugModal();
+});
+
+function openDrugModal() {
+    formReset();
+
+    $("#kt_drug_id").val(null);
+    loader(selectedForm, false);
+
+    $("#modalTitle").html("Add Drug");
+    $(".btnSubmit").html("Save");
+    $("#showModal").modal("show");
+}
+
+selectedForm.submit(function (e) {
+    e.preventDefault();
+
+    if (!validate.valid()) return;
+
+    loader(selectedForm, true);
+
+    // Setup CSRF token
+    setCSRFToken();
+
+    $(".error").remove();
+
+    const formData = new FormData(this);
+
+    let URL = `${ORIGIN_URL}/drug/store`;
+
+    $.ajax({
+        type: "POST", // Always use POST for FormData, append _method for PUT
+        url: URL,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: handleSuccessManual,
+        error: handleError,
+    });
+});
+
+function handleSuccessManual(response) {
+    // response এর ভিতরে নতুন medicine data আসবে
+    // ধরলাম response.data = { drug_id: 15, trade_name: "New Medicine" }
+
+    const drug = response.data;
+
+    // Medicine dropdown select2
+    const $medicineSelect = $("#kt_drug_id");
+
+    // নতুন option append করব
+    let text = `${drug.trade_name} (${drug.generic_name})`;
+    let newOption = new Option(text, drug.drug_id, true, true);
+
+
+    // select2 তে option add + select
+    $medicineSelect.append(newOption).trigger('change');
+
+    // Modal hide (যদি modal থাকে)
+    $("#showModal").modal('hide');
+
+    // Loader off
+    loader(selectedForm, false);
+
+    // Success message
+    toastr.success("Medicine added & selected successfully");
+}
+
+ClassicEditor
+    .create(document.querySelector('#kt_doctor_advice'), {
+        heading: {
+            options: [
+                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+                { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+                { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' },
+                { model: 'strong', view: 'strong', title: 'Strong', class: 'ck-heading_strong' },
+                { model: 'label', view: 'label', title: 'Label', class: 'ck-heading_label' },
+            ]
+        },
+        // 👉 Inject your CSS styles inside editor
+        fontFamily: {
+            options: ['default', 'Arial', 'Times New Roman']
+        },
+    })
+    .then(editor => {
+        window.termsEditor = editor;
+    })
+    .catch(error => {
+        console.error(error);
+    });

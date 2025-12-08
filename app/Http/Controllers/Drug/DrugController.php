@@ -12,9 +12,9 @@ use Illuminate\View\View;
 
 class DrugController extends Controller
 {
-     public function __construct(protected DrugService $drugService) {}
+    public function __construct(protected DrugService $drugService) {}
 
-         public function index(Request $request): View|JsonResponse
+    public function index(Request $request): View|JsonResponse
     {
         if ($request->ajax()) {
             return $this->drugService->getDrugList($request);
@@ -27,8 +27,8 @@ class DrugController extends Controller
     {
         try {
 
-            $this->drugService->createDrug($request->fields());
-            return sendSuccessResponse(201, 'Drug  created successfully.');
+            $drug = $this->drugService->createDrug($request->fields());
+            return sendSuccessResponse(201, 'Drug  created successfully.', 'data', $drug);
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }
