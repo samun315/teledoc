@@ -2470,11 +2470,11 @@ footer {
 .appointment-item-two-right .appointment-item-content .content-one ul li:before {
   position: absolute;
   content: "";
-  width: 50px;
+  width: 5px;
   height: 1px;
   top: 10px;
   left: 95px;
-  background-color: #b7b2b2;
+  /* background-color: #b7b2b2; */
 }
 .appointment-item-two-right .appointment-item-content .content-two {
   display: inline-block;
