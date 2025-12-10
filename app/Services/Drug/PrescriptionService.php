@@ -105,6 +105,8 @@ class PrescriptionService
                 'prescription_number' => $data['prescription_number'],
                 'patient_id' => $data['patient_id'],
                 'doctor_id' => $data['doctor_id'],
+                'doctor_advice' => $data['doctor_advice'],
+                'follow_up' => $data['follow_up'],
                 'appointment_id' => 1,
                 'created_by' => $data['created_by'],
                 'created_at' => $data['created_at'],

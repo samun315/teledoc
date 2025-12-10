@@ -165,14 +165,21 @@
                 @foreach ($prescription->medication ?? [] as $m)
                     <li>
                         <strong>{{ $m->drugType->drug_type ?? '' }}</strong>.
-                        <strong>{{ $m->drug->trade_name ?? '' }} </strong>
+                        <strong>{{ $m->drug->trade_name ?? '' }}
+                            {{ $m->drug->generic_name ? '(' . $m->drug->generic_name . ')' : '' }} </strong>
                         <strong>{{ $m->drugStrength->drug_strength ?? '' }}</strong><br>
                         {{ $m->drugDose->drug_dose ?? '' }}
                         <strong> {{ $m->drugDuration->drug_duration ?? '' }}</strong> <br>
-                        <strong>Advice:</strong> {{ $m->drugAdvice->drug_advice ?? '' }}
+                        <strong>Instruction:</strong> {{ $m->drugAdvice->drug_advice ?? '' }}
                     </li>
                 @endforeach
             </ol>
+
+            <div class="rx-title">Advice</div>
+            {!! $prescription?->doctor_advice !!}
+
+            <div class="rx-title">Follow up</div>
+            {{ $prescription?->follow_up }}
         </div>
 
     </div>

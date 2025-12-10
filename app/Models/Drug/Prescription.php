@@ -25,6 +25,8 @@ class Prescription extends Model
         'appointment_id',
         'status',
         'old_prescription_date',
+        'doctor_advice',
+        'follow_up',
         'created_by',
         'updated_by',
         'created_at',
