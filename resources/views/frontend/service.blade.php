@@ -52,64 +52,130 @@
     <!-- End Services -->
 
     <!-- Expertise -->
+    @if($expertise)
     <section class="expertise-area pb-70">
         <div class="container">
             <div class="section-title">
-                <h2>Our Expertise</h2>
+                <h2>{{ $expertise->title }}</h2>
             </div>
             <div class="row align-items-center justify-content-center">
                 <div class="col-lg-6">
                     <div class="expertise-item">
                         <div class="row justify-content-center">
+                            @if($expertise->item_1_title)
                             <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".3s">
-                                <a href="blog-details.html">
+                                @php
+                                    $link1 = $expertise->item_1_link ?? '#';
+                                    if ($link1 && !str_starts_with($link1, '/') && !str_starts_with($link1, 'http')) {
+                                        try {
+                                            $link1 = route($link1);
+                                        } catch (\Exception $e) {
+                                            $link1 = '#' . $expertise->item_1_link;
+                                        }
+                                    }
+                                @endphp
+                                <a href="{{ $link1 }}">
                                     <div class="expertise-inner">
-                                        <i class="icofont-doctor-alt"></i>
-                                        <h3>Certified Doctors</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                        @if($expertise->item_1_icon)
+                                        <i class="{{ $expertise->item_1_icon }}"></i>
+                                        @endif
+                                        <h3>{{ $expertise->item_1_title }}</h3>
+                                        @if($expertise->item_1_description)
+                                        <p>{{ $expertise->item_1_description }}</p>
+                                        @endif
                                     </div>
                                 </a>
                             </div>
+                            @endif
+                            @if($expertise->item_2_title)
                             <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".5s">
-                                <a href="blog-details.html">
+                                @php
+                                    $link2 = $expertise->item_2_link ?? '#';
+                                    if ($link2 && !str_starts_with($link2, '/') && !str_starts_with($link2, 'http')) {
+                                        try {
+                                            $link2 = route($link2);
+                                        } catch (\Exception $e) {
+                                            $link2 = '#' . $expertise->item_2_link;
+                                        }
+                                    }
+                                @endphp
+                                <a href="{{ $link2 }}">
                                     <div class="expertise-inner">
-                                        <i class="icofont-stretcher"></i>
-                                        <h3>Emergency</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                        @if($expertise->item_2_icon)
+                                        <i class="{{ $expertise->item_2_icon }}"></i>
+                                        @endif
+                                        <h3>{{ $expertise->item_2_title }}</h3>
+                                        @if($expertise->item_2_description)
+                                        <p>{{ $expertise->item_2_description }}</p>
+                                        @endif
                                     </div>
                                 </a>
                             </div>
+                            @endif
+                            @if($expertise->item_3_title)
                             <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".3s">
-                                <a href="blog-details.html">
+                                @php
+                                    $link3 = $expertise->item_3_link ?? '#';
+                                    if ($link3 && !str_starts_with($link3, '/') && !str_starts_with($link3, 'http')) {
+                                        try {
+                                            $link3 = route($link3);
+                                        } catch (\Exception $e) {
+                                            $link3 = '#' . $expertise->item_3_link;
+                                        }
+                                    }
+                                @endphp
+                                <a href="{{ $link3 }}">
                                     <div class="expertise-inner">
-                                        <i class="icofont-network"></i>
-                                        <h3>Teachnology</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                        @if($expertise->item_3_icon)
+                                        <i class="{{ $expertise->item_3_icon }}"></i>
+                                        @endif
+                                        <h3>{{ $expertise->item_3_title }}</h3>
+                                        @if($expertise->item_3_description)
+                                        <p>{{ $expertise->item_3_description }}</p>
+                                        @endif
                                     </div>
                                 </a>
                             </div>
+                            @endif
+                            @if($expertise->item_4_title)
                             <div class="col-sm-6 col-lg-6 wow fadeInUp" data-wow-delay=".5s">
-                                <a href="blog-details.html">
+                                @php
+                                    $link4 = $expertise->item_4_link ?? '#';
+                                    if ($link4 && !str_starts_with($link4, '/') && !str_starts_with($link4, 'http')) {
+                                        try {
+                                            $link4 = route($link4);
+                                        } catch (\Exception $e) {
+                                            $link4 = '#' . $expertise->item_4_link;
+                                        }
+                                    }
+                                @endphp
+                                <a href="{{ $link4 }}">
                                     <div class="expertise-inner">
-                                        <i class="icofont-ambulance-cross"></i>
-                                        <h3>Ambulance</h3>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                        @if($expertise->item_4_icon)
+                                        <i class="{{ $expertise->item_4_icon }}"></i>
+                                        @endif
+                                        <h3>{{ $expertise->item_4_title }}</h3>
+                                        @if($expertise->item_4_description)
+                                        <p>{{ $expertise->item_4_description }}</p>
+                                        @endif
                                     </div>
                                 </a>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="expertise-item">
                         <div class="expertise-right">
-                            <img src="assets/img/home-one/6.jpg" alt="Expertise">
+                            <img src="{{ $expertise->image ? asset('storage/' . $expertise->image) : asset('frontend/assets/img/home-one/6.jpg') }}" alt="Expertise">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    @endif
     <!-- End Expertise -->
 
     <!-- Blog -->

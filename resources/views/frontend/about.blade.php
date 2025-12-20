@@ -22,41 +22,65 @@
     <!-- End Page Title -->
 
     <!-- About -->
+    @if($about)
     <div class="about-area pt-100 pb-70">
         <div class="container">
             <div class="row align-items-center justify-content-center">
                 <div class="col-lg-6">
                     <div class="about-item">
                         <div class="about-left">
-                            <img src="assets/img/home-one/4.jpg" alt="About">
+                            <img src="{{ $about->left_image ? asset('storage/' . $about->left_image) : asset('frontend/assets/img/home-one/4.jpg') }}" alt="About">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="about-item about-right">
-                        <img src="assets/img/home-one/5.png" alt="About">
-                        <h2>About Our Hospital</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. </p>
+                        @if($about->right_image)
+                        <img src="{{ asset('storage/' . $about->right_image) }}" alt="About">
+                        @endif
+                        <h2>{{ $about->title }}</h2>
+                        <p>{{ $about->description }}</p>
+                        @if($about->feature_1 || $about->feature_2 || $about->feature_3)
                         <ul>
+                            @if($about->feature_1)
                             <li>
                                 <i class="icofont-check-circled"></i>
-                                Browse Our Website
+                                {{ $about->feature_1 }}
                             </li>
+                            @endif
+                            @if($about->feature_2)
                             <li>
                                 <i class="icofont-check-circled"></i>
-                                Choose Service
+                                {{ $about->feature_2 }}
                             </li>
+                            @endif
+                            @if($about->feature_3)
                             <li>
                                 <i class="icofont-check-circled"></i>
-                                Send Messege
+                                {{ $about->feature_3 }}
                             </li>
+                            @endif
                         </ul>
-                        <a href="about.html">Know More</a>
+                        @endif
+                        @if($about->button_text && $about->button_link)
+                        @php
+                            $buttonUrl = $about->button_link;
+                            if (!str_starts_with($buttonUrl, '/') && !str_starts_with($buttonUrl, 'http')) {
+                                try {
+                                    $buttonUrl = route($buttonUrl);
+                                } catch (\Exception $e) {
+                                    $buttonUrl = '#' . $about->button_link;
+                                }
+                            }
+                        @endphp
+                        <a href="{{ $buttonUrl }}">{{ $about->button_text }}</a>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @endif
     <!-- End About -->
 
     <!-- Counter -->

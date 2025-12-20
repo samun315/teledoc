@@ -12,6 +12,8 @@ use App\Models\Service\Service;
 use App\Models\Speciality\Speciality;
 use App\Models\Testimonial\Testimonial;
 use App\Models\Faq\Faq;
+use App\Models\About\About;
+use App\Models\Expertise\Expertise;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -39,7 +41,13 @@ class FrontendController extends Controller
             ->take(3)
             ->get();
 
-        return view('frontend.home', compact('sliders', 'latestBlogs', 'services', 'doctors'));
+        // Fetch active about section
+        $about = About::where('status', 'Active')->first();
+
+        // Fetch active expertise section
+        $expertise = Expertise::where('status', 'Active')->first();
+
+        return view('frontend.home', compact('sliders', 'latestBlogs', 'services', 'doctors', 'about', 'expertise'));
     }
 
     function homePage2(){
@@ -69,8 +77,10 @@ class FrontendController extends Controller
         $testimonials = Testimonial::where('status', 'Active')
             ->orderBy('order', 'asc')
             ->get();
+        // Fetch active about section
+        $about = About::where('status', 'Active')->first();
 
-        return view('frontend.about', compact('latestBlogs', 'services', 'specialities', 'testimonials'));
+        return view('frontend.about', compact('latestBlogs', 'services', 'specialities', 'testimonials', 'about'));
     }
 
     function blog(){
@@ -110,7 +120,9 @@ class FrontendController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        return view('frontend.service', compact('services'));
+        $expertise = Expertise::where('status', 'Active')->first();
+
+        return view('frontend.service', compact('services', 'expertise'));
     }
 
     public function serviceDetails($id){
@@ -119,13 +131,18 @@ class FrontendController extends Controller
             ->where('status', 'Active')
             ->firstOrFail(); // Returns 404 if not found
 
+        // Fetch all active services
+        $services = Service::where('status', 'Active')
+            ->orderBy('order', 'asc')
+            ->get();
+
         // Fetch 3 latest blogs
         $latestBlogs = Blog::where('status', 'Published')
             ->latest('published_at')
             ->take(3)
             ->get();
 
-        return view('frontend.serviceDetails', compact('service', 'latestBlogs'));
+        return view('frontend.serviceDetails', compact('service', 'latestBlogs', 'services'));
     }
 
     public function faqs(){

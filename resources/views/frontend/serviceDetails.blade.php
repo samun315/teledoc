@@ -64,40 +64,28 @@
     <section class="blog-area pt-100 pb-70">
         <div class="container">
             <div class="section-title">
-                <h2>Our Latest Blogs</h2>
+                <h2>Our Services</h2>
             </div>
             <div class="row justify-content-center">
-                @forelse($latestBlogs as $index => $blog)
-                <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay=".{{ 3 + ($index * 2) }}s">
-                    <div class="blog-item">
-                        <div class="blog-top">
-                            <a href="{{ route('blog-details', $blog->slug) }}">
-                                <img src="{{ $blog->banner_image ? asset('storage/' . $blog->banner_image) : asset('frontend/assets/img/home-one/11.jpg') }}" alt="{{ $blog->title }}">
-                            </a>
+                @forelse($services as $index => $service)
+                <div class="col-sm-6 col-lg-3 wow fadeInUp" data-wow-delay=".{{ 3 + ($index % 4) * 2 }}s">
+                    <div class="service-item">
+                        <div class="service-front">
+                            <i class="{{ $service->icon ?? 'icofont-cog' }}"></i>
+                            <h3>{{ $service->title }}</h3>
+                            <p>{{ Str::limit($service->short_description, 70) }}</p>
                         </div>
-                        <div class="blog-bottom">
-                            <h3>
-                                <a href="{{ route('blog-details', $blog->slug) }}">{{ $blog->title }}</a>
-                            </h3>
-                            <p>{{ Str::limit(strip_tags($blog->content), 100) }}</p>
-                            <ul>
-                                <li>
-                                    <a href="{{ route('blog-details', $blog->slug) }}">
-                                        Read More
-                                        <i class="icofont-long-arrow-right"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <i class="icofont-calendar"></i>
-                                    {{ $blog->published_at ? $blog->published_at->format('M d, Y') : $blog->created_at->format('M d, Y') }}
-                                </li>
-                            </ul>
+                        <div class="service-end">
+                            <i class="{{ $service->icon ?? 'icofont-cog' }}"></i>
+                            <h3>{{ $service->title }}</h3>
+                            <p>{{ Str::limit($service->short_description, 70) }}</p>
+                            <a href="{{ route('service-details', $service->service_id) }}">Read More</a>
                         </div>
                     </div>
                 </div>
                 @empty
                 <div class="col-12 text-center py-5">
-                    <p class="text-muted">No blogs available at the moment.</p>
+                    <p class="text-muted">No services available at the moment.</p>
                 </div>
                 @endforelse
             </div>

@@ -38,5 +38,17 @@ Route::middleware(['auth'])->prefix('admin/settings')->name('admin.settings.')->
         Route::post('/logo', [FrontendSettingsController::class, 'uploadLogo'])->name('logo');
         Route::post('/logo/delete', [FrontendSettingsController::class, 'deleteLogo'])->name('logo.delete');
     });
+
+    // About Section Settings
+    Route::prefix('about')->name('about.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\About\AboutController::class, 'index'])->name('index');
+        Route::post('/update', [\App\Http\Controllers\About\AboutController::class, 'update'])->name('update');
+    });
+
+    // Expertise Section Settings
+    Route::prefix('expertise')->name('expertise.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Expertise\ExpertiseController::class, 'index'])->name('index');
+        Route::post('/update', [\App\Http\Controllers\Expertise\ExpertiseController::class, 'update'])->name('update');
+    });
 });
 
