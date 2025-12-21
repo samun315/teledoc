@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Prescription</title>
@@ -10,19 +11,18 @@
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 13px;
-            margin-bottom: 160px;
+            margin-bottom: 200px;
         }
 
-        /* Doctor */
         .doctor-name {
             font-size: 15px;
             font-weight: bold;
         }
+
         .doctor-degree {
             font-size: 12px;
         }
 
-        /* Top Row */
         .top-row {
             width: 100%;
             overflow: hidden;
@@ -50,26 +50,28 @@
             clear: both;
         }
 
-        /* Rx */
         .rx-title {
             font-weight: bold;
             font-size: 16px;
             margin-top: 10px;
         }
+
         .medicine-list {
             list-style: decimal;
             padding-left: 20px;
         }
+
         .medicine-list li::marker {
             font-weight: bold;
         }
+
         .history-section div {
             margin-bottom: 10px;
         }
 
         /* Footer */
         .footer-bar {
-            background: #defce5;
+            background: #ffffff;
             color: #eb0707;
             padding: 10px;
             font-size: 11px;
@@ -78,11 +80,14 @@
             bottom: 0;
             left: 0;
             width: 100%;
+            z-index: 1000;
         }
 
         .footer-left {
             float: left;
             width: 66.66%;
+            display: flex;
+            align-items: center;
         }
 
         .footer-right {
@@ -92,16 +97,15 @@
         }
 
         .site-logo {
-            float: left;
             max-width: 80px;
             max-height: 50px;
             object-fit: contain;
         }
 
         .doctor-footer-info {
-            float: left;
             margin-left: 10px;
             line-height: 1.4;
+            color: #000;
         }
 
         .footer-bar a {
@@ -109,10 +113,16 @@
             text-decoration: underline;
         }
 
+        /* ✅ Signature fixed just above footer */
         .signature-section {
+            position: fixed;
+            right: 30px;
+            bottom: 130px;
+            display: inline-block;
             border-top: 1px solid #ccc;
             padding-top: 10px;
-            margin-top: 20px;
+            background: #fff;
+            z-index: 9999; /* 🔥 FIX: doctor name visible */
         }
 
         @media print {
@@ -120,17 +130,14 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            .no-print {
-                display: none !important;
-            }
         }
     </style>
 </head>
+
 <body class="p-4">
 
     <!-- Doctor + Patient Info -->
     <div class="top-row">
-        <!-- Doctor Info -->
         <div class="doctor-info">
             <span class="text-info doctor-name">
                 {{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }}
@@ -145,7 +152,6 @@
             @endif
         </div>
 
-        <!-- Patient Info (Right Corner) -->
         <div class="patient-info-right">
             <div><span class="label">Name:</span> {{ $prescription->patient->name ?? '' }}</div>
             <div><span class="label">Age:</span> {{ $prescription->patient->age ?? '' }} Yrs</div>
@@ -161,7 +167,6 @@
 
     <!-- Main Content -->
     <div class="row mt-3">
-        <!-- Clinical Records -->
         <div class="col-6 history-section">
             @foreach ($prescription->clinicalRecord ?? [] as $record)
                 @if ($record->subscriptionType)
@@ -173,17 +178,13 @@
             @endforeach
         </div>
 
-        <!-- Rx -->
         <div class="col-6">
             <div class="rx-title">Rx</div>
             <ol class="medicine-list">
                 @foreach ($prescription->medication ?? [] as $m)
                     <li>
                         <strong>{{ $m->drugType->drug_type ?? '' }}</strong>.
-                        <strong>
-                            {{ $m->drug->trade_name ?? '' }}
-                            {{-- {{ $m->drug->generic_name ? '(' . $m->drug->generic_name . ')' : '' }} --}}
-                        </strong>
+                        <strong>{{ $m->drug->trade_name ?? '' }}</strong>
                         <strong> - {{ $m->drugStrength->drug_strength ?? '' }}</strong><br>
 
                         {{ $m->drugDose->drug_dose ?? '' }}
@@ -203,39 +204,34 @@
         </div>
     </div>
 
+    <!-- Signature -->
+    <div class="signature-section text-end">
+        <strong>
+            ({{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }})
+        </strong>
+    </div>
+
     <!-- Footer -->
     <div class="footer-bar">
-        <!-- LEFT: Logo + Doctor Info -->
+        <hr class="text-dark">
         <div class="footer-left">
-            @if($siteInfo?->file_path)
-                <img src="{{ asset($siteInfo->file_path) }}"
-                     alt="{{ $siteInfo?->alt_text ?? 'Logo' }}"
-                     class="site-logo">
+            @if ($siteInfo?->file_path)
+                <img src="{{ asset($siteInfo->file_path) }}" class="site-logo">
             @endif
 
             <div class="doctor-footer-info">
                 <b>{{ $prescription->doctor->name }}'s online Healthcare Platform.</b><br>
                 @php $siteUrl = request()->getSchemeAndHttpHost(); @endphp
-                Website: <a href="{{ $siteUrl }}">{{ $siteUrl }}</a><br>
+                Website: <a class="text-dark" href="{{ $siteUrl }}">{{ $siteUrl }}</a><br>
                 WhatsApp message: {{ $prescription->doctor->phone }}<br>
                 Email: {{ $prescription->doctor->email }}
             </div>
         </div>
 
-        <!-- RIGHT: Schedule -->
-        <div class="footer-right">
-            <b class="text-success">রোগী দেখার সময় :</b><br>
-            @foreach ($prescription->doctor->schedules->groupBy('day_of_week') as $day => $schedules)
-                <div>
-                    <strong>{{ $day }}:</strong>
-                    @foreach ($schedules as $sch)
-                        {{ \Carbon\Carbon::parse($sch->start_time)->format('g:i A') }}
-                        to
-                        {{ \Carbon\Carbon::parse($sch->end_time)->format('g:i A') }}
-                    @endforeach
-                </div>
-            @endforeach
-            <div class="mt-2"> <small>স্বাস্থ্য বিষয়ক পরামর্শের জন্য ওয়েবসাইটে গিয়ে রেজিস্ট্রেশন ও এপয়ন্টমেন্ট করুন।</small> </div>
+        <div class="footer-right text-dark">
+            <small>
+                স্বাস্থ্য বিষয়ক পরামর্শের জন্য ওয়েবসাইটে গিয়ে রেজিস্ট্রেশন ও এপয়ন্টমেন্ট করুন।
+            </small>
         </div>
 
         <div class="clearfix"></div>
@@ -243,6 +239,10 @@
 
     <script nonce="{{ $cspNonce }}">
         document.addEventListener("DOMContentLoaded", function () {
+            const patientName = "{{ $prescription->patient->name ?? '' }}";
+            document.title = patientName
+                ? patientName + "'s Prescription"
+                : "Prescription";
             window.print();
         });
     </script>
