@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Drug;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Drug\PrescriptionRequest;
+use App\Models\Common\SiteLogo;
 use App\Models\Doctor\Doctor;
 use App\Models\Doctor\DoctorAppointment;
 use App\Models\Drug\Drug;
@@ -186,6 +187,8 @@ class PrescriptionController extends Controller
             'medication.drugAdvice',
             'clinicalRecord.subscriptionType'
         ])->findOrFail($prescriptionId);
+
+        $data['siteInfo'] = SiteLogo::query()->where('type','footer')->first();
 
         return view('drugs.prescription.print-prescription', $data);
     }
