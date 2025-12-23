@@ -7,6 +7,9 @@ use App\Models\Blog\Blog;
 use App\Models\Blog\BlogCategory;
 use App\Models\Doctor\Doctor;
 use App\Models\Doctor\DoctorDepartment;
+use App\Models\Doctor\DoctorAppointment;
+use App\Models\Doctor\DoctorSchedule;
+use App\Models\Patient\Patient;
 use App\Models\Slider\Slider;
 use App\Models\Service\Service;
 use App\Models\Speciality\Speciality;
@@ -14,7 +17,12 @@ use App\Models\Testimonial\Testimonial;
 use App\Models\Faq\Faq;
 use App\Models\About\About;
 use App\Models\Expertise\Expertise;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class FrontendController extends Controller
 {
@@ -212,5 +220,245 @@ class FrontendController extends Controller
         }
 
         return view('frontend.doctorDetails', compact('doctor', 'orderedSchedules'));
+    }
+
+    public function appointment(Request $request)
+    {
+        $selectedDoctorId = $request->input('doctor_id');
+        $selectedDoctor = null;
+
+        if ($selectedDoctorId) {
+            $selectedDoctor = Doctor::with(['department', 'degrees'])
+                ->where('doctor_id', $selectedDoctorId)
+                ->where('status', 'Active')
+                ->first();
+        }
+
+        // Get all active departments for filter
+        $departments = DoctorDepartment::where('status', 'Active')
+            ->orderBy('department_name', 'asc')
+            ->get(['department_id', 'department_name']);
+
+        return view('frontend.appointment', compact('selectedDoctor', 'departments'));
+    }
+
+    public function getDoctors(Request $request): JsonResponse
+    {
+        $searchKeyword = $request->input('search');
+        $departmentId = $request->input('department_id');
+
+        $query = Doctor::with(['department', 'degrees'])
+            ->where('status', 'Active');
+
+        if ($searchKeyword) {
+            $query->where(function ($q) use ($searchKeyword) {
+                $q->where('name', 'like', "%{$searchKeyword}%")
+                    ->orWhere('title', 'like', "%{$searchKeyword}%")
+                    ->orWhere('email', 'like', "%{$searchKeyword}%");
+            });
+        }
+
+        if ($departmentId) {
+            $query->where('department_id', $departmentId);
+        }
+
+        $doctors = $query->orderBy('name', 'asc')->get();
+
+        $doctorsData = $doctors->map(function ($doctor) {
+            $photoPath = $doctor->photo ? asset('uploads/doctor/' . $doctor->photo) : asset('assets/img/home-one/doctor/1.jpg');
+
+            return [
+                'doctor_id' => $doctor->doctor_id,
+                'name' => $doctor->name,
+                'title' => $doctor->title,
+                'photo' => $photoPath,
+                'department' => $doctor->department->department_name ?? 'General',
+                'email' => $doctor->email,
+                'phone' => $doctor->phone,
+                'address' => $doctor->address,
+                'description' => $doctor->description,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'doctors' => $doctorsData
+        ]);
+    }
+
+    public function getAvailableSlots($doctorId, $date): JsonResponse
+    {
+        try {
+            $dayOfWeek = Carbon::parse($date)->format('l');
+
+            // Get all schedules for that doctor on the given day
+            $schedules = DoctorSchedule::where('doctor_id', $doctorId)
+                ->where('day_of_week', $dayOfWeek)
+                ->where('status', 'Active')
+                ->get();
+
+            if ($schedules->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No schedules available for this doctor on ' . $dayOfWeek,
+                    'slots' => []
+                ]);
+            }
+
+            // Get all booked slot IDs for this doctor on this date
+            $bookedSlotIds = DoctorAppointment::where('doctor_id', $doctorId)
+                ->where('appointment_date', $date)
+                ->pluck('slot_id')
+                ->toArray();
+
+            $slots = [];
+            $slotId = 1;
+
+            foreach ($schedules as $schedule) {
+                $start = Carbon::parse($schedule->start_time);
+                $end = Carbon::parse($schedule->end_time);
+                $duration = (int) $schedule->slot_duration_minutes;
+
+                while ($start->lt($end)) {
+                    $slotEnd = (clone $start)->addMinutes($duration);
+
+                    if ($slotEnd->lte($end)) {
+                        $isBooked = in_array($slotId, $bookedSlotIds);
+
+                        $slots[] = [
+                            'slot_id' => $slotId,
+                            'start' => $start->format('H:i'),
+                            'end' => $slotEnd->format('H:i'),
+                            'start_formatted' => $start->format('h:i A'),
+                            'end_formatted' => $slotEnd->format('h:i A'),
+                            'is_booked' => $isBooked,
+                        ];
+                        $slotId++;
+                    }
+
+                    $start->addMinutes($duration);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'date' => $date,
+                'doctor_id' => $doctorId,
+                'slots' => $slots
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'slots' => []
+            ], 500);
+        }
+    }
+
+    public function storeAppointment(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'doctor_id' => 'required|exists:doctors,doctor_id',
+                'appointment_date' => 'required|date|after_or_equal:today',
+                'slot_id' => 'required|integer',
+                'slot_time' => 'required|string',
+                'patient_name' => 'required|string|max:255',
+                'patient_phone' => 'required|string|max:20',
+                'patient_email' => 'nullable|email|max:255',
+                'additional_notes' => 'nullable|string|max:1000',
+                'is_registered' => 'nullable|boolean',
+                'patient_id' => 'nullable|exists:patients,patient_id',
+            ]);
+
+            DB::beginTransaction();
+
+            // Check if slot is already booked
+            $existingAppointment = DoctorAppointment::where('doctor_id', $request->doctor_id)
+                ->where('appointment_date', $request->appointment_date)
+                ->where('slot_id', $request->slot_id)
+                ->first();
+
+            if ($existingAppointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This time slot is already booked. Please select another time.'
+                ], 400);
+            }
+
+            $patientId = null;
+
+            // Handle patient (registered or non-registered)
+            if ($request->is_registered && $request->patient_id) {
+                // Registered patient
+                $patientId = $request->patient_id;
+            } else {
+                // Non-registered patient - create or find by phone
+                $patient = Patient::where('phone', $request->patient_phone)->first();
+
+                if (!$patient) {
+                    // Create new patient
+                    $patient = Patient::create([
+                        'name' => $request->patient_name,
+                        'phone' => $request->patient_phone,
+                        'email' => $request->patient_email,
+                        'active' => 'YES',
+                    ]);
+                } else {
+                    // Update existing patient info if needed
+                    $patient->update([
+                        'name' => $request->patient_name,
+                        'email' => $request->patient_email ?? $patient->email,
+                    ]);
+                }
+
+                $patientId = $patient->patient_id;
+            }
+
+            // Generate appointment code
+            $appointmentCode = $this->generateAppointmentCode();
+
+            // Create appointment
+            $appointment = DoctorAppointment::create([
+                'doctor_id' => $request->doctor_id,
+                'patient_id' => $patientId,
+                'appointment_code' => $appointmentCode,
+                'appointment_date' => $request->appointment_date,
+                'slot_id' => $request->slot_id,
+                'slot_time' => $request->slot_time,
+                'appointment_status' => 'Pending',
+                'payment_status' => 'Pending',
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment booked successfully!',
+                'appointment_code' => $appointmentCode,
+                'appointment_id' => $appointment->appointment_id
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function generateAppointmentCode(): string
+    {
+        $date = Carbon::now()->format('ymd');
+        $countToday = DoctorAppointment::whereDate('created_at', Carbon::today())->count();
+        $incremental = str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
+        return 'A-' . $date . '-' . $incremental;
     }
 }

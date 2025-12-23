@@ -442,7 +442,7 @@
                                 <div class="doctor-item">
                                     <div class="doctor-top">
                                         <img src="{{ $photoPath }}" alt="{{ $doctor->name }}" style="width: 100%; height: 350px; object-fit: cover;">
-                                        <a href="{{ route('appointment.create') }}?doctor_id={{ $doctor->doctor_id }}">Get Appointment</a>
+                                        <a href="{{ route('patient.appointment') }}?doctor_id={{ $doctor->doctor_id }}">Get Appointment</a>
                                     </div>
                                     <div class="doctor-bottom">
                                         <h3>

@@ -40,6 +40,12 @@ Route::get('/faqs', [FrontendController::class, 'faqs'])->name('faqs');
 Route::get('/doctors', [FrontendController::class, 'doctors'])->name('doctors');
 Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])->name('doctor-details');
 
+// Appointment Booking Routes
+Route::get('/patient/appointment', [FrontendController::class, 'appointment'])->name('patient.appointment');
+Route::get('/appointment/get-doctors', [FrontendController::class, 'getDoctors'])->name('appointment.get-doctors');
+Route::get('/appointment/get-available-slots/{doctorId}/{date}', [FrontendController::class, 'getAvailableSlots'])->name('appointment.get-available-slots');
+Route::post('/appointment/store', [FrontendController::class, 'storeAppointment'])->name('appointment.store');
+
 // Include Settings Routes
 require __DIR__.'/settings.php';
 
