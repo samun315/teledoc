@@ -441,14 +441,16 @@
                             <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay="{{ $delay }}">
                                 <div class="doctor-item">
                                     <div class="doctor-top">
-                                        <img src="{{ $photoPath }}" alt="{{ $doctor->name }}" style="width: 100%; height: 350px; object-fit: cover;">
-                                        <a href="{{ route('patient.appointment') }}?doctor_id={{ $doctor->doctor_id }}">Get Appointment</a>
+                                        <img src="{{ $photoPath }}" alt="{{ $doctor->name }}">
                                     </div>
                                     <div class="doctor-bottom">
                                         <h3>
                                             <a href="{{ route('doctor-details', $doctor->doctor_id) }}">{{ $doctor->title }} {{ $doctor->name }}</a>
                                         </h3>
                                         <span>{{ $doctor->department->department_name ?? 'General' }}</span>
+                                    </div>
+                                    <div class="doctor-appointment-btn">
+                                        <a href="{{ route('patient.appointment') }}?doctor_id={{ $doctor->doctor_id }}" class="btn-appointment">Get Appointment</a>
                                     </div>
                                 </div>
                             </div>

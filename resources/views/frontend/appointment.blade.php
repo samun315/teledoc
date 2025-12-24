@@ -179,10 +179,9 @@
                                 </div>
                             </div>
 
-                            <!-- Calendar and Time Slots -->
-                            <div class="col-lg-8">
-                                <!-- Calendar -->
-                                <div class="calendar-card mb-4">
+                            <!-- Calendar -->
+                            <div class="col-lg-4 mb-4">
+                                <div class="calendar-card">
                                     <div class="calendar-header">
                                         <button type="button" class="btn-nav" id="prev-month">
                                             <i class="icofont-simple-left"></i>
@@ -221,8 +220,10 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Time Slots -->
+                            <!-- Time Slots -->
+                            <div class="col-lg-4 mb-4">
                                 <div class="time-slots-card">
                                     <div class="time-slots-header">
                                         <h4><i class="icofont-clock-time"></i> Available Time Slots</h4>
@@ -251,10 +252,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <button type="button" class="btn btn-primary btn-lg" id="proceed-to-step-3">Proceed to Patient Details</button>
                         </div>
                     </div>
 
@@ -307,62 +304,133 @@
                                         <a href="#" class="account-link" id="have-account-link" style="display: none;">I have an account</a>
                                     </div>
                                     <div class="card-body">
-                                        <!-- Guest/Registered Patient Banner -->
-                                        <div class="patient-status-banner" id="patient-status-banner">
-                                            <div class="alert alert-info">
-                                                <i class="icofont-info-circle"></i>
-                                                <strong>Guest Booking</strong>
-                                                <p>Please fill in your details to continue</p>
-                                            </div>
+                                        <!-- Registered Patient Option -->
+                                        <div class="registered-patient-option" id="registered-patient-option">
+                                            <button type="button" class="registered-patient-btn" id="registered-patient-btn">
+                                                <i class="icofont-user-md"></i>
+                                                <span>If you are a registered patient - Click here</span>
+                                                <i class="icofont-simple-down"></i>
+                                            </button>
                                         </div>
 
-                                        <!-- Patient Form -->
-                                        <form id="patient-form">
-                                            <input type="hidden" id="selected-doctor-id" name="doctor_id">
-                                            <input type="hidden" id="selected-date" name="appointment_date">
-                                            <input type="hidden" id="selected-slot-id" name="slot_id">
-                                            <input type="hidden" id="selected-slot-time" name="slot_time">
-                                            <input type="hidden" id="is-registered" name="is_registered" value="0">
-                                            <input type="hidden" id="patient-id" name="patient_id">
-
-                                            <div class="form-group">
-                                                <label>Full Name <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="icofont-user"></i></span>
-                                                    <input type="text" class="form-control" id="patient-name" name="patient_name" placeholder="Enter your full name" required>
+                                        <!-- Guest Patient Fields (Default) -->
+                                        <div class="guest-patient-section" id="guest-patient-section">
+                                            <div class="patient-status-banner">
+                                                <div class="alert alert-info">
+                                                    <i class="icofont-info-circle"></i>
+                                                    <div class="banner-content">
+                                                        <strong>Guest Booking</strong>
+                                                        <p>Please fill in your details to continue</p>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group">
-                                                <label>Phone Number <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="icofont-ui-call"></i></span>
-                                                    <input type="text" class="form-control" id="patient-phone" name="patient_phone" placeholder="Enter your phone number" required>
+                                            <!-- Patient Form -->
+                                            <form id="patient-form">
+                                                <input type="hidden" id="selected-doctor-id" name="doctor_id">
+                                                <input type="hidden" id="selected-date" name="appointment_date">
+                                                <input type="hidden" id="selected-slot-id" name="slot_id">
+                                                <input type="hidden" id="selected-slot-time" name="slot_time">
+                                                <input type="hidden" id="is-registered" name="is_registered" value="0">
+                                                <input type="hidden" id="patient-id" name="patient_id">
+
+                                                <div class="form-group">
+                                                    <label>Full Name <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-user"></i></span>
+                                                        <input type="text" class="form-control" id="patient-name" name="patient_name" placeholder="Enter your full name" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Phone Number <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-ui-call"></i></span>
+                                                        <input type="text" class="form-control" id="patient-phone" name="patient_phone" placeholder="Enter your phone number" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Email Address <span class="text-muted">(Optional)</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-ui-message"></i></span>
+                                                        <input type="email" class="form-control" id="patient-email" name="patient_email" placeholder="Enter your email address">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Additional Notes <span class="text-muted">(Optional)</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-file-text"></i></span>
+                                                        <textarea class="form-control" id="additional-notes" name="additional_notes" rows="4" placeholder="Any specific concerns or symptoms you'd like to mention..."></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-center mt-4">
+                                                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="confirm-booking">
+                                                        <i class="icofont-check-circled"></i> Confirm Booking
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!-- Registered Patient Fields (Hidden by default) -->
+                                        <div class="registered-patient-section" id="registered-patient-section" style="display: none;">
+                                            <div class="patient-status-banner">
+                                                <div class="alert alert-success">
+                                                    <i class="icofont-check-circled"></i>
+                                                    <div class="banner-content">
+                                                        <strong>Registered Patient</strong>
+                                                        <p>Please provide your Patient ID or Phone Number to verify your account</p>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group">
-                                                <label>Email Address <span class="text-muted">(Optional)</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="icofont-ui-message"></i></span>
-                                                    <input type="email" class="form-control" id="patient-email" name="patient_email" placeholder="Enter your email address">
-                                                </div>
-                                            </div>
+                                            <form id="registered-patient-form">
+                                                <input type="hidden" id="registered-doctor-id" name="doctor_id">
+                                                <input type="hidden" id="registered-date" name="appointment_date">
+                                                <input type="hidden" id="registered-slot-id" name="slot_id">
+                                                <input type="hidden" id="registered-slot-time" name="slot_time">
+                                                <input type="hidden" id="registered-is-registered" name="is_registered" value="1">
+                                                <input type="hidden" id="registered-patient-id-field" name="patient_id">
 
-                                            <div class="form-group">
-                                                <label>Additional Notes <span class="text-muted">(Optional)</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="icofont-file-text"></i></span>
-                                                    <textarea class="form-control" id="additional-notes" name="additional_notes" rows="4" placeholder="Any specific concerns or symptoms you'd like to mention..."></textarea>
+                                                <div class="form-group">
+                                                    <label>Patient ID <span class="text-muted">(Optional)</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-id-card"></i></span>
+                                                        <input type="text" class="form-control" id="registered-patient-id" name="registered_patient_id" placeholder="Enter your Patient ID">
+                                                    </div>
+                                                    <small class="form-help-text">
+                                                        <i class="icofont-info-circle"></i> If you have a Patient ID, enter it here
+                                                    </small>
                                                 </div>
-                                            </div>
 
-                                            <div class="text-center mt-4">
-                                                <button type="submit" class="btn btn-primary btn-lg btn-block" id="confirm-booking">
-                                                    <i class="icofont-check-circled"></i> Confirm Booking
-                                                </button>
-                                            </div>
-                                        </form>
+                                                <div class="form-group">
+                                                    <label>Phone Number <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-ui-call"></i></span>
+                                                        <input type="text" class="form-control" id="registered-patient-phone" name="registered_patient_phone" placeholder="Enter your registered phone number">
+                                                    </div>
+                                                    <small class="form-help-text">
+                                                        <i class="icofont-info-circle"></i> Provide at least Patient ID or Phone Number to verify your account
+                                                    </small>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Additional Notes <span class="text-muted">(Optional)</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="icofont-file-text"></i></span>
+                                                        <textarea class="form-control" id="registered-additional-notes" name="registered_additional_notes" rows="4" placeholder="Any specific concerns or symptoms you'd like to mention..."></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="text-center mt-4">
+                                                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="confirm-registered-booking">
+                                                        <i class="icofont-check-circled"></i> Confirm Booking
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -373,6 +441,46 @@
         </div>
     </div>
     <!-- End Appointment Booking Wizard -->
+
+    <!-- Slot Confirmation Modal -->
+    <div class="slot-confirmation-modal" id="slot-confirmation-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-card">
+            <div class="modal-card-header">
+                <div class="modal-icon-wrapper">
+                    <i class="icofont-calendar"></i>
+                </div>
+                <h3>Confirm Appointment Slot</h3>
+            </div>
+            <div class="modal-card-body">
+                <p class="modal-message">Do you want to proceed with this appointment slot?</p>
+                <div class="appointment-details">
+                    <div class="detail-item">
+                        <i class="icofont-calendar"></i>
+                        <div class="detail-content">
+                            <span class="detail-label">Date</span>
+                            <span class="detail-value" id="modal-date"></span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="icofont-clock-time"></i>
+                        <div class="detail-content">
+                            <span class="detail-label">Time</span>
+                            <span class="detail-value" id="modal-time"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-card-footer">
+                <button type="button" class="btn-modal btn-modal-no" id="modal-btn-no">
+                    <i class="icofont-close"></i> No, Cancel
+                </button>
+                <button type="button" class="btn-modal btn-modal-yes" id="modal-btn-yes">
+                    <i class="icofont-check"></i> Yes, Proceed
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')

@@ -42,7 +42,6 @@ $(document).ready(function() {
             $('#department-filter').on('change', () => this.loadDoctors());
 
             // Step navigation
-            $('#proceed-to-step-3').on('click', () => this.goToStep(3));
             $('#edit-doctor, #edit-doctor-step3').on('click', () => this.goToStep(1));
             $('#remove-doctor, #remove-doctor-step3').on('click', () => this.clearSelection());
             $('#change-datetime').on('click', (e) => {
@@ -56,6 +55,10 @@ $(document).ready(function() {
 
             // Form submission
             $('#patient-form').on('submit', (e) => this.handleFormSubmit(e));
+            $('#registered-patient-form').on('submit', (e) => this.handleFormSubmit(e));
+
+            // Registered patient toggle (toggles between guest and registered)
+            $('#registered-patient-btn').on('click', () => this.togglePatientType());
         },
 
         loadDoctors: function() {
@@ -290,15 +293,30 @@ $(document).ready(function() {
             $('#time-slots-grid').html(html);
 
             // Attach click handlers
-            $('.time-slot-btn:not(.booked)').on('click', (e) => {
-                $('.time-slot-btn').removeClass('selected');
-                $(e.currentTarget).addClass('selected');
-                this.selectedSlot = {
-                    slot_id: $(e.currentTarget).data('slot-id'),
-                    slot_time: $(e.currentTarget).data('slot-time')
-                };
-                $('#selected-slot-id').val(this.selectedSlot.slot_id);
-                $('#selected-slot-time').val(this.selectedSlot.slot_time);
+            const self = this;
+            $('.time-slot-btn:not(.booked)').on('click', function(e) {
+                const clickedSlot = $(this);
+                const slotId = clickedSlot.data('slot-id');
+                const slotTime = clickedSlot.data('slot-time');
+                
+                // Check if this slot is already selected
+                if (clickedSlot.hasClass('selected')) {
+                    // If already selected, show confirmation to proceed
+                    self.showSlotConfirmation(slotId, slotTime, clickedSlot);
+                } else {
+                    // If not selected, select it first, then show confirmation
+                    $('.time-slot-btn').removeClass('selected');
+                    clickedSlot.addClass('selected');
+                    self.selectedSlot = {
+                        slot_id: slotId,
+                        slot_time: slotTime
+                    };
+                    $('#selected-slot-id').val(self.selectedSlot.slot_id);
+                    $('#selected-slot-time').val(self.selectedSlot.slot_time);
+                    
+                    // Show confirmation popup
+                    self.showSlotConfirmation(slotId, slotTime, clickedSlot);
+                }
             });
         },
 
@@ -375,6 +393,94 @@ $(document).ready(function() {
             this.goToStep(1);
         },
 
+        togglePatientType: function() {
+            const isRegisteredVisible = $('#registered-patient-section').is(':visible');
+            const button = $('#registered-patient-btn');
+            const buttonSpan = button.find('span');
+            
+            if (isRegisteredVisible) {
+                // Switch to Guest Patient
+                $('#registered-patient-section').slideUp(300);
+                $('#guest-patient-section').slideDown(300);
+                
+                // Update button text and state
+                button.removeClass('active');
+                buttonSpan.html('I am a registered patient - Click here');
+                
+                // Update hidden field
+                $('#is-registered').val('0');
+                $('#registered-is-registered').val('0');
+                
+                // Clear registered patient fields
+                $('#registered-patient-id').val('');
+                $('#registered-patient-phone').val('');
+                $('#registered-additional-notes').val('');
+            } else {
+                // Switch to Registered Patient
+                $('#guest-patient-section').slideUp(300);
+                $('#registered-patient-section').slideDown(300);
+                
+                // Update button text and state
+                button.addClass('active');
+                buttonSpan.html('Switch to Guest Booking - Click here');
+                
+                // Update hidden field
+                $('#is-registered').val('1');
+                $('#registered-is-registered').val('1');
+                
+                // Copy values to registered form hidden fields
+                $('#registered-doctor-id').val($('#selected-doctor-id').val());
+                $('#registered-date').val($('#selected-date').val());
+                $('#registered-slot-id').val($('#selected-slot-id').val());
+                $('#registered-slot-time').val($('#selected-slot-time').val());
+            }
+        },
+
+        showSlotConfirmation: function(slotId, slotTime, slotElement) {
+            const self = this;
+            
+            // Format the time for display
+            const timeObj = new Date(`2000-01-01 ${slotTime}`);
+            const formattedTime = timeObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            
+            // Format the date for display
+            const dateObj = new Date(this.selectedDate);
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const formattedDate = `${dayNames[dateObj.getDay()]}, ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+            
+            // Update modal content
+            $('#modal-date').text(formattedDate);
+            $('#modal-time').text(formattedTime);
+            
+            // Show modal
+            $('#slot-confirmation-modal').addClass('show');
+            
+            // Handle Yes button click
+            $('#modal-btn-yes').off('click').on('click', function() {
+                $('#slot-confirmation-modal').removeClass('show');
+                self.goToStep(3);
+            });
+            
+            // Handle No button click
+            $('#modal-btn-no').off('click').on('click', function() {
+                $('#slot-confirmation-modal').removeClass('show');
+                slotElement.removeClass('selected');
+                self.selectedSlot = null;
+                $('#selected-slot-id').val('');
+                $('#selected-slot-time').val('');
+            });
+            
+            // Handle overlay click to close
+            $('.modal-overlay').off('click').on('click', function() {
+                $('#slot-confirmation-modal').removeClass('show');
+                slotElement.removeClass('selected');
+                self.selectedSlot = null;
+                $('#selected-slot-id').val('');
+                $('#selected-slot-time').val('');
+            });
+        },
+
         handleFormSubmit: function(e) {
             e.preventDefault();
 
@@ -383,21 +489,53 @@ $(document).ready(function() {
                 return;
             }
 
-            const formData = {
-                doctor_id: $('#selected-doctor-id').val(),
-                appointment_date: $('#selected-date').val(),
-                slot_id: $('#selected-slot-id').val(),
-                slot_time: $('#selected-slot-time').val(),
-                patient_name: $('#patient-name').val(),
-                patient_phone: $('#patient-phone').val(),
-                patient_email: $('#patient-email').val(),
-                additional_notes: $('#additional-notes').val(),
-                is_registered: $('#is-registered').val(),
-                patient_id: $('#patient-id').val()
-            };
+            // Check if registered patient form is visible
+            const isRegistered = $('#registered-patient-section').is(':visible');
+            
+            let formData;
+            
+            if (isRegistered) {
+                // Registered patient form
+                const patientId = $('#registered-patient-id').val();
+                const patientPhone = $('#registered-patient-phone').val();
+                
+                // Validate: at least one field required
+                if (!patientId && !patientPhone) {
+                    alert('Please provide at least Patient ID or Phone Number to verify your account.');
+                    return;
+                }
+                
+                formData = {
+                    doctor_id: $('#registered-doctor-id').val() || $('#selected-doctor-id').val(),
+                    appointment_date: $('#registered-date').val() || $('#selected-date').val(),
+                    slot_id: $('#registered-slot-id').val() || $('#selected-slot-id').val(),
+                    slot_time: $('#registered-slot-time').val() || $('#selected-slot-time').val(),
+                    patient_id: patientId || null,
+                    patient_phone: patientPhone,
+                    patient_name: '', // Will be fetched from database
+                    patient_email: '',
+                    additional_notes: $('#registered-additional-notes').val() || '',
+                    is_registered: '1'
+                };
+            } else {
+                // Guest patient form
+                formData = {
+                    doctor_id: $('#selected-doctor-id').val(),
+                    appointment_date: $('#selected-date').val(),
+                    slot_id: $('#selected-slot-id').val(),
+                    slot_time: $('#selected-slot-time').val(),
+                    patient_name: $('#patient-name').val(),
+                    patient_phone: $('#patient-phone').val(),
+                    patient_email: $('#patient-email').val(),
+                    additional_notes: $('#additional-notes').val(),
+                    is_registered: $('#is-registered').val(),
+                    patient_id: $('#patient-id').val()
+                };
+            }
 
             // Disable submit button
-            $('#confirm-booking').prop('disabled', true).html('<i class="icofont-spinner-alt-4"></i> Processing...');
+            const submitButton = isRegistered ? $('#confirm-registered-booking') : $('#confirm-booking');
+            submitButton.prop('disabled', true).html('<i class="icofont-spinner-alt-4"></i> Processing...');
 
             $.ajax({
                 url: config.storeUrl || '/appointment/store',
@@ -412,7 +550,7 @@ $(document).ready(function() {
                         window.location.href = config.homeUrl || '/';
                     } else {
                         alert('Error: ' + response.message);
-                        $('#confirm-booking').prop('disabled', false).html('<i class="icofont-check-circled"></i> Confirm Booking');
+                        submitButton.prop('disabled', false).html('<i class="icofont-check-circled"></i> Confirm Booking');
                     }
                 },
                 error: (xhr) => {
@@ -421,7 +559,7 @@ $(document).ready(function() {
                         errorMsg = xhr.responseJSON.message;
                     }
                     alert(errorMsg);
-                    $('#confirm-booking').prop('disabled', false).html('<i class="icofont-check-circled"></i> Confirm Booking');
+                    submitButton.prop('disabled', false).html('<i class="icofont-check-circled"></i> Confirm Booking');
                 }
             });
         },

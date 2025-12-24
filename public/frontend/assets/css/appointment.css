@@ -706,17 +706,319 @@
     padding: 20px;
 }
 
+/* Patient Type Toggle */
+.patient-type-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.patient-type-toggle-wrapper:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.toggle-label i {
+    font-size: 20px;
+    color: #667eea;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: 0.4s;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 42px;
+    width: 42px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(150px);
+}
+
+.toggle-label-text {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 15px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.toggle-label-guest {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.toggle-label-registered {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.toggle-switch input:checked ~ .toggle-label-text .toggle-label-guest {
+    opacity: 0;
+}
+
+.toggle-switch input:checked ~ .toggle-label-text .toggle-label-registered {
+    opacity: 1;
+}
+
 .patient-status-banner {
     margin-bottom: 20px;
 }
 
 .patient-status-banner .alert {
-    border-radius: 5px;
-    padding: 15px;
+    border-radius: 10px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.patient-status-banner .alert-info {
+    background: #e7f3ff;
+    border-color: #007bff;
+    color: #004085;
+}
+
+.patient-status-banner .alert-success {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
 }
 
 .patient-status-banner .alert i {
-    margin-right: 8px;
+    font-size: 24px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.patient-status-banner .banner-content {
+    flex: 1;
+}
+
+.patient-status-banner .banner-content strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.patient-status-banner .banner-content p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Registered Patient Fields */
+.registered-patient-fields {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.guest-patient-fields {
+    animation: slideDown 0.3s ease;
+}
+
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.form-group .input-group-text i {
+    color: #667eea;
+}
+
+/* Registered Patient Option Button */
+.registered-patient-option {
+    margin-bottom: 20px;
+}
+
+/* Registered Patient Button */
+.registered-patient-btn {
+    width: 100%;
+    padding: 18px 25px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    /* Guest mode (default) - Purple gradient */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Registered mode (active) - Green gradient */
+.registered-patient-btn.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.registered-patient-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.registered-patient-btn:hover::before {
+    left: 100%;
+}
+
+.registered-patient-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.registered-patient-btn.active:hover {
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.registered-patient-btn:active {
+    transform: translateY(0);
+}
+
+.registered-patient-btn i {
+    font-size: 20px;
+}
+
+.registered-patient-btn i.icofont-simple-down {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.registered-patient-btn.active i.icofont-simple-down {
+    transform: rotate(180deg);
+}
+
+/* Patient Sections */
+.guest-patient-section,
+.registered-patient-section {
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.registered-patient-section {
+    margin-top: 20px;
+}
+
+/* Form Help Text */
+.form-help-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.form-help-text i {
+    font-size: 14px;
+    color: #667eea;
+}
+
+/* Back to Guest Button */
+#back-to-guest-btn {
+    border-radius: 8px;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+#back-to-guest-btn:hover {
+    transform: translateX(-3px);
 }
 
 .form-group {
@@ -967,26 +1269,276 @@
     .doctor-search-section {
         padding: 20px;
     }
-    
+
     .search-header {
         flex-direction: column;
         text-align: center;
         gap: 10px;
     }
-    
+
     .search-header-icon {
         width: 45px;
         height: 45px;
     }
-    
+
     .search-header-content h4 {
         font-size: 18px;
     }
-    
+
     .search-input-wrapper .search-input,
     .filter-input-wrapper .filter-select {
         padding: 12px 45px 12px 40px;
         font-size: 14px;
+    }
+}
+
+/* Slot Confirmation Modal */
+.slot-confirmation-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.slot-confirmation-modal.show {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-card {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    z-index: 10000;
+    animation: slideUp 0.3s ease;
+    transform-origin: center;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    text-align: center;
+    color: #fff;
+}
+
+.modal-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    backdrop-filter: blur(10px);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-icon-wrapper i {
+    font-size: 40px;
+    color: #fff;
+}
+
+.modal-card-header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.modal-card-body {
+    padding: 30px;
+}
+
+.modal-message {
+    text-align: center;
+    font-size: 16px;
+    color: #6c757d;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.appointment-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.detail-item i {
+    font-size: 24px;
+    color: #667eea;
+    width: 30px;
+    text-align: center;
+}
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 16px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.modal-card-footer {
+    padding: 20px 30px;
+    background: #f8f9fa;
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-modal {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.btn-modal i {
+    font-size: 18px;
+}
+
+.btn-modal-no {
+    background: #fff;
+    color: #6c757d;
+    border: 2px solid #e9ecef;
+}
+
+.btn-modal-no:hover {
+    background: #f8f9fa;
+    border-color: #ced4da;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modal-yes {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-modal-yes:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-modal-yes:active {
+    transform: translateY(0);
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal-card {
+        width: 95%;
+        max-width: none;
+    }
+
+    .modal-card-header {
+        padding: 25px 20px;
+    }
+
+    .modal-icon-wrapper {
+        width: 70px;
+        height: 70px;
+    }
+
+    .modal-icon-wrapper i {
+        font-size: 35px;
+    }
+
+    .modal-card-header h3 {
+        font-size: 20px;
+    }
+
+    .modal-card-body {
+        padding: 25px 20px;
+    }
+
+    .modal-card-footer {
+        padding: 15px 20px;
+        flex-direction: column;
+    }
+
+    .btn-modal {
+        width: 100%;
     }
 }
 
@@ -1028,6 +1580,36 @@
 
     .time-slots-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .registered-patient-btn {
+        padding: 15px 20px;
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+
+    .registered-patient-btn i {
+        font-size: 18px;
+    }
+
+    .registered-patient-btn span {
+        flex: 1;
+        text-align: center;
+    }
+
+    .patient-type-toggle-wrapper {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .toggle-switch {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(calc(100% - 46px));
     }
 }
 

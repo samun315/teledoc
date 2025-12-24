@@ -998,64 +998,141 @@ button:focus {
   margin-bottom: 30px;
   background-color: #ffffff;
   text-align: center;
-  box-shadow: 0px 0px 20px 0px #ddd;
-  border-radius: 10px;
+  box-shadow: 0px 5px 25px rgba(0, 70, 192, 0.08);
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  border: 1px solid #f0f4f8;
+  position: relative;
 }
-.doctor-item:hover .doctor-top:before {
-  opacity: 0.6;
-  transform: scale(1);
+
+.doctor-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0px 10px 35px rgba(0, 70, 192, 0.15);
+  border-color: #e0ebf5;
 }
-.doctor-item:hover .doctor-top a {
-  opacity: 1;
-  bottom: 20px;
-}
+
 .doctor-item .doctor-top {
   position: relative;
-  border-radius: 10px;
+  padding: 30px 30px 20px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  border-bottom: 2px solid #f0f4f8;
 }
-.doctor-item .doctor-top a {
-  display: inline-block;
-  color: #0046c0;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 15px 0;
+
+.doctor-item .doctor-top::before {
+  content: '';
   position: absolute;
-  border-radius: 5px;
+  top: 0;
   left: 0;
   right: 0;
-  bottom: 10px;
+  height: 4px;
+  background: linear-gradient(90deg, #0046c0 0%, #0066ff 50%, #0046c0 100%);
   opacity: 0;
-  max-width: 160px;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: #ffffff;
+  transition: opacity 0.3s ease;
 }
-.doctor-item .doctor-top a:hover {
-  color: #ffffff;
-  background-color: #111111;
+
+.doctor-item:hover .doctor-top::before {
+  opacity: 1;
 }
+
 .doctor-item .doctor-top img {
-  width: 100%;
-  border-radius: 10px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #e0ebf5;
+  box-shadow: 0px 8px 20px rgba(0, 70, 192, 0.15);
+  transition: all 0.4s ease;
+  display: block;
+  margin: 0 auto;
+  background: #ffffff;
 }
+
+.doctor-item:hover .doctor-top img {
+  border-color: #0046c0;
+  box-shadow: 0px 10px 30px rgba(0, 70, 192, 0.25);
+  transform: scale(1.05);
+}
+
 .doctor-item .doctor-bottom {
-  padding-top: 25px;
-  padding-bottom: 25px;
+  padding: 25px 25px 20px;
+  background: #ffffff;
 }
+
+.doctor-item .doctor-bottom h3 {
+  margin-bottom: 8px;
+}
+
 .doctor-item .doctor-bottom h3 a {
   display: block;
-  font-weight: 600;
-  font-size: 22px;
-  margin-bottom: 10px;
-  color: #232323;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+  transition: all 0.3s ease;
+  text-decoration: none;
 }
+
 .doctor-item .doctor-bottom h3 a:hover {
   color: #0046c0;
 }
+
 .doctor-item .doctor-bottom span {
-  display: block;
-  color: #4a6f8a;
+  display: inline-block;
+  color: #0046c0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 16px;
+  background: #e8f2ff;
+  border-radius: 20px;
+  margin-top: 5px;
+}
+
+.doctor-appointment-btn {
+  padding: 0 25px 25px;
+  text-align: center;
+}
+
+.doctor-appointment-btn .btn-appointment {
+  display: inline-block;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0046c0 0%, #0066ff 100%);
   font-size: 15px;
+  font-weight: 600;
+  padding: 12px 35px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0px 4px 15px rgba(0, 70, 192, 0.3);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.doctor-appointment-btn .btn-appointment::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.doctor-appointment-btn .btn-appointment:hover::before {
+  left: 100%;
+}
+
+.doctor-appointment-btn .btn-appointment:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 25px rgba(0, 70, 192, 0.4);
+  color: #ffffff;
+  background: linear-gradient(135deg, #0066ff 0%, #0046c0 100%);
+}
+
+.doctor-appointment-btn .btn-appointment:active {
+  transform: translateY(0);
 }
 
 .doctor-btn {
