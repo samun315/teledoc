@@ -85,26 +85,26 @@ $(document).ready(function() {
         },
 
         renderDoctors: function(doctors) {
-            let html = '<div class="row">';
+            let html = '<div class="row justify-content-center">';
 
             if (doctors.length === 0) {
                 html += '<div class="col-12 text-center py-5"><p class="text-muted">No doctors found matching your criteria.</p></div>';
             } else {
                 doctors.forEach((doctor, index) => {
                     html += `
-                        <div class="col-md-4 mb-4">
-                            <div class="doctor-card">
-                                <div class="doctor-image">
+                        <div class="col-sm-6 col-lg-4 mb-4">
+                            <div class="doctor-item">
+                                <div class="doctor-top">
                                     <img src="${doctor.photo}" alt="${doctor.name}">
                                 </div>
-                                <div class="doctor-info">
-                                    <h4>${doctor.title} ${doctor.name}</h4>
-                                    <p class="specialty">${doctor.department}</p>
-                                    <div class="doctor-contact">
-                                        <p><i class="icofont-ui-message"></i> ${doctor.email || 'N/A'}</p>
-                                        <p><i class="icofont-location-pin"></i> ${doctor.address || 'N/A'}</p>
-                                    </div>
-                                    <button type="button" class="btn btn-primary btn-sm btn-block select-doctor-btn" data-doctor-id="${doctor.doctor_id}" data-doctor-index="${index}">
+                                <div class="doctor-bottom">
+                                    <h3>
+                                        <a href="javascript:void(0);" class="doctor-name-link">${doctor.title} ${doctor.name}</a>
+                                    </h3>
+                                    <span>${doctor.department}</span>
+                                </div>
+                                <div class="doctor-appointment-btn">
+                                    <button type="button" class="btn-appointment select-doctor-btn" data-doctor-id="${doctor.doctor_id}" data-doctor-index="${index}">
                                         Select Doctor
                                     </button>
                                 </div>
