@@ -39,7 +39,7 @@
                         <img src="{{ asset('storage/' . $about->right_image) }}" alt="About">
                         @endif
                         <h2>{{ $about->title }}</h2>
-                        <p>{{ $about->description }}</p>
+                        <div class="about-description">{!! $about->description !!}</div>
                         @if($about->feature_1 || $about->feature_2 || $about->feature_3)
                         <ul>
                             @if($about->feature_1)
