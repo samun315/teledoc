@@ -69,7 +69,14 @@
                             <!-- Right Column -->
                             <div class="col-md-5">
                                 <div class="card shadow-sm p-2">
-                                    <h3>Rx</h3>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h3>Rx</h3>
+
+                                        <button type="button" class="btn btn-icon btn-success btn-sm"
+                                            data-bs-toggle="modal" id="openDrugModal">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </button>
+                                    </div>
                                     <div class="row g-2 mb-2">
                                         <div class="col-md-6">
                                             <label class="fs-5 fw-bold mb-2">Type</label>
@@ -265,6 +272,25 @@
                                     </p>
                                 </div>
                             </div>
+
+                                    <div class="col-md-6">
+                                        <label class="fs-5 fw-bold mb-2 mt-2">Advice</label>
+                                        <textarea class="form-control form-control-solid doctor_advice @error('doctor_advice') is-invalid @enderror"
+                                            id="kt_doctor_advice" placeholder="Write Advices...." name="doctor_advice" data-kt-autosize="true">{{ old('doctor_advice', $prescriptionInfo->doctor_advice ?? '') }}</textarea>
+                                        <span class="text-danger mt-2 terms_error"></span>
+                                        @error('doctor_advice')
+                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="fs-5 fw-bold mb-2 mt-2">Follow Up</label>
+                                        <textarea class="form-control form-control-solid follow_up @error('follow_up') is-invalid @enderror" id="kt_follow_up"
+                                            placeholder="Write Follow Up...." name="follow_up" data-kt-autosize="true">{{ old('follow_up', $prescriptionInfo->follow_up ?? '') }}</textarea>
+                                        <span class="text-danger mt-2 terms_error"></span>
+                                        @error('follow_up')
+                                            <span class="text-danger mt-2 terms_error">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                         </div>
                     </div>
                     <!--end::Card body-->
@@ -279,6 +305,10 @@
         <!--end::Container-->
     </div>
 
+    {{-- start:: Drug add modal --}}
+    @include('drugs.drug.modal.addDrugModal')
+    {{-- end:: Drug add modal --}}
+
     {{-- start:: NEW PRESCRIPTION ADD MODAL --}}
     @include('drugs.prescription.modal.addSubscriptionModal')
     {{-- end:: NEW PRESCRIPTION ADD MODAL --}}
@@ -292,6 +322,8 @@
             let prescriptionData = <?php echo $prescriptionInfo; ?>
         @endisset
     </script>
+    <script src="{{ asset('assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}"
+        {{ Sri::html('assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js') }}></script>
     <!-- begin::Page Custom Stylesheets(used by this page) -->
     <script src="{{ asset('assets/custom/js/drugs/prescription/edit.js') }}"
         {{ Sri::html('assets/custom/js/drugs/prescription/edit.js') }}></script>

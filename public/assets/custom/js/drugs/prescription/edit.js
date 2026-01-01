@@ -193,18 +193,178 @@ function updateTextarea(names) {
 }
 
 
+// Initialize Select2 with tags and search functionality for Type, Strength, Duration, Advice
+function initializeSelect2WithAdd(selectId, apiRoute, fieldName, labelText) {
+    const $select = $(selectId);
+    
+    // Destroy existing Select2 if already initialized
+    if ($select.hasClass("select2-hidden-accessible")) {
+        $select.select2('destroy');
+    }
+    
+    // Store original option texts to check against
+    const originalOptionTexts = [];
+    $select.find('option').each(function() {
+        const optionText = $(this).text().toLowerCase().trim();
+        const optionValue = $(this).val();
+        if (optionValue && optionText) {
+            originalOptionTexts.push(optionText);
+        }
+    });
+    
+    // Initialize Select2 with tags
+    $select.select2({
+        tags: true,
+        allowClear: true,
+        placeholder: labelText,
+        width: '100%'
+    });
+
+    // Handle when user clicks on a new item (tag) in the dropdown
+    $select.on('select2:selecting', function(e) {
+        const selectedData = e.params.args.data;
+        const selectedText = selectedData.text.trim();
+        const selectedId = selectedData.id;
+        
+        // Check if the selected text already exists in the original options
+        const textExists = originalOptionTexts.includes(selectedText.toLowerCase());
+        
+        // Check if it's an existing option (ID is numeric, not equal to text)
+        const isExistingOption = selectedId && selectedId !== selectedText && !isNaN(selectedId);
+        
+        // If it's a new item (text doesn't exist and ID equals text, meaning it's a tag)
+        if (!textExists && !isExistingOption && selectedText !== '') {
+            // Prevent the default selection
+            e.preventDefault();
+            
+            // Show confirmation popup
+            showAddConfirmation(selectId, apiRoute, fieldName, selectedText, labelText);
+        }
+    });
+}
+
+// Show confirmation popup and create new item
+function showAddConfirmation(selectId, apiRoute, fieldName, itemName, labelText) {
+    Swal.fire({
+        title: `Add new ${labelText}?`,
+        text: `Do you want to add "${itemName}" as a new ${labelText.toLowerCase()}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Add',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#dc3545',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed - create the item
+            createNewDropdownItem(selectId, apiRoute, fieldName, itemName, labelText);
+        } else {
+            // User cancelled - no action, dropdown will remain unchanged
+        }
+    });
+}
+
+// Create new item via AJAX
+function createNewDropdownItem(selectId, apiRoute, fieldName, itemName, labelText) {
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    const $select = $(selectId);
+    
+    // Prepare data based on field name
+    const formData = {};
+    formData[fieldName] = itemName;
+    formData['status'] = 'Active';
+    
+    // Special handling for dose - needs drug_type_id
+    if (fieldName === 'drug_dose') {
+        const drugTypeId = $('#kt_drug_type_id').val();
+        if (!drugTypeId) {
+            toastr.error('Please select a Type first before adding Dose.');
+            $select.select2('close');
+            return;
+        }
+        formData['drug_type_id'] = drugTypeId;
+    }
+
+    $.ajax({
+        url: ORIGIN_URL + apiRoute,
+        type: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': csrfToken
+        },
+        beforeSend: function() {
+            // Show loading
+            $select.prop('disabled', true);
+        },
+        success: function(response) {
+            if (response.success && response.statusCode === 201) {
+                // Get the new item data from response
+                let newId, newText;
+                const responseData = response.data || {};
+                
+                if (fieldName === 'drug_type') {
+                    newId = responseData.drug_type_id;
+                    newText = responseData.drug_type || itemName;
+                } else if (fieldName === 'drug_strength') {
+                    newId = responseData.drug_strength_id;
+                    newText = responseData.drug_strength || itemName;
+                } else if (fieldName === 'drug_duration') {
+                    newId = responseData.drug_duration_id;
+                    newText = responseData.drug_duration || itemName;
+                } else if (fieldName === 'drug_advice') {
+                    newId = responseData.drug_advice_id;
+                    newText = responseData.drug_advice || itemName;
+                } else if (fieldName === 'drug_dose') {
+                    newId = responseData.drug_dose_id;
+                    newText = responseData.drug_dose || itemName;
+                }
+
+                // Add new option to select
+                if (newId) {
+                    const newOption = new Option(newText, newId, true, true);
+                    $select.append(newOption).trigger('change');
+                    toastr.success(`${labelText} added successfully!`);
+                } else {
+                    toastr.error('Failed to get new item ID from response.');
+                }
+            } else {
+                toastr.error(response.message || 'Failed to add item.');
+            }
+        },
+        error: function(xhr) {
+            const errorMsg = xhr.responseJSON?.message || 'Failed to add item.';
+            toastr.error(errorMsg);
+        },
+        complete: function() {
+            $select.prop('disabled', false);
+        }
+    });
+}
+
 // DRUG DOSE FETCH 
 
 $("#kt_drug_dose_id").empty();
 
 $(document).on('change', '#kt_drug_type_id', function () {
-    const drugTypeId = $(this).val() // Corrected variable
-
-    getDrugDoseByDrugType(drugTypeId)
-
+    const drugTypeId = $(this).val();
+    
+    // Clear dose dropdown when type changes
+    $('#kt_drug_dose_id').val(null).trigger('change');
+    
+    if (drugTypeId) {
+        getDrugDoseByDrugType(drugTypeId, null);
+    } else {
+        // Clear dose dropdown if no type selected
+        if ($("#kt_drug_dose_id").hasClass("select2-hidden-accessible")) {
+            $("#kt_drug_dose_id").select2('destroy');
+        }
+        $("#kt_drug_dose_id").empty().append('<option value="">Dose</option>');
+    }
 });
 
-function getDrugDoseByDrugType(drugTypeId) {
+function getDrugDoseByDrugType(drugTypeId, selectedDoseId = null) {
+    const $dose = $("#kt_drug_dose_id");
+
     if (drugTypeId) {
         $.ajax({
             url: BASE_URL + "/get-drug-dose/" + drugTypeId,
@@ -212,14 +372,12 @@ function getDrugDoseByDrugType(drugTypeId) {
             success: function (response) {
                 let data = response?.doses;
 
-                if (response?.success && response?.statusCode === 200 && data) {
-                    $("#kt_drug_dose_id").empty();
-                    $("#kt_drug_dose_id").append(
-                        '<option value="">Dose</option>'
-                    );
+                $dose.empty();
+                $dose.append('<option value="">Dose</option>');
 
+                if (response?.success && response?.statusCode === 200 && data) {
                     $.each(data, function (key, value) {
-                        $("#kt_drug_dose_id").append(
+                        $dose.append(
                             '<option value="' +
                             value?.drug_dose_id +
                             '">' +
@@ -228,13 +386,28 @@ function getDrugDoseByDrugType(drugTypeId) {
                         );
                     });
                 }
+
+                // Reinitialize Select2 with tags functionality for dose (only if type is selected)
+                if (drugTypeId) {
+                    initializeSelect2WithAdd('#kt_drug_dose_id', '/drug/drug-doses/store', 'drug_dose', 'Dose');
+                }
+
+                // ⭐ Select the dose if provided
+                if (selectedDoseId) {
+                    $dose.val(selectedDoseId).trigger("change");
+                } else {
+                    $dose.val("").trigger("change");
+                }
             },
         });
     } else {
-        $("#kt_drug_dose_id").empty();
-        $("#kt_drug_dose_id").append(
-            '<option value="">Dose</option>'
-        );
+        // Clear dose dropdown if no type selected
+        if ($dose.hasClass("select2-hidden-accessible")) {
+            $dose.select2('destroy');
+        }
+        $dose.empty();
+        $dose.append('<option value="">Dose</option>');
+        $dose.val("").trigger("change");
     }
 }
 
@@ -283,12 +456,22 @@ $(document).on('click', '.edit-drug-btn', function () {
     const card = $(this).closest('.card');
     editingDrugIndex = card.data('drug-index');
 
-    $('#kt_drug_type_id').val(card.find('input[name="drug_type_id[]"]').val()).trigger('change');
-    $('#kt_drug_id').val(card.find('input[name="drug_id[]"]').val()).trigger('change');
-    $('#kt_drug_strength_id').val(card.find('input[name="drug_strength_id[]"]').val()).trigger('change');
-    $('#kt_drug_dose_id').val(card.find('input[name="drug_dose_id[]"]').val()).trigger('change');
-    $('#kt_drug_duration_id').val(card.find('input[name="drug_duration_id[]"]').val()).trigger('change');
-    $('#kt_drug_advice_id').val(card.find('input[name="drug_advice_id[]"]').val()).trigger('change');
+    const typeId = card.find('input[name="drug_type_id[]"]').val();
+    const drugId = card.find('input[name="drug_id[]"]').val();
+    const strengthId = card.find('input[name="drug_strength_id[]"]').val();
+    const doseId = card.find('input[name="drug_dose_id[]"]').val();
+    const durationId = card.find('input[name="drug_duration_id[]"]').val();
+    const adviceId = card.find('input[name="drug_advice_id[]"]').val();
+
+    // Independent selects
+    $('#kt_drug_type_id').val(typeId).trigger('change');
+    $('#kt_drug_id').val(drugId).trigger('change');
+    $('#kt_drug_strength_id').val(strengthId).trigger('change');
+    $('#kt_drug_duration_id').val(durationId).trigger('change');
+    $('#kt_drug_advice_id').val(adviceId).trigger('change');
+
+    // 🔥 Dependent dose load + set selected
+    getDrugDoseByDrugType(typeId, doseId);
 
     $('#btnUpdateDrug').removeClass('d-none');
     $('#btnUpdateDrug').addClass('d-block');
@@ -475,4 +658,136 @@ $('#prescriptionForm').on('submit', function (e) {
     }
 
 });
+
+// Initialize Select2 with add functionality for Type, Strength, Duration, Advice dropdowns
+// This will run after page load and Select2 initialization
+setTimeout(function() {
+    // Initialize Type dropdown
+    initializeSelect2WithAdd('#kt_drug_type_id', '/drug/drug-type/store', 'drug_type', 'Type');
+    
+    // Initialize Strength dropdown
+    initializeSelect2WithAdd('#kt_drug_strength_id', '/drug/drug-strength/store', 'drug_strength', 'Strength');
+    
+    // Initialize Duration dropdown
+    initializeSelect2WithAdd('#kt_drug_duration_id', '/drug/drug-duration/store', 'drug_duration', 'Duration');
+    
+    // Initialize Advice dropdown
+    initializeSelect2WithAdd('#kt_drug_advice_id', '/drug/drug-advice/store', 'drug_advice', 'Advice');
+    
+    // Note: Dose dropdown will be initialized when Type is selected (handled in getDrugDoseByDrugType)
+}, 1000);
+
+// NEW MEDICINE ADD CODE (from index.js)
+let selectedForm = $("#submitForm");
+
+let validate = selectedForm.validate({
+    rules: {
+        name: "required",
+    },
+    onsubmit: true,
+});
+
+$(".formReset").on("click", function () {
+    formReset();
+});
+
+function formReset() {
+    $("#submitForm").trigger("reset");
+    $(".status").val("Active").trigger("change");
+}
+
+$("#openDrugModal").on("click", function () {
+    openDrugModal();
+});
+
+function openDrugModal() {
+    formReset();
+
+    $("#kt_drug_id").val(null);
+    loader(selectedForm, false);
+
+    $("#modalTitle").html("Add Drug");
+    $(".btnSubmit").html("Save");
+    $("#showModal").modal("show");
+}
+
+selectedForm.submit(function (e) {
+    e.preventDefault();
+
+    if (!validate.valid()) return;
+
+    loader(selectedForm, true);
+
+    // Setup CSRF token
+    setCSRFToken();
+
+    $(".error").remove();
+
+    const formData = new FormData(this);
+
+    let URL = `${ORIGIN_URL}/drug/store`;
+
+    $.ajax({
+        type: "POST",
+        url: URL,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: handleSuccessManual,
+        error: handleError,
+    });
+});
+
+function handleSuccessManual(response) {
+    const drug = response.data;
+
+    // Medicine dropdown select2
+    const $medicineSelect = $("#kt_drug_id");
+
+    // নতুন option append করব
+    let text = `${drug.trade_name} (${drug.generic_name})`;
+    let newOption = new Option(text, drug.drug_id, true, true);
+
+    // select2 তে option add + select
+    $medicineSelect.append(newOption).trigger('change');
+
+    // Modal hide
+    $("#showModal").modal('hide');
+
+    // Loader off
+    loader(selectedForm, false);
+
+    // Success message
+    toastr.success("Medicine added & selected successfully");
+}
+
+// Initialize CKEditor for doctor advice (if not already initialized)
+if (typeof ClassicEditor !== 'undefined') {
+    ClassicEditor
+        .create(document.querySelector('#kt_doctor_advice'), {
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                    { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+                    { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+                    { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' },
+                    { model: 'strong', view: 'strong', title: 'Strong', class: 'ck-heading_strong' },
+                    { model: 'label', view: 'label', title: 'Label', class: 'ck-heading_label' },
+                ]
+            },
+            fontFamily: {
+                options: ['default', 'Arial', 'Times New Roman']
+            },
+        })
+        .then(editor => {
+            window.termsEditor = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
 
