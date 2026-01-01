@@ -27,8 +27,8 @@ class DrugDurationController extends Controller
     {
         try {
 
-            $this->drugDurationService->createDrugDuration($request->fields());
-            return sendSuccessResponse(201, 'Drug Duration created successfully.');
+            $drugDuration = $this->drugDurationService->createDrugDuration($request->fields());
+            return sendSuccessResponse(201, 'Drug Duration created successfully.', 'data', $drugDuration);
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }

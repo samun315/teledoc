@@ -30,8 +30,8 @@ class DrugDosesController extends Controller
     {
         try {
 
-            $this->drugDosesService->createDrugDose($request->fields());
-            return sendSuccessResponse(201, 'Drug Doses created successfully.');
+            $drugDose = $this->drugDosesService->createDrugDose($request->fields());
+            return sendSuccessResponse(201, 'Drug Doses created successfully.', 'data', $drugDose);
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }

@@ -27,8 +27,8 @@ class DrugStrengthController extends Controller
     {
         try {
 
-            $this->drugStrengthService->createDrugStrength($request->fields());
-            return sendSuccessResponse(201, 'Drug strength created successfully.');
+            $drugStrength = $this->drugStrengthService->createDrugStrength($request->fields());
+            return sendSuccessResponse(201, 'Drug strength created successfully.', 'data', $drugStrength);
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }

@@ -27,8 +27,8 @@ class DrugTypeController extends Controller
     {
         try {
 
-            $this->drugTypeService->createDrugType($request->fields());
-            return sendSuccessResponse(201, 'Drug Type created successfully.');
+            $drugType = $this->drugTypeService->createDrugType($request->fields());
+            return sendSuccessResponse(201, 'Drug Type created successfully.', 'data', $drugType);
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }

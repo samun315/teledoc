@@ -27,8 +27,8 @@ class DrugAdviceController extends Controller
     {
         try {
 
-            $this->drugAdviceService->createDrugAdvice($request->fields());
-            return sendSuccessResponse(201, 'Drug Advice created successfully.');
+            $drugAdvice = $this->drugAdviceService->createDrugAdvice($request->fields());
+            return sendSuccessResponse(201, 'Drug Advice created successfully.', 'data', $drugAdvice);
         } catch (Exception $e) {
             return sendErrorResponse('Internal Server Error: ', $e->getMessage());
         }
