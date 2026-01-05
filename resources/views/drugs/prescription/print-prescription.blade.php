@@ -184,7 +184,7 @@
                 @foreach ($prescription->medication ?? [] as $m)
                     <li>
                         <strong>{{ $m->drugType->drug_type ?? '' }}</strong>.
-                        <strong>{{ $m->drug->trade_name ?? '' }}</strong>
+                        <strong>{{ $m->drug->trade_name ?? '' }} ({{$m->drug->generic_name ?? '' }})</strong>
                         <strong> - {{ $m->drugStrength->drug_strength ?? '' }}</strong><br>
 
                         {{ $m->drugDose->drug_dose ?? '' }}

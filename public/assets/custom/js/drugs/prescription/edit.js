@@ -495,8 +495,9 @@ function getDrugFormData() {
     const durationId = $('#kt_drug_duration_id').val();
     const adviceId = $('#kt_drug_advice_id').val();
 
-    if (!drugTypeId || !drugId || !strengthId || !doseId || !durationId || !adviceId) {
-        toastr.warning("Please fill in all fields before adding.");
+    // Only Medicine field is mandatory
+    if (!drugId) {
+        toastr.warning("Please select Medicine before adding.");
         return null;
     }
 
@@ -505,15 +506,31 @@ function getDrugFormData() {
 
 // Helper: Generate drug card HTML
 function generateDrugCard(data, index) {
+    // Build display text with only filled fields
+    let displayParts = [];
+    if (data.drugTypeText && data.drugTypeId) {
+        displayParts.push(`<strong>Type:</strong> ${data.drugTypeText}`);
+    }
+    if (data.medicineText && data.drugId) {
+        displayParts.push(`<strong>Medicine:</strong> ${data.medicineText}`);
+    }
+    if (data.strengthText && data.strengthId) {
+        displayParts.push(`<strong>Strength:</strong> ${data.strengthText}`);
+    }
+    if (data.doseText && data.doseId) {
+        displayParts.push(`<strong>Dose:</strong> ${data.doseText}`);
+    }
+    if (data.durationText && data.durationId) {
+        displayParts.push(`<strong>Duration:</strong> ${data.durationText}`);
+    }
+    if (data.adviceText && data.adviceId) {
+        displayParts.push(`<strong>Advice:</strong> ${data.adviceText}`);
+    }
+    
     return `
         <div class="card card-body border shadow-sm position-relative drug-item" data-drug-index="${index}">
             <div>
-                <strong>Type:</strong> ${data.drugTypeText} |
-                <strong>Medicine:</strong> ${data.medicineText} |
-                <strong>Strength:</strong> ${data.strengthText} |
-                <strong>Dose:</strong> ${data.doseText} |
-                <strong>Duration:</strong> ${data.durationText} |
-                <strong>Advice:</strong> ${data.adviceText}
+                ${displayParts.join(' | ')}
             </div>
             <div class="position-absolute top-0 end-0 m-2">
                 <button type="button" class="btn btn-sm btn-light-danger bg-transparent btn-icon remove-drug-btn"><i class="fas fa-times"></i></button>
@@ -521,12 +538,12 @@ function generateDrugCard(data, index) {
           </div>
 
             <!-- Hidden inputs -->
-            <input type="hidden" name="drug_type_id[]" value="${data.drugTypeId}">
+            <input type="hidden" name="drug_type_id[]" value="${data.drugTypeId || ''}">
             <input type="hidden" name="drug_id[]" value="${data.drugId}">
-            <input type="hidden" name="drug_strength_id[]" value="${data.strengthId}">
-            <input type="hidden" name="drug_dose_id[]" value="${data.doseId}">
-            <input type="hidden" name="drug_duration_id[]" value="${data.durationId}">
-            <input type="hidden" name="drug_advice_id[]" value="${data.adviceId}">
+            <input type="hidden" name="drug_strength_id[]" value="${data.strengthId || ''}">
+            <input type="hidden" name="drug_dose_id[]" value="${data.doseId || ''}">
+            <input type="hidden" name="drug_duration_id[]" value="${data.durationId || ''}">
+            <input type="hidden" name="drug_advice_id[]" value="${data.adviceId || ''}">
         </div>
     `;
 }
@@ -592,12 +609,12 @@ function getOldPrescriptionList(prescriptionId) {
                 } else {
                     prescription.drugs.forEach((drug, dIndex) => {
                         const drugData = {
-                            drugTypeText: drug.drug_type ?? 'N/A',
-                            medicineText: drug.trade_name ?? 'N/A',
-                            strengthText: drug.drug_strength ?? 'N/A',
-                            doseText: drug.drug_dose ?? 'N/A',
-                            durationText: drug.drug_duration ?? 'N/A',
-                            adviceText: drug.drug_advice ?? 'N/A',
+                            drugTypeText: drug.drug_type ?? '',
+                            medicineText: drug.trade_name ?? '',
+                            strengthText: drug.drug_strength ?? '',
+                            doseText: drug.drug_dose ?? '',
+                            durationText: drug.drug_duration ?? '',
+                            adviceText: drug.drug_advice ?? '',
 
                             drugTypeId: drug.drug_type_id ?? '',
                             drugId: drug.drug_id ?? '',

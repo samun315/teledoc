@@ -115,20 +115,23 @@ class PrescriptionService
             $prescription = Prescription::query()->create($prescriptionData);
 
             // make prescription medicaiton data
-            if (!empty($data['drug_type_id'])) {
-                foreach ($data['drug_type_id'] as $index => $drugTypeId) {
-
-                    $medicationData[$index] = [
-                        'prescription_id' => $prescription->prescription_id,
-                        'drug_type_id' => $drugTypeId,
-                        'drug_id' => $data['drug_id'][$index],
-                        'drug_strength_id' => $data['drug_strength_id'][$index],
-                        'drug_dose_id' => $data['drug_dose_id'][$index],
-                        'drug_duration_id' => $data['drug_duration_id'][$index],
-                        'drug_advice_id' => $data['drug_advice_id'][$index],
-                        'created_by' => loggedInUserId(),
-                        'created_at' => createdAtDateConvertToDB(),
-                    ];
+            // Only drug_id is mandatory, other fields are optional
+            if (!empty($data['drug_id'])) {
+                foreach ($data['drug_id'] as $index => $drugId) {
+                    // Only create medication if drug_id is not empty
+                    if (!empty($drugId)) {
+                        $medicationData[$index] = [
+                            'prescription_id' => $prescription->prescription_id,
+                            'drug_type_id' => !empty($data['drug_type_id'][$index]) ? $data['drug_type_id'][$index] : null,
+                            'drug_id' => $drugId,
+                            'drug_strength_id' => !empty($data['drug_strength_id'][$index]) ? $data['drug_strength_id'][$index] : null,
+                            'drug_dose_id' => !empty($data['drug_dose_id'][$index]) ? $data['drug_dose_id'][$index] : null,
+                            'drug_duration_id' => !empty($data['drug_duration_id'][$index]) ? $data['drug_duration_id'][$index] : null,
+                            'drug_advice_id' => !empty($data['drug_advice_id'][$index]) ? $data['drug_advice_id'][$index] : null,
+                            'created_by' => loggedInUserId(),
+                            'created_at' => createdAtDateConvertToDB(),
+                        ];
+                    }
                 }
             }
 
@@ -330,21 +333,27 @@ class PrescriptionService
             }
 
             // 3️⃣ Handle Medication
+            // Only drug_id is mandatory, other fields are optional
             $existingMedications = $prescription->medication()
                 ->pluck('prescription_medication_id')
                 ->toArray();
 
-            $formMedications = $updateData['drug_type_id'] ?? [];
+            $formMedications = $updateData['drug_id'] ?? [];
             $processedMedIds = [];
 
-            foreach ($formMedications as $index => $drugTypeId) {
+            foreach ($formMedications as $index => $drugId) {
+                // Only process if drug_id is not empty (mandatory field)
+                if (empty($drugId)) {
+                    continue;
+                }
+
                 $data = [
-                    'drug_type_id'     => $drugTypeId,
-                    'drug_id'          => $updateData['drug_id'][$index] ?? null,
-                    'drug_strength_id' => $updateData['drug_strength_id'][$index] ?? null,
-                    'drug_dose_id'     => $updateData['drug_dose_id'][$index] ?? null,
-                    'drug_duration_id' => $updateData['drug_duration_id'][$index] ?? null,
-                    'drug_advice_id'   => $updateData['drug_advice_id'][$index] ?? null,
+                    'drug_type_id'     => !empty($updateData['drug_type_id'][$index]) ? $updateData['drug_type_id'][$index] : null,
+                    'drug_id'          => $drugId,
+                    'drug_strength_id' => !empty($updateData['drug_strength_id'][$index]) ? $updateData['drug_strength_id'][$index] : null,
+                    'drug_dose_id'     => !empty($updateData['drug_dose_id'][$index]) ? $updateData['drug_dose_id'][$index] : null,
+                    'drug_duration_id' => !empty($updateData['drug_duration_id'][$index]) ? $updateData['drug_duration_id'][$index] : null,
+                    'drug_advice_id'   => !empty($updateData['drug_advice_id'][$index]) ? $updateData['drug_advice_id'][$index] : null,
                     'created_by'       => $updateData['created_by'] ?? null,
                     'updated_by'       => $updateData['updated_by'] ?? null,
                     'created_at'       => $updateData['created_at'] ?? now(),
