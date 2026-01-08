@@ -792,9 +792,10 @@ function resetDrugForm() {
     $('#kt_drug_advice_id').val('').trigger('change');
 }
 
-// Initialize flatpickr with today's date
+// Initialize flatpickr with today's date as default
 const datePicker = $("#kt_prescription_date").flatpickr({
     dateFormat: "Y-m-d",
+    defaultDate: "today",
     maxDate: "today",
 });
 
@@ -946,13 +947,6 @@ $('#kt_prescription_id').on('change', function () {
 // form submit validation
 $('#prescriptionForm').on('submit', function (e) {
     toastr.clear();
-
-
-    if ($('#drugListWrapper .drug-item').length === 0) {
-        e.preventDefault();
-        toastr.error('Please add at least one drug in prescription before submitting.');
-        return false;
-    }
 
     let doctorId = $('#kt_doctor_id').val();
     if (!doctorId) {

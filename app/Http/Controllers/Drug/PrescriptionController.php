@@ -50,11 +50,23 @@ class PrescriptionController extends Controller
         $data['drugAdvices'] = DrugAdvice::query()->whereNot('status', 'Inactive')->get(['drug_advice_id', 'drug_advice']);
 
         $data['patientInfo'] = Patient::query()->where('patient_id', $patientId)->first();
-        $data['doctorInfos'] = Doctor::query()->whereNot('status', 'Inactive')->get(['doctor_id', 'title', 'name']);
+        $data['doctorInfos'] = Doctor::query()->whereNot('status', 'Inactive')->get(['doctor_id', 'title', 'name', 'email']);
         $data['oldPrescriptionInfos'] = Prescription::query()->where('patient_id', $patientId)->get(['prescription_id', 'prescription_number', 'created_at']);
         $data['subscriptionTypes'] = SubscriptionType::query()->where('status', 'Active')->get(['subscription_type_id', 'subscription_type']);
         $data['appointmentLists'] = DoctorAppointment::query()->with('doctor')->where('patient_id', $patientId)->get();
         $data['prescriptionDocs'] = PrescriptionDocs::query()->where('patient_id', $patientId)->get();
+
+        // Get logged-in user's email and find matching doctor
+        $loggedInUserEmail = session('logged_session_data.email');
+        if ($loggedInUserEmail) {
+            $defaultDoctor = Doctor::query()
+                ->where('email', $loggedInUserEmail)
+                ->whereNot('status', 'Inactive')
+                ->first(['doctor_id']);
+            $data['defaultDoctorId'] = $defaultDoctor ? $defaultDoctor->doctor_id : null;
+        } else {
+            $data['defaultDoctorId'] = null;
+        }
 
         return view('drugs.prescription.create', $data);
     }

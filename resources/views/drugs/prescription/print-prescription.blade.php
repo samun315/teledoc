@@ -153,10 +153,18 @@
         </div>
 
         <div class="patient-info-right">
-            <div><span class="label">Name:</span> {{ $prescription->patient->name ?? '' }}</div>
-            <div><span class="label">Age:</span> {{ $prescription->patient->age ?? '' }} Yrs</div>
-            <div><span class="label">Weight:</span> {{ $prescription->patient->weight ?? '' }} kg</div>
-            <div><span class="label">Blood Group:</span> {{ $prescription->patient->blood_group ?? '' }}</div>
+            @if (!empty($prescription->patient->name))
+                <div><span class="label">Name:</span> {{ $prescription->patient->name }}</div>
+            @endif
+            @if (!empty($prescription->patient->age))
+                <div><span class="label">Age:</span> {{ $prescription->patient->age }} Yrs</div>
+            @endif
+            @if (!empty($prescription->patient->weight))
+                <div><span class="label">Weight:</span> {{ $prescription->patient->weight }} kg</div>
+            @endif
+            @if (!empty($prescription->patient->blood_group))
+                <div><span class="label">Blood Group:</span> {{ $prescription->patient->blood_group }}</div>
+            @endif
             <div><span class="label">Date:</span> {{ $prescription->created_at->format('d.m.Y') }}</div>
         </div>
 
@@ -168,39 +176,61 @@
     <!-- Main Content -->
     <div class="row mt-3">
         <div class="col-6 history-section">
-            @foreach ($prescription->clinicalRecord ?? [] as $record)
-                @if ($record->subscriptionType)
-                    <div>
-                        <strong>{{ $record->subscriptionType->subscription_type }}:</strong>
-                        <div class="ms-3">{{ $record->subscription_details }}</div>
-                    </div>
-                @endif
-            @endforeach
+            @if ($prescription->clinicalRecord && $prescription->clinicalRecord->count() > 0)
+                @foreach ($prescription->clinicalRecord as $record)
+                    @if ($record->subscriptionType && !empty($record->subscription_details))
+                        <div>
+                            <strong>{{ $record->subscriptionType->subscription_type }}:</strong>
+                            <div class="ms-3">{{ $record->subscription_details }}</div>
+                        </div>
+                    @endif
+                @endforeach
+            @endif
         </div>
 
         <div class="col-6">
-            <div class="rx-title">Rx</div>
-            <ol class="medicine-list">
-                @foreach ($prescription->medication ?? [] as $m)
-                    <li>
-                        <strong>{{ $m->drugType->drug_type ?? '' }}</strong>.
-                        <strong>{{ $m->drug->trade_name ?? '' }} ({{$m->drug->generic_name ?? '' }})</strong>
-                        <strong> - {{ $m->drugStrength->drug_strength ?? '' }}</strong><br>
+            @if ($prescription->medication && $prescription->medication->count() > 0)
+                <div class="rx-title">Rx</div>
+                <ol class="medicine-list">
+                    @foreach ($prescription->medication as $m)
+                        <li>
+                            @if ($m->drugType && $m->drugType->drug_type)
+                                <strong>{{ $m->drugType->drug_type }}</strong>.
+                            @endif
+                            @if ($m->drug && $m->drug->trade_name)
+                                <strong>{{ $m->drug->trade_name }}@if($m->drug->generic_name) ({{ $m->drug->generic_name }})@endif</strong>
+                            @endif
+                            @if ($m->drugStrength && $m->drugStrength->drug_strength)
+                                <strong> - {{ $m->drugStrength->drug_strength }}</strong>
+                            @endif
+                            @if (($m->drugDose && $m->drugDose->drug_dose) || ($m->drugDuration && $m->drugDuration->drug_duration))
+                                <br>
+                                @if ($m->drugDose && $m->drugDose->drug_dose)
+                                    {{ $m->drugDose->drug_dose }}
+                                @endif
+                                @if ($m->drugDuration && $m->drugDuration->drug_duration)
+                                    <strong>{{ $m->drugDuration->drug_duration }}</strong>
+                                @endif
+                            @endif
+                            @if ($m->drugAdvice && $m->drugAdvice->drug_advice)
+                                <br>
+                                <strong>Instruction:</strong>
+                                {{ $m->drugAdvice->drug_advice }}
+                            @endif
+                        </li>
+                    @endforeach
+                </ol>
+            @endif
 
-                        {{ $m->drugDose->drug_dose ?? '' }}
-                        <strong>{{ $m->drugDuration->drug_duration ?? '' }}</strong><br>
+            @if (!empty($prescription->doctor_advice))
+                <div class="rx-title">Advice</div>
+                {!! $prescription->doctor_advice !!}
+            @endif
 
-                        <strong>Instruction:</strong>
-                        {{ $m->drugAdvice->drug_advice ?? '' }}
-                    </li>
-                @endforeach
-            </ol>
-
-            <div class="rx-title">Advice</div>
-            {!! $prescription?->doctor_advice !!}
-
-            <div class="rx-title">Follow up</div>
-            {{ $prescription?->follow_up }}
+            @if (!empty($prescription->follow_up))
+                <div class="rx-title">Follow up</div>
+                {{ $prescription->follow_up }}
+            @endif
         </div>
     </div>
 

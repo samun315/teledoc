@@ -206,7 +206,8 @@
                                     <label class="fs-6 fw-bold mb-2">Prescription Date</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control form-control-light"
-                                            id="kt_prescription_date" name="prescription_date" placeholder="Select date">
+                                            id="kt_prescription_date" name="prescription_date" 
+                                            value="{{ old('prescription_date', $prescriptionInfo->created_at ? \Carbon\Carbon::parse($prescriptionInfo->created_at)->format('Y-m-d') : date('Y-m-d')) }}" placeholder="Select date">
                                         <span class="input-group-text bg-light cursor-pointer" id="dateIcon">
                                             <i class="fas fa-calendar-alt"></i>
                                         </span>
@@ -218,10 +219,10 @@
 
                                 <div class="card shadow-sm p-3 mb-2">
                                     <div class="col-md-12 mb-3">
-                                        <label class="fs-6 fw-bold mb-2">Ready Treatment</label>
+                                        <label class="fs-6 fw-bold mb-2">Doctor Name</label>
                                         <select id="kt_doctor_id" name="doctor_id"
                                             class="form-select form-select-light @error('doctor_id') is-invalid @enderror"
-                                            data-control="select2" data-placeholder="Ready Treatment" disabled>
+                                            data-control="select2" data-placeholder="Doctor Name" disabled>
                                             <option value=""></option>
                                             @foreach ($doctorInfos as $doctorInfo)
                                                 <option @if (old('doctor_id', $prescriptionInfo->doctor_id ?? null) == $doctorInfo->doctor_id) selected @endif
