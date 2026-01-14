@@ -42,7 +42,7 @@ class PrescriptionMedication extends Model
 
     public function drugStrength(): HasOne
     {
-        return $this->hasOne(DrugStrength::class, 'drug_strength_id');
+        return $this->hasOne(DrugStrength::class, 'drug_strength_id', 'drug_strength_id');
     }
 
     public function drugDuration(): HasOne
