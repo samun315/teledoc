@@ -6,6 +6,8 @@ use App\Models\Doctor\Doctor;
 use App\Models\Doctor\DoctorAppointment;
 use App\Models\Doctor\DoctorSchedule;
 use App\Models\Drug\DrugType;
+use App\Models\Order\Order;
+use App\Models\Order\OrderItem;
 use App\Models\Patient\Patient;
 use Carbon\Carbon;
 use Exception;
@@ -26,6 +28,11 @@ class DoctorAppointmentService
             ->leftJoin('doctors', 'appointments.doctor_id', '=', 'doctors.doctor_id')
             ->leftJoin('departments', 'doctors.department_id', '=', 'departments.department_id')
             ->leftJoin('patients', 'appointments.patient_id', '=', 'patients.patient_id')
+            ->leftJoin('order_items', function($join) {
+                $join->on('order_items.reference_id', '=', 'appointments.appointment_id')
+                     ->where('order_items.item_type', '=', 'CONSULTATION');
+            })
+            ->leftJoin('orders', 'order_items.order_id', '=', 'orders.order_id')
             ->select(
                 'appointments.*',
                 'patients.name as patient_name',
@@ -40,6 +47,8 @@ class DoctorAppointmentService
                 'doctors.title as doctor_title',
                 'doctors.phone as doctor_phone',
                 'departments.department_name',
+                'orders.status as order_status',
+                'orders.order_id as order_id',
             )->latest();
 
         if ($searchKeyword) {
@@ -106,6 +115,48 @@ class DoctorAppointmentService
 
                 return $info;
             })
+            ->addColumn('payment_status', function ($row) {
+                $orderStatus = $row->order_status ?? null;
+                $orderId = $row->order_id ?? null;
+                $appointmentId = $row->appointment_id ?? null;
+
+                if (!$orderStatus || !$orderId) {
+                    // If no order exists, show message or create order button
+                    if ($appointmentId) {
+                        return '<span class="badge badge-warning">No Order</span><br>
+                                <small class="text-muted">Order not created</small>';
+                    }
+                    return '<span class="badge badge-secondary">No Order</span>';
+                }
+
+                // If status is PENDING, show "Make Payment" button with modal trigger
+                if (strtoupper($orderStatus) === 'PENDING' && $orderId && $orderId > 0) {
+                    return '<button type="button" class="btn btn-sm btn-primary make-payment-btn" data-order-id="' . (int)$orderId . '" title="Order ID: ' . (int)$orderId . '">
+                                <i class="fas fa-credit-card"></i> Make Payment
+                            </button>';
+                }
+
+                // For other statuses, show badge
+                $badgeClass = '';
+                switch (strtoupper($orderStatus)) {
+                    case 'PAID':
+                        $badgeClass = 'badge-success';
+                        break;
+                    case 'CANCELLED':
+                        $badgeClass = 'badge-danger';
+                        break;
+                    case 'FAILED':
+                        $badgeClass = 'badge-danger';
+                        break;
+                    case 'REFUNDED':
+                        $badgeClass = 'badge-info';
+                        break;
+                    default:
+                        $badgeClass = 'badge-secondary';
+                }
+
+                return '<span class="badge ' . $badgeClass . '">' . ucfirst(strtolower($orderStatus)) . '</span>';
+            })
             ->addColumn('action', function ($row) {
 
                 $editBtn = '<a href="' . route('appointment.edit', $row->appointment_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
@@ -115,7 +166,7 @@ class DoctorAppointmentService
                             </div>';
                 return $button;
             })
-            ->rawColumns(['date_of_appointment', 'doctor_info', 'patient_info', 'action'])
+            ->rawColumns(['date_of_appointment', 'doctor_info', 'patient_info', 'payment_status', 'action'])
             ->make(true);
     }
 
@@ -149,6 +200,42 @@ class DoctorAppointmentService
                 'created_at'       => $data['created_at'],
             ]);
 
+            // Get doctor information for consultation fee
+            $doctor = Doctor::findOrFail($data['doctor_id']);
+            $consultationFee = $doctor->consultation_fee ?? 0;
+
+            // Generate order number
+            $orderNo = $this->generateOrderNumber();
+
+            // Get logged in user id
+            $userId = loggedInUserId();
+
+            // Create order
+            $order = Order::create([
+                'order_no' => $orderNo,
+                'user_id' => $userId,
+                'doctor_id' => $data['doctor_id'],
+                'order_type' => 'CONSULTATION',
+                'subtotal' => $consultationFee,
+                'discount' => 0,
+                'tax' => 0,
+                'total_amount' => $consultationFee,
+                'status' => 'PENDING',
+                'created_at' => $data['created_at'],
+            ]);
+
+            // Create order item for consultation
+            OrderItem::create([
+                'order_id' => $order->order_id,
+                'item_type' => 'CONSULTATION',
+                'reference_id' => $appointment->appointment_id,
+                'item_name' => 'Consultation - ' . $doctor->title . ' ' . $doctor->name,
+                'quantity' => 1,
+                'unit_price' => $consultationFee,
+                'total_price' => $consultationFee,
+                'created_at' => $data['created_at'],
+            ]);
+
             DB::commit();
 
             return $appointment;
@@ -173,6 +260,21 @@ class DoctorAppointmentService
 
         // Final ticket number
         return 'A-' . $date . '-' . $incremental;
+    }
+
+    public function generateOrderNumber(): string
+    {
+        // আজকের তারিখ YYMMDD format
+        $date = Carbon::now()->format('ymd'); // e.g., 250115
+
+        // আজকের order এর সংখ্যা
+        $countToday = Order::whereDate('created_at', Carbon::today())->count();
+
+        // Incremental number (start from 1 every day)
+        $incremental = str_pad($countToday + 1, 4, '0', STR_PAD_LEFT); // 0001, 0002, ...
+
+        // Final order number: ORD-YYMMDD-XXXX
+        return 'ORD-' . $date . '-' . $incremental;
     }
 
     public function getDoctorInfoById(int $doctorId): Model|Builder

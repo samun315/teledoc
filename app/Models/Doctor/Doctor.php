@@ -26,6 +26,8 @@ class Doctor extends Model
         'description',
         'photo',
         'status',
+        'consultation_fee',
+        'platform_commission',
         'created_by',
         'updated_by',
         'created_at',

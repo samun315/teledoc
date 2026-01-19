@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Doctor\DoctorDepartmentController;
+use App\Http\Controllers\Doctor\DoctorFeeController;
 use Illuminate\Support\Facades\Route;
 
 // doctor department
@@ -16,7 +17,7 @@ Route::group(['prefix' => 'department', 'as' => 'department.'], function () {
 });
 
 
-// doctor 
+// doctor
 // name route  doctor.index
 // url /doctor
 Route::get('/', [DoctorController::class, 'index'])->name('index');
@@ -25,3 +26,12 @@ Route::post('/store', [DoctorController::class, 'store'])->name('store');
 Route::get('/edit/{doctor_id}', [DoctorController::class, 'edit'])->name('edit');
 Route::put('/update/{doctor_id}', [DoctorController::class, 'update'])->name('update');
 Route::get('/view/{doctor_id}', [DoctorController::class, 'view'])->name('view');
+
+// doctor fee configuration
+// name route  doctor.fee.index
+// url /doctor/fee
+Route::group(['prefix' => 'fee', 'as' => 'fee.'], function () {
+    Route::get('/', [DoctorFeeController::class, 'index'])->name('index');
+    Route::get('/edit/{doctor_id}', [DoctorFeeController::class, 'edit'])->name('edit');
+    Route::put('/update/{doctor_id}', [DoctorFeeController::class, 'update'])->name('update');
+});

@@ -71,6 +71,10 @@ let table = $("#kt_appointment_table").DataTable({
             name: "patient_info",
         },
         {
+            data: "payment_status",
+            name: "payment_status",
+        },
+        {
             data: "appointment_status",
             render: function (data) {
                 if (!data) return "";
@@ -103,6 +107,202 @@ let table = $("#kt_appointment_table").DataTable({
 
 search.keyup(function () {
     table.draw();
+});
+
+// Payment button click handler (event delegation for dynamically loaded content)
+$(document).on('click', '.make-payment-btn', function() {
+    const orderId = $(this).data('order-id');
+    console.log('Payment button clicked, Order ID:', orderId);
+    
+    if (!orderId || orderId === '0' || orderId === 0) {
+        toastr.error('Order ID is missing or invalid.');
+        console.error('Invalid order ID:', orderId);
+        return;
+    }
+    
+    openPaymentModal(orderId);
+});
+
+// Payment Modal Functions
+function openPaymentModal(orderId) {
+    // Validate order ID
+    orderId = parseInt(orderId);
+    if (!orderId || orderId <= 0) {
+        toastr.error('Invalid Order ID.');
+        console.error('Invalid order ID:', orderId);
+        return;
+    }
+    
+    console.log('Opening payment modal for Order ID:', orderId);
+    
+    // Build URL - ensure it starts with /
+    let url;
+    if (typeof ORDER_DETAILS_BASE_URL !== 'undefined') {
+        url = ORDER_DETAILS_BASE_URL;
+        // Ensure URL ends with / if it doesn't already
+        if (!url.endsWith('/')) {
+            url += '/';
+        }
+        url += orderId;
+    } else {
+        url = ORIGIN_URL + '/order/get-order-details/' + orderId;
+    }
+    
+    // Ensure URL is absolute
+    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+        url = '/' + url;
+    }
+    
+    console.log('Fetching order details from:', url);
+    console.log('Order ID:', orderId);
+    console.log('ORDER_DETAILS_BASE_URL:', typeof ORDER_DETAILS_BASE_URL !== 'undefined' ? ORDER_DETAILS_BASE_URL : 'undefined');
+    
+    // Fetch order details
+    $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function(response) {
+            console.log('Order details response:', response);
+            
+            if (response.success && response.data) {
+                const order = response.data;
+                $('#payment_order_id').val(order.order_id);
+                // Use subtotal as base amount (before discount)
+                $('#payment_amount').val(order.subtotal);
+                $('#payment_discount').val(order.discount || 0);
+                calculateFinalAmount();
+                $('#payment_transaction_id').val('');
+                $('#payment_method').val('');
+                
+                // Show modal - try Bootstrap 5 first, then fallback to jQuery
+                const modalElement = document.getElementById('kt_payment_modal');
+                if (modalElement) {
+                    // Try Bootstrap 5
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                    } else {
+                        // Fallback to jQuery/Bootstrap 4
+                        $('#kt_payment_modal').modal('show');
+                    }
+                } else {
+                    console.error('Modal element not found: #kt_payment_modal');
+                    toastr.error('Payment modal not found. Please refresh the page.');
+                }
+            } else {
+                const errorMsg = response.message || 'Failed to load order details.';
+                toastr.error(errorMsg);
+                console.error('Order details failed:', response);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Payment Modal Error:', {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                responseText: xhr.responseText,
+                error: error,
+                orderId: orderId
+            });
+            
+            let errorMessage = 'Error loading order details.';
+            
+            if (xhr.status === 404) {
+                errorMessage = xhr.responseJSON?.message || 'Order not found. This appointment may not have an associated order. Please create a new appointment.';
+            } else if (xhr.status === 403) {
+                errorMessage = 'You do not have permission to access this order.';
+            } else if (xhr.status === 500) {
+                errorMessage = 'Server error. Please try again.';
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            
+            toastr.error(errorMessage);
+            
+            // Log to console for debugging
+            if (xhr.responseJSON) {
+                console.error('Server response:', xhr.responseJSON);
+            }
+        }
+    });
+}
+
+function calculateFinalAmount() {
+    const amount = parseFloat($('#payment_amount').val()) || 0;
+    const discount = parseFloat($('#payment_discount').val()) || 0;
+    const finalAmount = Math.max(0, amount - discount);
+    $('#payment_final_amount').val(finalAmount.toFixed(2));
+}
+
+// Bind discount change event
+$(document).on('input change', '#payment_discount', function() {
+    calculateFinalAmount();
+});
+
+// Payment Form Submit
+$('#kt_payment_form').on('submit', function(e) {
+    e.preventDefault();
+    
+    const submitButton = $('#kt_payment_submit');
+    const indicator = submitButton.find('.indicator-label');
+    const progress = submitButton.find('.indicator-progress');
+    
+    // Disable button and show progress
+    submitButton.prop('disabled', true);
+    indicator.addClass('d-none');
+    progress.removeClass('d-none');
+    
+    const formData = {
+        order_id: $('#payment_order_id').val(),
+        payment_method: $('#payment_method').val(),
+        amount: $('#payment_amount').val(),
+        discount: $('#payment_discount').val(),
+        final_amount: $('#payment_final_amount').val(),
+        transaction_id: $('#payment_transaction_id').val()
+    };
+    
+    // Build payment URL
+    let paymentUrl;
+    if (typeof PROCESS_PAYMENT_URL !== 'undefined') {
+        paymentUrl = PROCESS_PAYMENT_URL;
+    } else {
+        paymentUrl = ORIGIN_URL + '/order/process-payment';
+    }
+    
+    $.ajax({
+        url: paymentUrl,
+        method: 'POST',
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function(response) {
+            if (response.success) {
+                toastr.success(response.message || 'Payment processed successfully!');
+                $('#kt_payment_modal').modal('hide');
+                table.draw(); // Refresh table
+            } else {
+                toastr.error(response.message || 'Payment processing failed.');
+            }
+        },
+        error: function(xhr) {
+            let errorMessage = 'Payment processing failed.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            toastr.error(errorMessage);
+        },
+        complete: function() {
+            // Re-enable button
+            submitButton.prop('disabled', false);
+            indicator.removeClass('d-none');
+            progress.addClass('d-none');
+        }
+    });
 });
 
 $(document).ready(function () {
