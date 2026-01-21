@@ -111,6 +111,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/payment/adjustBalance.php'));
             //End Balance adjust Route
 
+            //Start Pending Payment Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('payment')
+                ->name('payment.')
+                ->group(base_path('routes/payment/pendingPayment.php'));
+            //End Pending Payment Route
+
             //Start Blog Route
             Route::middleware(['web', 'preventBackHistory', 'user'])
                 ->prefix('blog')

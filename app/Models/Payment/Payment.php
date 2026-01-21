@@ -35,6 +35,7 @@ class Payment extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'paid_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function order(): BelongsTo
