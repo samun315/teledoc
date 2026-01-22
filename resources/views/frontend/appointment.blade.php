@@ -481,6 +481,60 @@
             </div>
         </div>
     </div>
+
+    <!-- Appointment Success Modal -->
+    <div class="appointment-success-modal" id="appointment-success-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-card success-modal-card">
+            <div class="modal-card-header success-header">
+                <div class="modal-icon-wrapper success-icon">
+                    <i class="icofont-check-circled"></i>
+                </div>
+                <h3>Appointment Booked Successfully!</h3>
+                <button type="button" class="modal-close-btn" id="success-modal-close-btn" title="Close">
+                    <i class="icofont-close"></i>
+                </button>
+            </div>
+            <div class="modal-card-body success-body">
+                <p class="success-message">Your appointment has been confirmed. Please save the following information:</p>
+                <div class="success-details">
+                    <div class="success-detail-item">
+                        <div class="detail-label-wrapper">
+                            <i class="icofont-ticket"></i>
+                            <span class="detail-label">Appointment Code</span>
+                        </div>
+                        <div class="detail-value-wrapper">
+                            <span class="detail-value" id="success-appointment-code"></span>
+                            <button type="button" class="copy-btn" data-copy-target="success-appointment-code" title="Copy Appointment Code">
+                                <i class="icofont-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="success-detail-item">
+                        <div class="detail-label-wrapper">
+                            <i class="icofont-id-card"></i>
+                            <span class="detail-label">Patient ID Number</span>
+                        </div>
+                        <div class="detail-value-wrapper">
+                            <span class="detail-value" id="success-patient-id-number"></span>
+                            <button type="button" class="copy-btn" data-copy-target="success-patient-id-number" title="Copy Patient ID Number">
+                                <i class="icofont-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="success-note">
+                    <i class="icofont-info-circle"></i>
+                    <p>Please keep this information safe. You will need it for future reference.</p>
+                </div>
+            </div>
+            <div class="modal-card-footer success-footer">
+                <button type="button" class="btn-modal btn-modal-success" id="success-modal-close">
+                    <i class="icofont-check"></i> Done
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')
@@ -494,7 +548,7 @@
     window.appointmentConfig = {
         getDoctorsUrl: '{{ route("appointment.get-doctors") }}',
         getSlotsUrl: '{{ url("appointment/get-available-slots") }}',
-        storeUrl: '{{ route("appointment.store") }}',
+        storeUrl: '{{ route("patient.appointment.store") }}',
         homeUrl: '{{ route("home") }}',
         csrfToken: '{{ csrf_token() }}'
     };

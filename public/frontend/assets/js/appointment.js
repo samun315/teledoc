@@ -298,7 +298,7 @@ $(document).ready(function() {
                 const clickedSlot = $(this);
                 const slotId = clickedSlot.data('slot-id');
                 const slotTime = clickedSlot.data('slot-time');
-                
+
                 // Check if this slot is already selected
                 if (clickedSlot.hasClass('selected')) {
                     // If already selected, show confirmation to proceed
@@ -313,7 +313,7 @@ $(document).ready(function() {
                     };
                     $('#selected-slot-id').val(self.selectedSlot.slot_id);
                     $('#selected-slot-time').val(self.selectedSlot.slot_time);
-                    
+
                     // Show confirmation popup
                     self.showSlotConfirmation(slotId, slotTime, clickedSlot);
                 }
@@ -397,20 +397,20 @@ $(document).ready(function() {
             const isRegisteredVisible = $('#registered-patient-section').is(':visible');
             const button = $('#registered-patient-btn');
             const buttonSpan = button.find('span');
-            
+
             if (isRegisteredVisible) {
                 // Switch to Guest Patient
                 $('#registered-patient-section').slideUp(300);
                 $('#guest-patient-section').slideDown(300);
-                
+
                 // Update button text and state
                 button.removeClass('active');
                 buttonSpan.html('I am a registered patient - Click here');
-                
+
                 // Update hidden field
                 $('#is-registered').val('0');
                 $('#registered-is-registered').val('0');
-                
+
                 // Clear registered patient fields
                 $('#registered-patient-id').val('');
                 $('#registered-patient-phone').val('');
@@ -419,15 +419,15 @@ $(document).ready(function() {
                 // Switch to Registered Patient
                 $('#guest-patient-section').slideUp(300);
                 $('#registered-patient-section').slideDown(300);
-                
+
                 // Update button text and state
                 button.addClass('active');
                 buttonSpan.html('Switch to Guest Booking - Click here');
-                
+
                 // Update hidden field
                 $('#is-registered').val('1');
                 $('#registered-is-registered').val('1');
-                
+
                 // Copy values to registered form hidden fields
                 $('#registered-doctor-id').val($('#selected-doctor-id').val());
                 $('#registered-date').val($('#selected-date').val());
@@ -438,30 +438,30 @@ $(document).ready(function() {
 
         showSlotConfirmation: function(slotId, slotTime, slotElement) {
             const self = this;
-            
+
             // Format the time for display
             const timeObj = new Date(`2000-01-01 ${slotTime}`);
             const formattedTime = timeObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-            
+
             // Format the date for display
             const dateObj = new Date(this.selectedDate);
             const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const formattedDate = `${dayNames[dateObj.getDay()]}, ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
-            
+
             // Update modal content
             $('#modal-date').text(formattedDate);
             $('#modal-time').text(formattedTime);
-            
+
             // Show modal
             $('#slot-confirmation-modal').addClass('show');
-            
+
             // Handle Yes button click
             $('#modal-btn-yes').off('click').on('click', function() {
                 $('#slot-confirmation-modal').removeClass('show');
                 self.goToStep(3);
             });
-            
+
             // Handle No button click
             $('#modal-btn-no').off('click').on('click', function() {
                 $('#slot-confirmation-modal').removeClass('show');
@@ -470,7 +470,7 @@ $(document).ready(function() {
                 $('#selected-slot-id').val('');
                 $('#selected-slot-time').val('');
             });
-            
+
             // Handle overlay click to close
             $('.modal-overlay').off('click').on('click', function() {
                 $('#slot-confirmation-modal').removeClass('show');
@@ -491,20 +491,20 @@ $(document).ready(function() {
 
             // Check if registered patient form is visible
             const isRegistered = $('#registered-patient-section').is(':visible');
-            
+
             let formData;
-            
+
             if (isRegistered) {
                 // Registered patient form
                 const patientId = $('#registered-patient-id').val();
                 const patientPhone = $('#registered-patient-phone').val();
-                
+
                 // Validate: at least one field required
                 if (!patientId && !patientPhone) {
                     alert('Please provide at least Patient ID or Phone Number to verify your account.');
                     return;
                 }
-                
+
                 formData = {
                     doctor_id: $('#registered-doctor-id').val() || $('#selected-doctor-id').val(),
                     appointment_date: $('#registered-date').val() || $('#selected-date').val(),
@@ -537,8 +537,9 @@ $(document).ready(function() {
             const submitButton = isRegistered ? $('#confirm-registered-booking') : $('#confirm-booking');
             submitButton.prop('disabled', true).html('<i class="icofont-spinner-alt-4"></i> Processing...');
 
+            const self = this;
             $.ajax({
-                url: config.storeUrl || '/appointment/store',
+                url: config.storeUrl || '/patient/appointment/store',
                 method: 'POST',
                 data: formData,
                 headers: {
@@ -546,8 +547,8 @@ $(document).ready(function() {
                 },
                 success: (response) => {
                     if (response.success) {
-                        alert('Appointment booked successfully! Your appointment code is: ' + response.appointment_code);
-                        window.location.href = config.homeUrl || '/';
+                        // Show success modal
+                        self.showSuccessModal(response.appointment_code, response.patient_id_number);
                     } else {
                         alert('Error: ' + response.message);
                         submitButton.prop('disabled', false).html('<i class="icofont-check-circled"></i> Confirm Booking');
@@ -583,6 +584,71 @@ $(document).ready(function() {
                     clearTimeout(timeout);
                     timeout = setTimeout(later, wait);
                 };
+            },
+
+            showSuccessModal: function(appointmentCode, patientIdNumber) {
+                // Set the values in the modal
+                $('#success-appointment-code').text(appointmentCode || 'N/A');
+                $('#success-patient-id-number').text(patientIdNumber || 'N/A');
+
+                // Show the modal
+                $('#appointment-success-modal').addClass('show');
+
+                // Handle close button in footer
+                $('#success-modal-close').off('click').on('click', () => {
+                    $('#appointment-success-modal').removeClass('show');
+                    window.location.href = config.homeUrl || '/';
+                });
+
+                // Handle close button in header
+                $('#success-modal-close-btn').off('click').on('click', () => {
+                    $('#appointment-success-modal').removeClass('show');
+                    window.location.href = config.homeUrl || '/';
+                });
+
+                // Handle overlay click to close
+                $('#appointment-success-modal .modal-overlay').off('click').on('click', () => {
+                    $('#appointment-success-modal').removeClass('show');
+                    window.location.href = config.homeUrl || '/';
+                });
+
+                // Initialize copy buttons
+                this.initCopyButtons();
+            },
+
+            initCopyButtons: function() {
+                const self = this;
+                $('.copy-btn').off('click').on('click', function() {
+                    const targetId = $(this).data('copy-target');
+                    const targetElement = $('#' + targetId);
+                    const textToCopy = targetElement.text().trim();
+
+                    if (textToCopy && textToCopy !== 'N/A') {
+                        // Create a temporary textarea element
+                        const tempTextarea = $('<textarea>');
+                        $('body').append(tempTextarea);
+                        tempTextarea.val(textToCopy).select();
+
+                        try {
+                            document.execCommand('copy');
+                            tempTextarea.remove();
+
+                            // Show feedback
+                            const copyBtn = $(this);
+                            const originalIcon = copyBtn.html();
+                            copyBtn.html('<i class="icofont-check"></i>');
+                            copyBtn.addClass('copied');
+
+                            setTimeout(() => {
+                                copyBtn.html(originalIcon);
+                                copyBtn.removeClass('copied');
+                            }, 2000);
+                        } catch (err) {
+                            tempTextarea.remove();
+                            alert('Failed to copy. Please copy manually: ' + textToCopy);
+                        }
+                    }
+                });
             }
         };
 

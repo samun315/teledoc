@@ -44,7 +44,7 @@ Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])
 Route::get('/patient/appointment', [FrontendController::class, 'appointment'])->name('patient.appointment');
 Route::get('/appointment/get-doctors', [FrontendController::class, 'getDoctors'])->name('appointment.get-doctors');
 Route::get('/appointment/get-available-slots/{doctorId}/{date}', [FrontendController::class, 'getAvailableSlots'])->name('appointment.get-available-slots');
-Route::post('/appointment/store', [FrontendController::class, 'storeAppointment'])->name('appointment.store');
+Route::post('/patient/appointment/store', [FrontendController::class, 'storeAppointment'])->name('patient.appointment.store');
 
 // Include Settings Routes
 require __DIR__.'/settings.php';

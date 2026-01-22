@@ -358,18 +358,39 @@ class FrontendController extends Controller
     public function storeAppointment(Request $request): JsonResponse
     {
         try {
-            $request->validate([
+            $validationRules = [
                 'doctor_id' => 'required|exists:doctors,doctor_id',
                 'appointment_date' => 'required|date|after_or_equal:today',
                 'slot_id' => 'required|integer',
                 'slot_time' => 'required|string',
-                'patient_name' => 'required|string|max:255',
-                'patient_phone' => 'required|string|max:20',
                 'patient_email' => 'nullable|email|max:255',
                 'additional_notes' => 'nullable|string|max:1000',
                 'is_registered' => 'nullable|boolean',
-                'patient_id' => 'nullable|exists:patients,patient_id',
-            ]);
+            ];
+
+            // Conditional validation based on patient type
+            // Handle string "1" or "0" as well as boolean
+            $isRegistered = filter_var($request->is_registered, FILTER_VALIDATE_BOOLEAN);
+
+            // Convert empty string to null for patient_id
+            if ($request->has('patient_id') && ($request->patient_id === '' || $request->patient_id === null)) {
+                $request->merge(['patient_id' => null]);
+            }
+
+            if ($isRegistered) {
+                // For registered patients, patient_id is required
+                $validationRules['patient_id'] = 'required|exists:patients,patient_id';
+                $validationRules['patient_phone'] = 'nullable|string|max:20';
+                $validationRules['patient_name'] = 'nullable|string|max:255';
+            } else {
+                // For new/guest patients, name and phone are required
+                // patient_id is NOT validated - it will be created on the backend
+                $validationRules['patient_name'] = 'required|string|max:255';
+                $validationRules['patient_phone'] = 'required|string|max:20';
+                // Don't include patient_id in validation for new patients
+            }
+
+            $request->validate($validationRules);
 
             DB::beginTransaction();
 
@@ -387,39 +408,80 @@ class FrontendController extends Controller
             }
 
             $patientId = null;
+            $patientIdNumber = null;
 
             // Handle patient (registered or non-registered)
-            if ($request->is_registered && $request->patient_id) {
+            // Check if is_registered is true (handle string "1" or boolean true)
+            $isRegistered = filter_var($request->is_registered, FILTER_VALIDATE_BOOLEAN);
+
+            if ($isRegistered && $request->patient_id) {
                 // Registered patient
                 $patientId = $request->patient_id;
-            } else {
-                // Non-registered patient - create or find by phone
-                $patient = Patient::where('phone', $request->patient_phone)->first();
+                $patient = Patient::find($patientId);
 
                 if (!$patient) {
-                    // Create new patient
-                    $patient = Patient::create([
-                        'name' => $request->patient_name,
-                        'phone' => $request->patient_phone,
-                        'email' => $request->patient_email,
-                        'active' => 'YES',
-                    ]);
-                } else {
-                    // Update existing patient info if needed
-                    $patient->update([
-                        'name' => $request->patient_name,
-                        'email' => $request->patient_email ?? $patient->email,
-                    ]);
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Patient not found.'
+                    ], 404);
                 }
 
-                $patientId = $patient->patient_id;
+                $patientIdNumber = $patient->patient_id_number ?? null;
+            } else {
+                // Non-registered patient - check if phone already exists
+                $existingPatient = Patient::where('phone', $request->patient_phone)->first();
+
+                if ($existingPatient) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This phone number is already used for another patient. Please try a different phone number.'
+                    ], 400);
+                }
+
+                // Generate patient_id_number
+                $totalPatient = Patient::query()->count();
+                $patientIdNumber = 'P' . sprintf("%06d", $totalPatient + 1);
+
+                // Create new patient
+                $patient = Patient::create([
+                    'name' => $request->patient_name,
+                    'phone' => $request->patient_phone,
+                    'email' => $request->patient_email,
+                    'patient_id_number' => $patientIdNumber,
+                    'active' => 'YES',
+                ]);
+
+                // Refresh to ensure patient_id is available
+                $patient->refresh();
+
+                // Ensure patient_id is set
+                $patientId = $patient->patient_id ?? $patient->getKey();
+
+                if (!$patientId) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to retrieve patient ID. Please try again.'
+                    ], 400);
+                }
+            }
+
+            // Validate that patient_id is set
+            if (!$patientId) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to create or retrieve patient. Please try again.'
+                ], 400);
             }
 
             // Generate appointment code
             $appointmentCode = $this->generateAppointmentCode();
 
-            // Create appointment
-            $appointment = DoctorAppointment::create([
+            // Create appointment - ensure patient_id is set
+            $appointmentData = [
                 'doctor_id' => $request->doctor_id,
                 'patient_id' => $patientId,
                 'appointment_code' => $appointmentCode,
@@ -428,7 +490,18 @@ class FrontendController extends Controller
                 'slot_time' => $request->slot_time,
                 'appointment_status' => 'Pending',
                 'payment_status' => 'Pending',
-            ]);
+            ];
+
+            // Validate appointment data before creating
+            if (empty($appointmentData['patient_id'])) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Patient ID is required to create appointment.'
+                ], 400);
+            }
+
+            $appointment = DoctorAppointment::create($appointmentData);
 
             DB::commit();
 
@@ -436,6 +509,7 @@ class FrontendController extends Controller
                 'success' => true,
                 'message' => 'Appointment booked successfully!',
                 'appointment_code' => $appointmentCode,
+                'patient_id_number' => $patientIdNumber,
                 'appointment_id' => $appointment->appointment_id
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
