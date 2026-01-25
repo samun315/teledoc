@@ -4,6 +4,8 @@ namespace App\Services\Patient;
 
 use App\Http\Requests\Patient\PatientRequest;
 use App\Models\Patient\Patient;
+use App\Models\User;
+use App\Models\Common\Master\UserRole;
 use App\Traits\FileUploader;
 use Exception;
 use Illuminate\Http\Request;
@@ -71,14 +73,50 @@ class PatientService
 
     public function storePatient(PatientRequest $request): Model
     {
+        DB::beginTransaction();
         try {
             $patientData = $request->fields();
+
+            // Get patient role or use first active role as fallback
+            $patientRole = UserRole::query()
+                ->where('role_name', 'like', '%Patient%')
+                ->where('active', 'YES')
+                ->first();
+
+            if (!$patientRole) {
+                $patientRole = UserRole::query()
+                    ->where('active', 'YES')
+                    ->first();
+            }
+
+            if (!$patientRole) {
+                throw new Exception('No active role found. Please create a role first.');
+            }
+
+            // Create user first
+            $userData = [
+                'user_name' => $patientData['name'],
+                'full_name' => $patientData['name'],
+                'role_id' => $patientRole->role_id,
+                'email' => $patientData['email'] ?? null,
+                'phone' => $patientData['phone'],
+                'address' => $patientData['address'] ?? null,
+                'password' => Hash::make('athful123'),
+                'active' => 'NO',
+                'created_by' => $patientData['created_by'] ?? null,
+            ];
+
+            $user = User::query()->create($userData);
+
+            // Set user_id in patient data
+            $patientData['user_id'] = $user->id;
 
             if (!empty($request->photo)) {
                 $patientData['photo'] = $this->uploadMedia($request, 'photo', 'patient');
             }
 
-            $patientData['password'] = Hash::make($patientData['password']);
+            // Remove password from patient data as it's stored in users table
+            unset($patientData['password']);
 
             $totalPatient = Patient::query()->count();
 
@@ -86,8 +124,11 @@ class PatientService
 
             $patient = Patient::query()->create($patientData);
 
+            DB::commit();
+
             return $patient;
         } catch (Exception $exception) {
+            DB::rollBack();
             throw $exception;
         }
     }

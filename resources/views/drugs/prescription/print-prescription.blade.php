@@ -165,7 +165,7 @@
 
             @if ($prescription->doctor->department && $prescription->doctor->department->department_name)
                 <div class="doctor-degree">
-                    <b>{{ $prescription->doctor->department->department_name }}</b>
+                    <b>{{ strtoupper($prescription->doctor->department->department_name) }}</b>
                 </div>
             @endif
 
@@ -272,11 +272,11 @@
             @endif
 
             <div class="doctor-footer-info">
-                <b>Teledoc Athful's Healthcare Platform.</b><br>
+                <b>Teledoc-Athful's Healthcare Platform.</b><br>
                 Contact: +960 9303893 (WhatsApp message)<br>
                 Email: info@teledocathful.com <br>
                 @php $siteUrl = request()->getSchemeAndHttpHost(); @endphp
-                Weblink: <a class="text-dark" href="https://teledocathful.com/">https://teledocathful.com/</a><br>
+                Weblink:www.teledocathful.com<br>
 
             </div>
         </div>

@@ -40,7 +40,10 @@ class Prescription extends Model
 
     public function clinicalRecord(): HasMany
     {
-        return $this->hasMany(PrescriptionClinicalRecord::class, 'prescription_id', 'prescription_id')->orderBy('subscription_type_id', 'asc');
+        return $this->hasMany(PrescriptionClinicalRecord::class, 'prescription_id', 'prescription_id')
+            ->join('subscription_types', 'prescription_clinical_records.subscription_type_id', '=', 'subscription_types.subscription_type_id')
+            ->orderBy('subscription_types.orders', 'asc')
+            ->select('prescription_clinical_records.*');
     }
 
     public function patient(): BelongsTo

@@ -44,8 +44,8 @@ class PatientRequest extends FormRequest
         } else {
             $validationData['photo'] = 'nullable';
             $validationData['name'] = 'required';
-            $validationData['email'] = 'nullable|email|unique:patients,email';
-            $validationData['phone'] = 'required|unique:patients,phone';
+            $validationData['email'] = 'nullable|email|unique:patients,email|unique:users,email';
+            $validationData['phone'] = 'required|unique:patients,phone|unique:users,phone';
             $validationData['password'] = 'nullable|min:6';
             $validationData['confirm_password'] = 'nullable|same:password';
             $validationData['date_of_birth'] = 'required';
