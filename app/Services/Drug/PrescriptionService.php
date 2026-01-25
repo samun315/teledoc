@@ -32,9 +32,14 @@ class PrescriptionService
             ->select('prescriptions.*', 'patients.name as patient_name', 'patients.email as patient_email', 'patients.phone as patient_phone', 'patients.date_of_birth as patient_dob', 'patients.photo as patient_photo', 'patients.gender as patient_gender', 'patients.blood_group as patient_blood_group', 'patients.marital_status as patient_marital_status', 'doctors.name as doctor_name')->latest();
 
         if ($searchKeyword) {
-            $query->where('patients.name', 'like', '%' . $searchKeyword . '%')
-                ->orWhere('subscriptions.status', 'like', '%' . $searchKeyword . '%')
-                ->orWhere('doctors.name', 'like', '%' . $searchKeyword . '%');
+            $query->where(function($q) use ($searchKeyword) {
+                $q->where('patients.name', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('prescriptions.prescription_number', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('doctors.name', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('patients.phone', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('prescriptions.created_at', 'like', '%' . $searchKeyword . '%')
+                    ->orWhere('patients.email', 'like', '%' . $searchKeyword . '%');
+            });
         }
 
 
@@ -63,9 +68,10 @@ class PrescriptionService
                             ' . $photo . '
                         </div>
                         <div>
+                            <div><i class="fas fa-user text-warning"></i> :' . $name . '</div>
                             <div><i class="fas fa-venus-mars text-danger"></i> :' . $gender . ',
                             <i class="fas fa-tint text-danger ms-1"></i> :' . $blood_group . '</div>
-                            <div><i class="fas fa-ring text-warning"></i> :' . $marital_status . '</div>
+
                             <div><i class="fas fa-calendar-day text-success"></i> :' . $dob . '</div>
                             <div><i class="fas fa-envelope text-primary"></i> :' . $email . '</div>
                             <div><i class="fas fa-phone text-dark"></i> :' . $phone . '</div>

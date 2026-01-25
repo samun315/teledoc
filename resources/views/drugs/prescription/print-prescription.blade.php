@@ -150,6 +150,13 @@
                     </div>
                 @endforeach
             @endif
+
+            @if ($prescription->doctor->department && $prescription->doctor->department->department_name)
+                <div class="doctor-degree">
+                    <b>{{ $prescription->doctor->department->department_name }}</b>
+                </div>
+            @endif
+
         </div>
 
         <div class="patient-info-right">
@@ -250,17 +257,18 @@
             @endif
 
             <div class="doctor-footer-info">
-                <b>{{ $prescription->doctor->name }}'s online Healthcare Platform.</b><br>
+                <b>Teledoc Athful's Healthcare Platform.</b><br>
+                Contact: +960 9303893 (WhatsApp message)<br>
+                Email: info@teledocathful.com <br>
                 @php $siteUrl = request()->getSchemeAndHttpHost(); @endphp
-                Website: <a class="text-dark" href="{{ $siteUrl }}">{{ $siteUrl }}</a><br>
-                WhatsApp message: {{ $prescription->doctor->phone }}<br>
-                Email: {{ $prescription->doctor->email }}
+                Weblink: <a class="text-dark" href="https://teledocathful.com/">https://teledocathful.com/</a><br>
+
             </div>
         </div>
 
         <div class="footer-right text-dark">
             <small>
-                স্বাস্থ্য বিষয়ক পরামর্শের জন্য ওয়েবসাইটে গিয়ে রেজিস্ট্রেশন ও এপয়ন্টমেন্ট করুন।
+                যে কোন স্বাস্থ্য বিষয়ক পরামর্শের জন্য ওয়েবসাইট লিঙ্কে গিয়ে আপনার নাম রেজিস্ট্রেশন করে এপয়ন্টমেন্ট করুন।
             </small>
         </div>
 

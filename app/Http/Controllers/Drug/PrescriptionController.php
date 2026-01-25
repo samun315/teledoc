@@ -189,6 +189,7 @@ class PrescriptionController extends Controller
     {
         $data['prescription'] = Prescription::with([
             'doctor.degrees',
+            'doctor.department',
             'doctor.schedules',
             'patient',
             'medication.drugType',

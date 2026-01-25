@@ -13,7 +13,7 @@
                 <input type="text" class="form-control mb-3" id="searchPatient" placeholder="Search Patient...">
 
                 <!-- Patient List -->
-                <div id="patientList" class="overflow-auto flex-grow-1">
+                <div id="patientList" class="flex-grow-1 overflow-auto" style="max-height: calc(100vh - 300px);">
                 </div>
             </div>
 
