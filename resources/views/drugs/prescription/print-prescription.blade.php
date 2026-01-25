@@ -114,15 +114,27 @@
         }
 
         /* ✅ Signature fixed just above footer */
-        .signature-section {
+        .signature-wrapper {
             position: fixed;
             right: 30px;
             bottom: 130px;
             display: inline-block;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
             background: #fff;
             z-index: 9999; /* 🔥 FIX: doctor name visible */
+        }
+
+        .signature-image {
+            max-width: 150px;
+            max-height: 60px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .signature-section {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            text-align: right;
         }
 
         @media print {
@@ -242,10 +254,13 @@
     </div>
 
     <!-- Signature -->
-    <div class="signature-section text-end">
-        <strong>
-            ({{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }})
-        </strong>
+    <div class="signature-wrapper text-end">
+        <img src="{{ asset('uploads/doctor sign/athful_sign.png') }}" alt="Doctor Signature" class="signature-image">
+        <div class="signature-section">
+            <strong>
+                ({{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }})
+            </strong>
+        </div>
     </div>
 
     <!-- Footer -->
