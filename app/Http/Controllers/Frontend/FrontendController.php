@@ -17,6 +17,8 @@ use App\Models\Testimonial\Testimonial;
 use App\Models\Faq\Faq;
 use App\Models\About\About;
 use App\Models\Expertise\Expertise;
+use App\Models\Order\Order;
+use App\Models\Order\OrderItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -355,6 +357,21 @@ class FrontendController extends Controller
         }
     }
 
+    public function generateOrderNumber(): string
+    {
+        // আজকের তারিখ YYMMDD format
+        $date = Carbon::now()->format('ymd'); // e.g., 250115
+
+        // আজকের order এর সংখ্যা
+        $countToday = Order::whereDate('created_at', Carbon::today())->count();
+
+        // Incremental number (start from 1 every day)
+        $incremental = str_pad($countToday + 1, 4, '0', STR_PAD_LEFT); // 0001, 0002, ...
+
+        // Final order number: ORD-YYMMDD-XXXX
+        return 'ORD-' . $date . '-' . $incremental;
+    }
+
     public function storeAppointment(Request $request): JsonResponse
     {
         try {
@@ -502,6 +519,43 @@ class FrontendController extends Controller
             }
 
             $appointment = DoctorAppointment::create($appointmentData);
+            // Refresh to ensure patient_id is available
+            $appointment->refresh();
+            // Get doctor information for consultation fee
+            $doctor = Doctor::findOrFail($appointmentData['doctor_id']);
+            $consultationFee = $doctor->consultation_fee ?? 0;
+
+            // Generate order number
+            $orderNo = $this->generateOrderNumber();
+
+            // Get logged in user id
+            //$userId = loggedInUserId() ? loggedInUserId() : 'NULL';
+
+            // Create order
+            $order = Order::create([
+                'order_no' => $orderNo,
+                'user_id' => $patientId,
+                'doctor_id' => $appointmentData['doctor_id'],
+                'order_type' => 'CONSULTATION',
+                'subtotal' => $consultationFee,
+                'discount' => 0,
+                'tax' => 0,
+                'total_amount' => $consultationFee,
+                'status' => 'PENDING',
+                'created_at' => $appointment->created_at,
+            ]);
+
+            // Create order item for consultation
+            OrderItem::create([
+                'order_id' => $order->order_id,
+                'item_type' => 'CONSULTATION',
+                'reference_id' => $appointment->appointment_id,
+                'item_name' => 'Consultation - ' . $doctor->title . ' ' . $doctor->name,
+                'quantity' => 1,
+                'unit_price' => $consultationFee,
+                'total_price' => $consultationFee,
+                'created_at' => $appointment->created_at,
+            ]);
 
             DB::commit();
 
