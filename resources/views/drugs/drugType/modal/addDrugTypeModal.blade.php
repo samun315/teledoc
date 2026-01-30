@@ -28,10 +28,10 @@
                         <input type="text" hidden name="drug_type_id" id="kt_drug_type_id">
 
                         <div class="col-md-12 fv-row mb-5">
-                            <label class="required fs-5 fw-bold mb-2">Drug Type</label>
+                            <label class="required fs-5 fw-bold mb-2">Drug Form</label>
                             <input type="text"
                                 class="form-control form-control-solid @error('drug_type') is-invalid @enderror"
-                                placeholder="Enter drug type name" name="drug_type" id="kt_drug_type" />
+                                placeholder="Enter drug form" name="drug_type" id="kt_drug_type" />
                         </div>
 
                         <div class="col-md-12 fv-row mb-5">
@@ -39,7 +39,7 @@
                             <select name="status" id="kt_status"
                                 class="form-select form-select-solid @error('status') is-invalid @enderror"
                                 data-control="select2" data-placeholder="Select Status"
-                                data-dropdown-parent="#showModal">  
+                                data-dropdown-parent="#showModal">
                                 <option value=""></option>
                                 <option value="Active"> Active</option>
                                 <option value="Inactive">Inactive</option>

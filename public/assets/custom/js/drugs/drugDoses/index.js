@@ -34,7 +34,7 @@ function openDrugDosesModal() {
     $("#kt_drug_dose_id").val(null);
     loader(selectedForm, false);
 
-    $("#modalTitle").html("Add Drug Dose");
+    $("#modalTitle").html("Add Drug Frequency");
     $(".btnSubmit").html("Save");
     $("#showModal").modal("show");
 }

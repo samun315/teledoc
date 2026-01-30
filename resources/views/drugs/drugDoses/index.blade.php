@@ -1,14 +1,14 @@
 @extends('master')
 
-@section('title', 'Drug Doses List')
+@section('title', 'Drug Frequency List')
 
 @section('content')
-    <x-toolbar-component title="Drug Doses List" :breadcrumbs="[
+    <x-toolbar-component title="Drug Frequency List" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
         ['label' => 'Drug Management', 'url' => 'javascript:void(0)'],
-        ['label' => 'Drug Doses', 'url' => route('drug.doses.index')],
-        ['label' => 'Drug Doses List', 'active' => true],
+        ['label' => 'Drug Frequency', 'url' => route('drug.doses.index')],
+        ['label' => 'Drug Frequency List', 'active' => true],
     ]" modalTarget="openDrugDosesModal"
         actionIcon="fas fa-plus-circle" actionLabel="Add new" />
     <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -28,7 +28,7 @@
                             </div>
                             <div class="col-md-3">
                                 <select name="drug_type_id" id="drug_type_id" class="form-select form-select-solid"
-                                    data-control="select2" data-placeholder="Select drug type" data-allow-clear="true">
+                                    data-control="select2" data-placeholder="Select drug form" data-allow-clear="true">
                                     <option value=""></option>
                                     @foreach ($drugTypes as $drugType)
                                         <option {{ old('drug_type_id') ? 'selected' : '' }}
@@ -55,8 +55,8 @@
                                 <!--begin::Table row-->
                                 <tr class="text-start text-muted text-uppercase fw-bolder fs-7 gs-0">
                                     <th>#</th>
-                                    <th>Dose</th>
-                                    <th>Drug Type</th>
+                                    <th>Frequency</th>
+                                    <th>Drug Form</th>
                                     <th>Status</th>
                                     <th class="col-md-2">Action</th>
                                 </tr>

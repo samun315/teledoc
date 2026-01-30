@@ -430,12 +430,12 @@ function updateTextarea(names) {
 // Initialize Select2 with tags and search functionality for Type, Strength, Duration, Advice
 function initializeSelect2WithAdd(selectId, apiRoute, fieldName, labelText) {
     const $select = $(selectId);
-    
+
     // Destroy existing Select2 if already initialized
     if ($select.hasClass("select2-hidden-accessible")) {
         $select.select2('destroy');
     }
-    
+
     // Store original option texts to check against
     const originalOptionTexts = [];
     $select.find('option').each(function() {
@@ -445,7 +445,7 @@ function initializeSelect2WithAdd(selectId, apiRoute, fieldName, labelText) {
             originalOptionTexts.push(optionText);
         }
     });
-    
+
     // Initialize Select2 with tags
     $select.select2({
         tags: true,
@@ -459,18 +459,18 @@ function initializeSelect2WithAdd(selectId, apiRoute, fieldName, labelText) {
         const selectedData = e.params.args.data;
         const selectedText = selectedData.text.trim();
         const selectedId = selectedData.id;
-        
+
         // Check if the selected text already exists in the original options
         const textExists = originalOptionTexts.includes(selectedText.toLowerCase());
-        
+
         // Check if it's an existing option (ID is numeric, not equal to text)
         const isExistingOption = selectedId && selectedId !== selectedText && !isNaN(selectedId);
-        
+
         // If it's a new item (text doesn't exist and ID equals text, meaning it's a tag)
         if (!textExists && !isExistingOption && selectedText !== '') {
             // Prevent the default selection
             e.preventDefault();
-            
+
             // Show confirmation popup
             showAddConfirmation(selectId, apiRoute, fieldName, selectedText, labelText);
         }
@@ -503,12 +503,12 @@ function showAddConfirmation(selectId, apiRoute, fieldName, searchTerm, labelTex
 function createNewDropdownItem(selectId, apiRoute, fieldName, itemName, labelText) {
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
     const $select = $(selectId);
-    
+
     // Prepare data based on field name
     const formData = {};
     formData[fieldName] = itemName;
     formData['status'] = 'Active';
-    
+
     // Special handling for dose - needs drug_type_id
     if (fieldName === 'drug_dose') {
         const drugTypeId = $('#kt_drug_type_id').val();
@@ -536,7 +536,7 @@ function createNewDropdownItem(selectId, apiRoute, fieldName, itemName, labelTex
                 // Get the new item data from response
                 let newId, newText;
                 const responseData = response.data || {};
-                
+
                 if (fieldName === 'drug_type') {
                     newId = responseData.drug_type_id;
                     newText = responseData.drug_type || itemName;
@@ -576,16 +576,16 @@ function createNewDropdownItem(selectId, apiRoute, fieldName, itemName, labelTex
     });
 }
 
-// DRUG DOSE FETCH 
+// DRUG DOSE FETCH
 
 $("#kt_drug_dose_id").empty();
 
 $(document).on('change', '#kt_drug_type_id', function () {
     const drugTypeId = $(this).val(); // Corrected variable
-    
+
     // Clear dose dropdown when type changes
     $('#kt_drug_dose_id').val(null).trigger('change');
-    
+
     if (drugTypeId) {
         getDrugDoseByDrugType(drugTypeId, null);
     } else {
@@ -743,7 +743,7 @@ function generateDrugCard(data, index) {
     // Build display text with only filled fields
     let displayParts = [];
     if (data.drugTypeText && data.drugTypeId) {
-        displayParts.push(`<strong>Type:</strong> ${data.drugTypeText}`);
+        displayParts.push(`<strong>Form:</strong> ${data.drugTypeText}`);
     }
     if (data.medicineText && data.drugId) {
         displayParts.push(`<strong>Medicine:</strong> ${data.medicineText}`);
@@ -752,15 +752,15 @@ function generateDrugCard(data, index) {
         displayParts.push(`<strong>Strength:</strong> ${data.strengthText}`);
     }
     if (data.doseText && data.doseId) {
-        displayParts.push(`<strong>Dose:</strong> ${data.doseText}`);
+        displayParts.push(`<strong>Frequency:</strong> ${data.doseText}`);
     }
     if (data.durationText && data.durationId) {
         displayParts.push(`<strong>Duration:</strong> ${data.durationText}`);
     }
     if (data.adviceText && data.adviceId) {
-        displayParts.push(`<strong>Advice:</strong> ${data.adviceText}`);
+        displayParts.push(`<strong>Instruction:</strong> ${data.adviceText}`);
     }
-    
+
     return `
         <div class="card card-body border shadow-sm position-relative drug-item" data-drug-index="${index}">
             <div>
@@ -1194,13 +1194,13 @@ ClassicEditor
 setTimeout(function() {
     // Initialize Type dropdown
     initializeSelect2WithAdd('#kt_drug_type_id', '/drug/drug-type/store', 'drug_type', 'Type');
-    
+
     // Initialize Strength dropdown
     initializeSelect2WithAdd('#kt_drug_strength_id', '/drug/drug-strength/store', 'drug_strength', 'Strength');
-    
+
     // Initialize Duration dropdown
     initializeSelect2WithAdd('#kt_drug_duration_id', '/drug/drug-duration/store', 'drug_duration', 'Duration');
-    
+
     // Initialize Advice dropdown
     initializeSelect2WithAdd('#kt_drug_advice_id', '/drug/drug-advice/store', 'drug_advice', 'Advice');
 }, 1000);

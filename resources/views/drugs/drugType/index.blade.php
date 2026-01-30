@@ -1,14 +1,14 @@
 @extends('master')
 
-@section('title', 'Drug Type List')
+@section('title', 'Drug Form List')
 
 @section('content')
-    <x-toolbar-component title="Drug Type List" :breadcrumbs="[
+    <x-toolbar-component title="Drug Form List" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
         ['label' => 'Drug Management', 'url' => 'javascript:void(0)'],
-        ['label' => 'Drug Type', 'url' => route('drug.type.index')],
-        ['label' => 'Drug Type List', 'active' => true],
+        ['label' => 'Drug Form', 'url' => route('drug.type.index')],
+        ['label' => 'Drug Form List', 'active' => true],
     ]" modalTarget="openDrugTypeModal"
         actionIcon="fas fa-plus-circle" actionLabel="Add new" />
     <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -36,7 +36,7 @@
                                 <!--begin::Table row-->
                                 <tr class="text-start text-muted text-uppercase fw-bolder fs-7 gs-0">
                                     <th>#</th>
-                                    <th>Type</th>
+                                    <th>Form</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>

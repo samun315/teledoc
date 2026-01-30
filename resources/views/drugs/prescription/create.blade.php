@@ -109,10 +109,10 @@
 
                                             <div class="row g-2 mb-2">
                                                 <div class="col-md-6">
-                                                    <label class="fs-5 fw-bold mb-2">Type</label>
+                                                    <label class="fs-5 fw-bold mb-2">Form</label>
                                                     <select id="kt_drug_type_id"
                                                         class="form-select form-select-light @error('drug_type_id') is-invalid @enderror"
-                                                        data-control="select2" data-placeholder="Type">
+                                                        data-control="select2" data-placeholder="Form">
                                                         <option value=""></option>
                                                         @foreach ($drugTypes as $drugType)
                                                             <option {{ old('drug_type_id') ? 'selected' : '' }}
@@ -163,10 +163,10 @@
 
                                             <div class="row g-2 mb-2">
                                                 <div class="col-md-6">
-                                                    <label class="fs-5 fw-bold mb-2">Dose</label>
+                                                    <label class="fs-5 fw-bold mb-2">Frequency</label>
                                                     <select id="kt_drug_dose_id"
                                                         class="form-select form-select-light @error('drug_dose_id') is-invalid @enderror"
-                                                        data-control="select2" data-placeholder="Dose">
+                                                        data-control="select2" data-placeholder="Frequency">
                                                         <option value=""></option>
                                                         @foreach ($drugDoses as $drugDose)
                                                             <option {{ old('drug_dose_id') ? 'selected' : '' }}
@@ -198,10 +198,10 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="fs-5 fw-bold mb-2">Advice</label>
+                                                <label class="fs-5 fw-bold mb-2">Instruction</label>
                                                 <select id="kt_drug_advice_id"
                                                     class="form-select form-select-light @error('drug_advice_id') is-invalid @enderror"
-                                                    data-control="select2" data-placeholder="Advice">
+                                                    data-control="select2" data-placeholder="Instruction">
                                                     <option value=""></option>
                                                     @foreach ($drugAdvices as $drugAdvice)
                                                         <option {{ old('drug_advice_id') ? 'selected' : '' }}

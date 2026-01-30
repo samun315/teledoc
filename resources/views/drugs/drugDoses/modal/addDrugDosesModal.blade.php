@@ -28,16 +28,16 @@
                         <input type="text" hidden name="drug_dose_id" id="kt_drug_dose_id">
 
                         <div class="col-md-12 fv-row mb-5">
-                            <label class="required fs-5 fw-bold mb-2">Drug Dose</label>
+                            <label class="required fs-5 fw-bold mb-2">Drug Frequency</label>
                             <textarea data-kt-autosize="true" class="form-control form-control-solid @error('drug_dose') is-invalid @enderror"
-                                placeholder="Write drug dose...." name="drug_dose" id="kt_drug_dose" required></textarea>
+                                placeholder="Write drug frequency...." name="drug_dose" id="kt_drug_dose" required></textarea>
                         </div>
 
                         <div class="col-md-12 fv-row mb-5">
-                            <label class="required fs-5 fw-bold mb-2">Drug Type</label>
+                            <label class="required fs-5 fw-bold mb-2">Drug form</label>
                             <select name="drug_type_id" id="kt_drug_type_id"
                                 class="form-select form-select-solid @error('drug_type_id') is-invalid @enderror"
-                                data-control="select2" data-placeholder="Select drug type"
+                                data-control="select2" data-placeholder="Select drug form"
                                 data-dropdown-parent="#showModal">
                                 {{-- onchange="getdrug_typeItem(this);" --}}
                                 <option value=""></option>

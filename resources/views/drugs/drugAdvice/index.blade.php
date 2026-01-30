@@ -1,14 +1,14 @@
 @extends('master')
 
-@section('title', 'Drug Advice List')
+@section('title', 'Drug Instruction List')
 
 @section('content')
-    <x-toolbar-component title="Drug Advice List" :breadcrumbs="[
+    <x-toolbar-component title="Drug Instruction List" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('dashboard')],
         ['label' => 'Drug & Others', 'url' => 'javascript:void(0)'],
         ['label' => 'Drug Management', 'url' => 'javascript:void(0)'],
-        ['label' => 'Drug Advice', 'url' => route('drug.advice.index')],
-        ['label' => 'Drug Advice List', 'active' => true],
+        ['label' => 'Drug Instruction', 'url' => route('drug.advice.index')],
+        ['label' => 'Drug Instruction List', 'active' => true],
     ]" modalTarget="openDrugAdviceModal"
         actionIcon="fas fa-plus-circle" actionLabel="Add new" />
     <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -36,7 +36,7 @@
                                 <!--begin::Table row-->
                                 <tr class="text-start text-muted text-uppercase fw-bolder fs-7 gs-0">
                                     <th>#</th>
-                                    <th>Advice</th>
+                                    <th>Instruction</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>

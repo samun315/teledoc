@@ -32,7 +32,7 @@ function openDrugTypeModal() {
     $("#kt_drug_type_id").val(null);
     loader(selectedForm, false);
 
-    $("#modalTitle").html("Add Drug Type");
+    $("#modalTitle").html("Add Drug Form");
     $(".btnSubmit").html("Save");
     $("#showModal").modal("show");
 }

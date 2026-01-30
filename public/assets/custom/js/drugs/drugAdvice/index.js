@@ -32,7 +32,7 @@ function openDrugAdviceModal() {
     $("#kt_drug_advice_id").val(null);
     loader(selectedForm, false);
 
-    $("#modalTitle").html("Add Drug Advice");
+    $("#modalTitle").html("Add Drug Instruction");
     $(".btnSubmit").html("Save");
     $("#showModal").modal("show");
 }

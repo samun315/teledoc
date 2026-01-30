@@ -28,9 +28,9 @@
                         <input type="text" hidden name="drug_advice_id" id="kt_drug_advice_id">
 
                         <div class="col-md-12 fv-row mb-5">
-                            <label class="required fs-5 fw-bold mb-2">Drug Advice</label>
+                            <label class="required fs-5 fw-bold mb-2">Drug Instruction</label>
                             <textarea data-kt-autosize="true" class="form-control form-control-solid @error('drug_advice') is-invalid @enderror"
-                                placeholder="Write drug advice...." name="drug_advice" id="kt_drug_advice" required></textarea>
+                                placeholder="Write drug Instruction...." name="drug_advice" id="kt_drug_advice" required></textarea>
                         </div>
 
                         <div class="col-md-12 fv-row mb-5">
