@@ -4,16 +4,16 @@
 <!--begin::Head-->
 
 <head>
-    <title>TeleDoc</title>
+    <title>TeleDoc-Athful's Healthcare Platform</title>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' 'nonce-{{ $cspNonce }}'; style-src 'self' 'nonce-{{ $cspNonce }}' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'self';">
     <meta name="description" content="" />
-    <meta name="keywords" content="OurAbs, OurAbs, IMO Diamond, IMO Diamond Bangladesh" />
+    <meta name="keywords" content="Teledoc-Athful, online doctor, doctor consultation, doctor consultation Bangladesh" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="OurAbs" />
+    <meta property="og:title" content="Teledoc-Athful's Online Doctor" />
 
     <meta property="og:site_name" content="OurAbs" />
 
@@ -96,7 +96,7 @@
 
                                 <!--begin::Subtitle-->
                                 <div class="text-gray-500 fw-semibold fs-6">
-                                    Sign In to OurAbs
+                                    Sign In to Teledoc
                                 </div>
                                 <!--end::Subtitle--->
                             </div>
