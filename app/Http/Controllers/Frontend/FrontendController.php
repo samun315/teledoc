@@ -132,7 +132,13 @@ class FrontendController extends Controller
 
         $expertise = Expertise::where('status', 'Active')->first();
 
-        return view('frontend.service', compact('services', 'expertise'));
+        // Fetch 3 latest published blogs
+        $latestBlogs = Blog::where('status', 'Published')
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        return view('frontend.service', compact('services', 'expertise', 'latestBlogs'));
     }
 
     public function serviceDetails($id){
