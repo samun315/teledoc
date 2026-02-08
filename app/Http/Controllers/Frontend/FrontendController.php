@@ -18,6 +18,8 @@ use App\Models\Faq\Faq;
 use App\Models\About\About;
 use App\Models\Expertise\Expertise;
 use App\Models\Order\Order;
+use App\Models\User;
+use App\Models\Common\Master\UserRole;
 use App\Models\Order\OrderItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,6 +27,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Exception;
 
 class FrontendController extends Controller
 {
@@ -463,12 +466,42 @@ class FrontendController extends Controller
                     ], 400);
                 }
 
+                // Get patient role or use first active role as fallback
+                $patientRole = UserRole::query()
+                    ->where('role_name', 'like', '%Patient%')
+                    ->where('active', 'YES')
+                    ->first();
+
+                if (!$patientRole) {
+                    $patientRole = UserRole::query()
+                        ->where('active', 'YES')
+                        ->first();
+                }
+
+                if (!$patientRole) {
+                    throw new Exception('No active role found. Please create a role first.');
+                }
+
+                // Create user first
+                $userData = [
+                    'user_name' => $request->patient_name,
+                    'full_name' => $request->patient_name,
+                    'role_id' => $patientRole->role_id,
+                    'email' => $request->patient_email ?? null,
+                    'phone' => $request->patient_phone,
+                    'password' => Hash::make('patient123'),
+                    'active' => 'NO',
+                ];
+
+                $user = User::query()->create($userData);
+
                 // Generate patient_id_number
                 $totalPatient = Patient::query()->count();
                 $patientIdNumber = 'P' . sprintf("%06d", $totalPatient + 1);
 
                 // Create new patient
                 $patient = Patient::create([
+                    'user_id' => $user->id,
                     'name' => $request->patient_name,
                     'phone' => $request->patient_phone,
                     'email' => $request->patient_email,
@@ -534,13 +567,30 @@ class FrontendController extends Controller
             // Generate order number
             $orderNo = $this->generateOrderNumber();
 
-            // Get logged in user id
-            //$userId = loggedInUserId() ? loggedInUserId() : 'NULL';
+            // Get user_id for order - use patient's user_id if available, otherwise use logged in user id
+            // Refetch patient to ensure we have the latest data including user_id
+            $patient = Patient::find($patientId);
+            $userId = null;
+
+            if ($patient && $patient->user_id) {
+                $userId = $patient->user_id;
+            } elseif (function_exists('loggedInUserId') && loggedInUserId()) {
+                $userId = loggedInUserId();
+            }
+
+            // If no user_id is available, we cannot create the order due to foreign key constraint
+            if (!$userId) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to create order. User account is required for order processing.'
+                ], 400);
+            }
 
             // Create order
             $order = Order::create([
                 'order_no' => $orderNo,
-                'user_id' => $patientId,
+                'user_id' => $userId,
                 'doctor_id' => $appointmentData['doctor_id'],
                 'order_type' => 'CONSULTATION',
                 'subtotal' => $consultationFee,

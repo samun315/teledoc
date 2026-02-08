@@ -101,7 +101,7 @@ class PatientService
                 'email' => $patientData['email'] ?? null,
                 'phone' => $patientData['phone'],
                 'address' => $patientData['address'] ?? null,
-                'password' => Hash::make('athful123'),
+                'password' => Hash::make('patient123'),
                 'active' => 'NO',
                 'created_by' => $patientData['created_by'] ?? null,
             ];
