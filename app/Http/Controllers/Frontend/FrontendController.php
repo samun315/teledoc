@@ -21,6 +21,8 @@ use App\Models\Order\Order;
 use App\Models\User;
 use App\Models\Common\Master\UserRole;
 use App\Models\Order\OrderItem;
+use App\Services\Patient\PatientService;
+use App\Http\Requests\Frontend\FrontendPatientRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -31,6 +33,7 @@ use Exception;
 
 class FrontendController extends Controller
 {
+    public function __construct(protected PatientService $patientService) {}
     function homePage(){
         // Fetch active sliders for home page
         $sliders = Slider::where('status', 'Active')
@@ -644,5 +647,55 @@ class FrontendController extends Controller
         $countToday = DoctorAppointment::whereDate('created_at', Carbon::today())->count();
         $incremental = str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
         return 'A-' . $date . '-' . $incremental;
+    }
+
+    /**
+     * Show patient registration form
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRegistrationForm()
+    {
+        $data['genderList'] = \App\Constant\Patient\PatientConstant::GENDERS;
+        $data['bloodGroupList'] = \App\Constant\Patient\PatientConstant::BLOOD_GROUPS;
+        $data['maritalStatusList'] = \App\Constant\Patient\PatientConstant::MARITAL_STATUSES;
+
+        return view('frontend.patient.register', $data);
+    }
+
+    /**
+     * Handle patient registration from frontend
+     *
+     * @param FrontendPatientRequest $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function registerPatient(FrontendPatientRequest $request)
+    {
+        try {
+            $patientData = $request->getPatientData();
+            $patient = $this->patientService->registerPatientFromFrontend($patientData, $request);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Registration successful! Your Patient ID is: ' . $patient->patient_id_number,
+                    'patient_id' => $patient->patient_id,
+                    'patient_id_number' => $patient->patient_id_number,
+                    'redirect_url' => route('patient.appointment')
+                ], 200);
+            }
+
+            return redirect()->route('patient.register')
+                ->with('success', 'Registration successful! Your Patient ID is: ' . $patient->patient_id_number . '. You can now book an appointment.');
+        } catch (Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+            return back()->withInput()->with('error', $e->getMessage());
+        }
     }
 }

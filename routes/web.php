@@ -40,6 +40,10 @@ Route::get('/faqs', [FrontendController::class, 'faqs'])->name('faqs');
 Route::get('/doctors', [FrontendController::class, 'doctors'])->name('doctors');
 Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])->name('doctor-details');
 
+// Patient Registration Routes
+Route::get('/patient/register', [FrontendController::class, 'showRegistrationForm'])->name('patient.register');
+Route::post('/patient/register', [FrontendController::class, 'registerPatient'])->name('patient.register.store');
+
 // Appointment Booking Routes
 Route::get('/patient/appointment', [FrontendController::class, 'appointment'])->name('patient.appointment');
 Route::get('/appointment/get-doctors', [FrontendController::class, 'getDoctors'])->name('appointment.get-doctors');

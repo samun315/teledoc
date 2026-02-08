@@ -157,4 +157,85 @@ class PatientService
             throw $exception;
         }
     }
+
+    /**
+     * Register a new patient from frontend
+     *
+     * @param array $patientData
+     * @param \Illuminate\Http\Request|null $request
+     * @return Model
+     * @throws Exception
+     */
+    public function registerPatientFromFrontend(array $patientData, $request = null): Model
+    {
+        DB::beginTransaction();
+        try {
+            // Get patient role or use first active role as fallback
+            $patientRole = UserRole::query()
+                ->where('role_name', 'like', '%Patient%')
+                ->where('active', 'YES')
+                ->first();
+
+            if (!$patientRole) {
+                $patientRole = UserRole::query()
+                    ->where('active', 'YES')
+                    ->first();
+            }
+
+            if (!$patientRole) {
+                throw new Exception('No active role found. Please contact administrator.');
+            }
+
+            // Create user first
+            $userData = [
+                'user_name' => $patientData['name'],
+                'full_name' => $patientData['name'],
+                'role_id' => $patientRole->role_id,
+                'email' => $patientData['email'] ?? null,
+                'phone' => $patientData['phone'],
+                'address' => $patientData['address'] ?? null,
+                'password' => Hash::make($patientData['password']),
+                'active' => 'YES', // Frontend registered patients are active
+            ];
+
+            $user = User::query()->create($userData);
+
+            // Set user_id in patient data
+            $patientData['user_id'] = $user->id;
+
+            // Handle photo upload if provided
+            if ($request && !empty($request->photo)) {
+                $patientData['photo'] = $this->uploadMedia($request, 'photo', 'patient');
+            }
+
+            // Remove password from patient data as it's stored in users table
+            unset($patientData['password']);
+
+            // Generate patient ID number
+            $totalPatient = Patient::query()->count();
+            $patientData['patient_id_number'] = 'P' . sprintf("%06d", $totalPatient + 1);
+
+            // Convert date_of_birth format if needed
+            // Frontend sends date in Y-m-d format, which is already correct for database
+            // But we'll ensure it's properly formatted
+            if (isset($patientData['date_of_birth']) && !empty($patientData['date_of_birth'])) {
+                try {
+                    // Parse and format to ensure Y-m-d format
+                    $date = \Carbon\Carbon::parse($patientData['date_of_birth'])->format('Y-m-d');
+                    $patientData['date_of_birth'] = $date;
+                } catch (\Exception $e) {
+                    // Keep original if conversion fails
+                }
+            }
+
+            $patient = Patient::query()->create($patientData);
+
+            DB::commit();
+
+            return $patient;
+        } catch (Exception $exception) {
+            DB::rollBack();
+            throw $exception;
+        }
+    }
 }
