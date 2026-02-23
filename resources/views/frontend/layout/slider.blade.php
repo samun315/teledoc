@@ -19,10 +19,40 @@
                                 @endif
                                 <div class="common-btn">
                                     @if($slider->button_text_1 && $slider->button_url_1)
-                                        <a href="{{ $slider->button_url_1 }}">{{ $slider->button_text_1 }}</a>
+                                        @php
+                                            $buttonUrl1 = $slider->button_url_1;
+                                            // Check if it's a route name (doesn't start with / or http)
+                                            if (!str_starts_with($buttonUrl1, '/') && !str_starts_with($buttonUrl1, 'http') && !str_starts_with($buttonUrl1, '#')) {
+                                                try {
+                                                    $buttonUrl1 = route($buttonUrl1);
+                                                } catch (\Exception $e) {
+                                                    // If route doesn't exist, treat as relative URL
+                                                    $buttonUrl1 = '/' . ltrim($buttonUrl1, '/');
+                                                }
+                                            } elseif (!str_starts_with($buttonUrl1, 'http') && !str_starts_with($buttonUrl1, '#')) {
+                                                // Ensure relative URLs start with /
+                                                $buttonUrl1 = '/' . ltrim($buttonUrl1, '/');
+                                            }
+                                        @endphp
+                                        <a href="{{ $buttonUrl1 }}">{{ $slider->button_text_1 }}</a>
                                     @endif
                                     @if($slider->button_text_2 && $slider->button_url_2)
-                                        <a class="cmn-btn-right" href="{{ $slider->button_url_2 }}">{{ $slider->button_text_2 }}</a>
+                                        @php
+                                            $buttonUrl2 = $slider->button_url_2;
+                                            // Check if it's a route name (doesn't start with / or http)
+                                            if (!str_starts_with($buttonUrl2, '/') && !str_starts_with($buttonUrl2, 'http') && !str_starts_with($buttonUrl2, '#')) {
+                                                try {
+                                                    $buttonUrl2 = route($buttonUrl2);
+                                                } catch (\Exception $e) {
+                                                    // If route doesn't exist, treat as relative URL
+                                                    $buttonUrl2 = '/' . ltrim($buttonUrl2, '/');
+                                                }
+                                            } elseif (!str_starts_with($buttonUrl2, 'http') && !str_starts_with($buttonUrl2, '#')) {
+                                                // Ensure relative URLs start with /
+                                                $buttonUrl2 = '/' . ltrim($buttonUrl2, '/');
+                                            }
+                                        @endphp
+                                        <a class="cmn-btn-right" href="{{ $buttonUrl2 }}">{{ $slider->button_text_2 }}</a>
                                     @endif
                                 </div>
                             </div>

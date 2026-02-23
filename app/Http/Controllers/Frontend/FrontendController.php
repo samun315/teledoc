@@ -22,6 +22,7 @@ use App\Models\User;
 use App\Models\Common\Master\UserRole;
 use App\Models\Order\OrderItem;
 use App\Models\Feedback\Feedback;
+use App\Models\Common\SiteSetting;
 use App\Services\Patient\PatientService;
 use App\Http\Requests\Frontend\FrontendPatientRequest;
 use App\Http\Requests\Frontend\FeedbackRequest;
@@ -74,7 +75,10 @@ class FrontendController extends Controller
     }
 
     function contactUs(){
-        return view('frontend.contactUs');
+        // Fetch contact settings from database
+        $settings = SiteSetting::all()->pluck('value', 'key')->toArray();
+
+        return view('frontend.contactUs', compact('settings'));
     }
 
     function about(){
@@ -713,6 +717,7 @@ class FrontendController extends Controller
             $feedback = Feedback::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'email' => $request->email,
                 'message' => $request->message,
                 'status' => 'Pending',
             ]);

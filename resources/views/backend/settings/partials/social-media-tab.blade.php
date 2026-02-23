@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12">
-        <button type="button" class="btn btn-success mb-3" onclick="openSocialMediaModal()">
+        <button type="button" class="btn btn-success mb-3" id="addSocialMediaBtn" data-action="add">
             <i class="icofont-plus"></i> Add Social Media Link
         </button>
     </div>
@@ -33,11 +33,11 @@
                             </span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary" onclick="editSocialMedia({{ $link->id }})">
-                                <i class="icofont-edit"></i>
+                            <button class="btn btn-sm btn-primary edit-social-media-btn" data-id="{{ $link->id }}" data-action="edit" title="Edit">
+                                <i class="fas fa-edit text-white"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteSocialMedia({{ $link->id }})">
-                                <i class="icofont-trash"></i>
+                            <button class="btn btn-sm btn-danger delete-social-media-btn" data-id="{{ $link->id }}" data-action="delete" title="Delete">
+                                <i class="fas fa-trash text-white"></i>
                             </button>
                         </td>
                     </tr>

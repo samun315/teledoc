@@ -34,7 +34,7 @@
                         <i class="icofont-upload"></i> Upload
                     </button>
                     @if(isset($logos['main']))
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteLogo('main')">
+                    <button type="button" class="btn btn-danger btn-sm delete-logo-btn" data-logo-type="main">
                         <i class="icofont-trash"></i> Remove
                     </button>
                     @endif
@@ -78,7 +78,7 @@
                         <i class="icofont-upload"></i> Upload
                     </button>
                     @if(isset($logos['mobile']))
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteLogo('mobile')">
+                    <button type="button" class="btn btn-danger btn-sm delete-logo-btn" data-logo-type="mobile">
                         <i class="icofont-trash"></i> Remove
                     </button>
                     @endif
@@ -122,7 +122,7 @@
                         <i class="icofont-upload"></i> Upload
                     </button>
                     @if(isset($logos['footer']))
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteLogo('footer')">
+                    <button type="button" class="btn btn-danger btn-sm delete-logo-btn" data-logo-type="footer">
                         <i class="icofont-trash"></i> Remove
                     </button>
                     @endif
@@ -161,7 +161,7 @@
                         <i class="icofont-upload"></i> Upload
                     </button>
                     @if(isset($logos['favicon']))
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteLogo('favicon')">
+                    <button type="button" class="btn btn-danger btn-sm delete-logo-btn" data-logo-type="favicon">
                         <i class="icofont-trash"></i> Remove
                     </button>
                     @endif

@@ -24,6 +24,7 @@ class FeedbackRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
             'message' => 'required|string|max:1000',
         ];
     }
@@ -38,6 +39,7 @@ class FeedbackRequest extends FormRequest
         return [
             'name.required' => 'Name is required.',
             'phone.required' => 'Phone number is required.',
+            'email.email' => 'Please enter a valid email address.',
             'message.required' => 'Message is required.',
             'message.max' => 'Message must not exceed 1000 characters.',
         ];

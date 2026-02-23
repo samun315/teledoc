@@ -116,7 +116,7 @@
             <section class="services-area pb-70">
                 <div class="container">
                     <div class="section-title">
-                        <h2>Our Services</h2>
+                        <h2>Our Platform  Services</h2>
                     </div>
                     <div class="row justify-content-center">
                         @forelse($services as $index => $service)

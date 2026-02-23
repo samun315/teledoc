@@ -91,6 +91,44 @@
 @include('backend.settings.partials.footer-link-modal')
 @endsection
 
+@section('page_style')
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .spin {
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+    
+    /* Icon-only action buttons */
+    .edit-social-media-btn,
+    .delete-social-media-btn,
+    .edit-footer-link-btn,
+    .delete-footer-link-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 5px;
+        border-radius: 4px;
+    }
+    
+    .edit-social-media-btn i,
+    .delete-social-media-btn i,
+    .edit-footer-link-btn i,
+    .delete-footer-link-btn i {
+        font-size: 14px;
+        line-height: 1;
+        display: inline-block;
+        vertical-align: middle;
+    }
+</style>
+@endsection
+
 @section('page_script')
 <script nonce="{{ $cspNonce }}">
 $(document).ready(function() {

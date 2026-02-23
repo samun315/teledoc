@@ -23,6 +23,8 @@
 <script src="{{ asset('frontend/assets/js/jquery.appear.min.js') }}"></script>
 <!-- Custom JS -->
 <script src="{{ asset('frontend/assets/js/custom.js') }}"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @yield('page_script')
 
 <!-- Feedback Form Script -->

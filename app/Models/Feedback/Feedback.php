@@ -16,6 +16,7 @@ class Feedback extends Model
         'feedback_id',
         'name',
         'phone',
+        'email',
         'message',
         'status',
         'admin_notes',

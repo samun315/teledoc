@@ -46,11 +46,66 @@ $('#contactSettingsForm').on('submit', function(e) {
     });
 });
 
+// Event Delegation for Social Media Buttons
+$(document).on('click', '#addSocialMediaBtn', function() {
+    openSocialMediaModal();
+});
+
+$(document).on('click', '.edit-social-media-btn', function() {
+    const id = $(this).data('id');
+    if (id) {
+        openSocialMediaModal(id);
+    }
+});
+
+$(document).on('click', '.delete-social-media-btn', function() {
+    const id = $(this).data('id');
+    if (id) {
+        deleteSocialMedia(id);
+    }
+});
+
+// Event Delegation for Footer Link Buttons
+$(document).on('click', '#addQuickLinkBtn', function() {
+    const section = $(this).data('section');
+    openFooterLinkModal(section);
+});
+
+$(document).on('click', '#addServiceLinkBtn', function() {
+    const section = $(this).data('section');
+    openFooterLinkModal(section);
+});
+
+$(document).on('click', '.edit-footer-link-btn', function() {
+    const id = $(this).data('id');
+    const section = $(this).data('section');
+    if (id && section) {
+        openFooterLinkModal(section, id);
+    }
+});
+
+$(document).on('click', '.delete-footer-link-btn', function() {
+    const id = $(this).data('id');
+    if (id) {
+        deleteFooterLink(id);
+    }
+});
+
+// Event Delegation for Logo Delete Buttons
+$(document).on('click', '.delete-logo-btn', function() {
+    const logoType = $(this).data('logo-type');
+    if (logoType) {
+        deleteLogo(logoType);
+    }
+});
+
 // Social Media Functions
 function openSocialMediaModal(id = null) {
+    // Reset form
     $('#socialMediaForm')[0].reset();
     $('#socialMediaId').val('');
     $('#socialMediaModalTitle').text('Add Social Media Link');
+    $('#socialIcon').val('');
 
     if (id) {
         $('#socialMediaModalTitle').text('Edit Social Media Link');
@@ -59,22 +114,39 @@ function openSocialMediaModal(id = null) {
             url: `/admin/settings/frontend/social-media/${id}`,
             method: 'GET',
             success: function(response) {
-                $('#socialMediaId').val(response.data.id);
-                $('#socialPlatform').val(response.data.platform);
-                $('#socialUrl').val(response.data.url);
-                $('#socialIcon').val(response.data.icon_class);
-                $('#socialLocation').val(response.data.display_location);
-                $('#socialOrder').val(response.data.order);
-                $('#socialActive').val(response.data.active);
+                if (response.data) {
+                    $('#socialMediaId').val(response.data.id);
+                    $('#socialPlatform').val(response.data.platform);
+                    $('#socialUrl').val(response.data.url);
+                    $('#socialIcon').val(response.data.icon_class || '');
+                    $('#socialLocation').val(response.data.display_location);
+                    $('#socialOrder').val(response.data.order || 0);
+                    $('#socialActive').val(response.data.active || 'YES');
+                }
+            },
+            error: function(xhr) {
+                iziToast.error({
+                    title: 'Error',
+                    message: xhr.responseJSON?.message || 'Failed to load social media data',
+                    position: 'topRight'
+                });
             }
         });
     }
 
-    $('#socialMediaModal').modal('show');
+    // Show modal - Bootstrap 5 compatible
+    const modalElement = document.getElementById('socialMediaModal');
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    } else {
+        // Fallback for jQuery/Bootstrap 4
+        $('#socialMediaModal').modal('show');
+    }
 }
 
 // Auto-fill icon on platform change
-$('#socialPlatform').on('change', function() {
+$(document).on('change', '#socialPlatform', function() {
     const platform = $(this).val();
     const icons = {
         'facebook': 'icofont-facebook',
@@ -89,59 +161,124 @@ $('#socialPlatform').on('change', function() {
     $('#socialIcon').val(icons[platform] || 'icofont-link');
 });
 
-$('#socialMediaForm').on('submit', function(e) {
+$(document).on('submit', '#socialMediaForm', function(e) {
     e.preventDefault();
+    
     const id = $('#socialMediaId').val();
     const url = id ? `/admin/settings/frontend/social-media/${id}` : '{{ route("admin.settings.frontend.social-media.store") }}';
     const method = id ? 'PUT' : 'POST';
+    
+    // Prepare form data
+    let formData = $(this).serialize();
+    if (method === 'PUT') {
+        formData += '&_method=PUT';
+    }
+
+    // Show loading state
+    const submitBtn = $(this).find('button[type="submit"]');
+    const originalText = submitBtn.html();
+    submitBtn.prop('disabled', true).html('<i class="icofont-spinner-alt-4 spin"></i> Saving...');
 
     $.ajax({
         url: url,
-        method: method,
-        data: $(this).serialize(),
+        method: 'POST',
+        data: formData,
         success: function(response) {
-            iziToast.success({
-                title: 'Success',
-                message: response.message,
-                position: 'topRight'
-            });
-            $('#socialMediaModal').modal('hide');
-            location.reload();
-        },
-        error: function(xhr) {
-            iziToast.error({
-                title: 'Error',
-                message: xhr.responseJSON?.message || 'An error occurred',
-                position: 'topRight'
-            });
-        }
-    });
-});
-
-function editSocialMedia(id) {
-    openSocialMediaModal(id);
-}
-
-function deleteSocialMedia(id) {
-    if (confirm('Are you sure you want to delete this social media link?')) {
-        $.ajax({
-            url: `/admin/settings/frontend/social-media/${id}`,
-            method: 'DELETE',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
+            if (response.success) {
                 iziToast.success({
                     title: 'Success',
                     message: response.message,
                     position: 'topRight'
                 });
-                location.reload();
-            },
-            error: function(xhr) {
+                
+                // Hide modal - Bootstrap 5 compatible
+                const modalElement = document.getElementById('socialMediaModal');
+                if (modalElement) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    } else {
+                        $('#socialMediaModal').modal('hide');
+                    }
+                }
+                
+                // Reload page after short delay
+                setTimeout(function() {
+                    location.reload();
+                }, 500);
+            } else {
                 iziToast.error({
                     title: 'Error',
-                    message: xhr.responseJSON?.message || 'An error occurred',
+                    message: response.message || 'Failed to save social media link',
+                    position: 'topRight'
+                });
+                submitBtn.prop('disabled', false).html(originalText);
+            }
+        },
+        error: function(xhr) {
+            let errorMessage = 'An error occurred';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                const errors = xhr.responseJSON.errors;
+                errorMessage = Object.values(errors).flat().join('<br>');
+            }
+            
+            iziToast.error({
+                title: 'Error',
+                message: errorMessage,
+                position: 'topRight'
+            });
+            submitBtn.prop('disabled', false).html(originalText);
+        }
+    });
+});
+
+
+function deleteSocialMedia(id) {
+    if (!id) {
+        iziToast.error({
+            title: 'Error',
+            message: 'Invalid social media link ID',
+            position: 'topRight'
+        });
+        return;
+    }
+
+    if (confirm('Are you sure you want to delete this social media link?')) {
+        $.ajax({
+            url: `/admin/settings/frontend/social-media/${id}`,
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                _method: 'DELETE'
+            },
+            success: function(response) {
+                if (response.success) {
+                    iziToast.success({
+                        title: 'Success',
+                        message: response.message,
+                        position: 'topRight'
+                    });
+                    setTimeout(function() {
+                        location.reload();
+                    }, 500);
+                } else {
+                    iziToast.error({
+                        title: 'Error',
+                        message: response.message || 'Failed to delete social media link',
+                        position: 'topRight'
+                    });
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'An error occurred';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                iziToast.error({
+                    title: 'Error',
+                    message: errorMessage,
                     position: 'topRight'
                 });
             }
@@ -207,12 +344,6 @@ $('#footerLinkForm').on('submit', function(e) {
     });
 });
 
-function editFooterLink(id) {
-    // Determine section from current tab
-    const activeTab = $('.tab-pane.active').attr('id');
-    const section = activeTab === 'quick-links-tab' ? 'quick_links' : 'services';
-    openFooterLinkModal(section, id);
-}
 
 function deleteFooterLink(id) {
     if (confirm('Are you sure you want to delete this link?')) {

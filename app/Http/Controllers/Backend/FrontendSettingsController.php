@@ -95,10 +95,21 @@ class FrontendSettingsController extends Controller
     }
 
     /**
-     * Get all social media links
+     * Get all social media links or single link by ID
      */
-    public function getSocialMedia()
+    public function getSocialMedia($id = null)
     {
+        if ($id) {
+            $link = \App\Models\Common\SocialMediaLink::find($id);
+            if (!$link) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Social media link not found'
+                ], 404);
+            }
+            return response()->json(['data' => $link]);
+        }
+        
         $links = $this->socialMediaService->getAll();
         return response()->json(['data' => $links]);
     }

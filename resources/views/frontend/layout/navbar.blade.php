@@ -14,6 +14,14 @@
                                 </a>
                             </li>
                             @endif
+                            @if(!empty($siteSettings['contact_whatsapp']))
+                            <li>
+                                <a href="https://wa.me/{{ str_replace([' ', '-', '(', ')', '+'], '', $siteSettings['contact_whatsapp']) }}" target="_blank">
+                                    <i class="icofont-whatsapp"></i>
+                                    WhatsApp : {{ $siteSettings['contact_whatsapp'] }}
+                                </a>
+                            </li>
+                            @endif
                             @if(!empty($siteSettings['contact_email_1']))
                             <li>
                                 <a href="mailto:{{ $siteSettings['contact_email_1'] }}">

@@ -24,8 +24,8 @@ jQuery(function ($) {
 		nav: true,
 		dots: true,
 		smartSpeed: 1000,
-		autoplay:false,
-		autoplayTimeout:9000,
+		autoplay:true,
+		autoplayTimeout:15000,
 		autoplayHoverPause:true,
 		navText: [
 			"<i class='icofont-simple-left'></i>",
