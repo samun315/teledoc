@@ -103,13 +103,10 @@
                             <div class="footer-quick">
                                 <h3>Our Services</h3>
                                 <ul>
-                                    @forelse($footerServiceLinks as $link)
+                                    @forelse($footerServices as $service)
                                     <li>
-                                        <a href="{{ $link->url }}" target="{{ $link->target }}">
-                                            @if($link->icon)
-                                            <i class="{{ $link->icon }}"></i>
-                                            @endif
-                                            {{ $link->title }}
+                                        <a href="{{ route('service-details', $service->service_id) }}">
+                                            {{ $service->title }}
                                         </a>
                                     </li>
                                     @empty
@@ -123,19 +120,24 @@
                         <div class="footer-item">
                             <div class="footer-feedback">
                                 <h3>Feedback</h3>
-                                <form>
+                                <form id="feedbackForm" method="POST" action="{{ route('feedback.store') }}">
+                                    @csrf
                                     <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="Name">
+                                        <input type="text" name="name" id="feedback_name" class="form-control" placeholder="Name" required>
+                                        <span class="error text-danger" id="error_name"></span>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="Phone">
+                                        <input type="text" name="phone" id="feedback_phone" class="form-control" placeholder="Phone" required>
+                                        <span class="error text-danger" id="error_phone"></span>
                                     </div>
                                     <div class="form-group">
-                                        <textarea class="form-control" id="your_message" rows="5" placeholder="Message"></textarea>
+                                        <textarea class="form-control" name="message" id="feedback_message" rows="5" placeholder="Message" required></textarea>
+                                        <span class="error text-danger" id="error_message"></span>
                                     </div>
                                     <div class="text-left">
-                                        <button type="submit" class="btn feedback-btn">SUBMIT</button>
+                                        <button type="submit" class="btn feedback-btn" id="feedbackSubmitBtn">SUBMIT</button>
                                     </div>
+                                    <div id="feedbackMessage" class="mt-2"></div>
                                 </form>
                             </div>
                         </div>
@@ -154,3 +156,4 @@
             </div>
         </div>
         <!-- End Copyright -->
+

@@ -160,6 +160,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/faq/faq.php'));
             //End FAQ Route
 
+            //Start Feedback Route
+            Route::middleware(['web', 'preventBackHistory', 'user'])
+                ->prefix('feedback-management')
+                ->name('feedback.')
+                ->group(base_path('routes/feedback/feedback.php'));
+            //End Feedback Route
+
             //****Start Api Route******//
             Route::middleware(['api'])
                 ->prefix('api')

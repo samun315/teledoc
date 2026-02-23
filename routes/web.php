@@ -50,6 +50,9 @@ Route::get('/appointment/get-doctors', [FrontendController::class, 'getDoctors']
 Route::get('/appointment/get-available-slots/{doctorId}/{date}', [FrontendController::class, 'getAvailableSlots'])->name('appointment.get-available-slots');
 Route::post('/patient/appointment/store', [FrontendController::class, 'storeAppointment'])->name('patient.appointment.store');
 
+// Feedback Routes
+Route::post('/feedback/store', [FrontendController::class, 'storeFeedback'])->name('feedback.store');
+
 // Include Settings Routes
 require __DIR__.'/settings.php';
 

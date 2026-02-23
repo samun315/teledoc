@@ -21,8 +21,10 @@ use App\Models\Order\Order;
 use App\Models\User;
 use App\Models\Common\Master\UserRole;
 use App\Models\Order\OrderItem;
+use App\Models\Feedback\Feedback;
 use App\Services\Patient\PatientService;
 use App\Http\Requests\Frontend\FrontendPatientRequest;
+use App\Http\Requests\Frontend\FeedbackRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -687,6 +689,42 @@ class FrontendController extends Controller
 
             return redirect()->route('patient.register')
                 ->with('success', 'Registration successful! Your Patient ID is: ' . $patient->patient_id_number . '. You can now book an appointment.');
+        } catch (Exception $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Store feedback from frontend
+     *
+     * @param FeedbackRequest $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function storeFeedback(FeedbackRequest $request)
+    {
+        try {
+            $feedback = Feedback::create([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'message' => $request->message,
+                'status' => 'Pending',
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Thank you for your feedback! We will get back to you soon.'
+                ], 200);
+            }
+
+            return back()->with('success', 'Thank you for your feedback! We will get back to you soon.');
         } catch (Exception $e) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([

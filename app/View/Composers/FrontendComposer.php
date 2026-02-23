@@ -2,6 +2,7 @@
 
 namespace App\View\Composers;
 
+use App\Models\Service\Service;
 use App\Services\SiteSettingService;
 use App\Services\SocialMediaService;
 use App\Services\FooterLinkService;
@@ -42,7 +43,11 @@ class FrontendComposer
 
         // Footer Links
         $footerQuickLinks = $this->footerLinkService->getBySection('quick_links');
-        $footerServiceLinks = $this->footerLinkService->getBySection('services');
+        
+        // Load services from services table for footer
+        $footerServices = Service::where('status', 'Active')
+            ->orderBy('order', 'asc')
+            ->get(['service_id', 'title', 'slug']);
 
         // Logos
         $mainLogo = $this->logoService->getByType('main');
@@ -56,7 +61,7 @@ class FrontendComposer
             'socialMediaHeader' => $socialMediaHeader,
             'socialMediaFooter' => $socialMediaFooter,
             'footerQuickLinks' => $footerQuickLinks,
-            'footerServiceLinks' => $footerServiceLinks,
+            'footerServices' => $footerServices,
             'mainLogo' => $mainLogo ?? asset('frontend/assets/img/logo.png'),
             'mobileLogo' => $mobileLogo ?? $mainLogo ?? asset('frontend/assets/img/logo-two.png'),
             'footerLogo' => $footerLogo ?? $mainLogo ?? asset('frontend/assets/img/logo.png'),
