@@ -1730,7 +1730,7 @@ footer {
 }
 
 .speciality-right {
-  background-image: url("../img/home-two/4.jpg");
+  background-image: url("../img/home-two/8.jpg");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -1776,7 +1776,8 @@ footer {
   margin-bottom: 8px;
   position: absolute;
   top: 23px;
-  right: 70px;
+  /* display: block; */
+  right: 150px;
 }
 .speciality-right .speciality-emergency a {
   margin-bottom: 0;

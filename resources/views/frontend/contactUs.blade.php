@@ -192,7 +192,7 @@
                             <div class="speciality-icon">
                                 <i class="icofont-ui-call"></i>
                             </div>
-                            <h3>Emergency Call</h3>
+                            <h3>Call Now</h3>
                             <p>
                                 @if(!empty($settings['contact_phone_1']))
                                     <a href="tel:{{ preg_replace('/[^0-9+]/', '', $settings['contact_phone_1']) }}" style="color: #ffffff; text-decoration: none;">

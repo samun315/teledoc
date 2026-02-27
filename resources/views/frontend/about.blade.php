@@ -160,12 +160,12 @@
                 </div>
                 <div class="col-lg-5 pr-0">
                     <div class="speciality-item speciality-right">
-                        <img src="assets/img/home-two/4.jpg" alt="Speciality">
+                        <img src="assets/img/home-two/8.jpg" alt="Speciality">
                         <div class="speciality-emergency">
                             <div class="speciality-icon">
                                 <i class="icofont-ui-call"></i>
                             </div>
-                            <h3>Emergency Call</h3>
+                            <h3>Call Now</h3>
                             <a href="tel:+07554332322">+07 554 332 322</a>
                         </div>
                     </div>
