@@ -160,7 +160,7 @@
                 </div>
                 <div class="col-lg-5 pr-0">
                     <div class="speciality-item speciality-right">
-                        <img src="assets/img/home-two/8.jpg" alt="Speciality">
+                        <img src="frontend/assets/img/home-two/8.jpg" alt="Speciality">
                         <div class="speciality-emergency">
                             <div class="speciality-icon">
                                 <i class="icofont-ui-call"></i>

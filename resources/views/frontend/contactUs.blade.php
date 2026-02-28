@@ -187,7 +187,7 @@
                 </div>
                 <div class="col-lg-5 p-0">
                     <div class="speciality-item speciality-right speciality-right-two speciality-right-three">
-                        <img src="assets/img/home-two/4.jpg" alt="Contact">
+                        <img src="frontend/assets/img/home-two/8.jpg" alt="Contact">
                         <div class="speciality-emergency">
                             <div class="speciality-icon">
                                 <i class="icofont-ui-call"></i>
