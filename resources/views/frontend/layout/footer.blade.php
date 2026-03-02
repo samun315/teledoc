@@ -36,6 +36,11 @@
                     <div class="col-sm-6 col-lg-4">
                         <div class="footer-item">
                             <div class="footer-contact">
+                                <div class="footer-logo mb-3">
+                                    <a href="{{ route('home') }}">
+                                        <img src="{{ $footerLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" style="max-height: 60px;">
+                                    </a>
+                                </div>
                                 <h3>Contact Us</h3>
                                 <ul>
                                     @if(!empty($siteSettings['contact_email_1']) || !empty($siteSettings['contact_email_2']))

@@ -137,7 +137,7 @@
                     <div class="speciality-left">
                         <div class="section-title-two">
                             <span>Speciality</span>
-                            <h2>Our Expertise</h2>
+                            <h2>Our Experts</h2>
                         </div>
                         <div class="speciality-item">
                             <div class="row m-0">
@@ -166,7 +166,11 @@
                                 <i class="icofont-ui-call"></i>
                             </div>
                             <h3>Call Now</h3>
-                            <a href="tel:+07554332322">+07 554 332 322</a>
+                            @if(!empty($siteSettings['contact_phone_1']))
+                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $siteSettings['contact_phone_1']) }}">{{ $siteSettings['contact_phone_1'] }}</a>
+                            @else
+                                <a href="tel:+07554332322">+07 554 332 322</a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -180,7 +184,7 @@
         <div class="container">
             <div class="section-title-two">
                 <span>Services</span>
-                <h2>Our Hospital Services</h2>
+                <h2>Our Platform Services</h2>
             </div>
             <div class="row justify-content-center">
                 @forelse($services as $index => $service)
