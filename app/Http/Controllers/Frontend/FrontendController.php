@@ -122,6 +122,24 @@ class FrontendController extends Controller
             ->where('status', 'Published')
             ->firstOrFail(); // Returns 404 if not found
 
+        // Get the date to use for ordering (prefer published_at, fallback to created_at)
+        $blogDate = $blog->published_at ?? $blog->created_at;
+        $blogId = $blog->blog_id;
+
+        // Previous blog (older than current) - using COALESCE to handle null published_at
+        $previousBlog = Blog::where('status', 'Published')
+            ->where('blog_id', '!=', $blogId)
+            ->whereRaw('COALESCE(published_at, created_at) < ?', [$blogDate])
+            ->orderByRaw('COALESCE(published_at, created_at) DESC')
+            ->first();
+
+        // Next blog (newer than current) - using COALESCE to handle null published_at
+        $nextBlog = Blog::where('status', 'Published')
+            ->where('blog_id', '!=', $blogId)
+            ->whereRaw('COALESCE(published_at, created_at) > ?', [$blogDate])
+            ->orderByRaw('COALESCE(published_at, created_at) ASC')
+            ->first();
+
         // Recent blogs (3 latest, excluding current)
         $recentBlogs = Blog::where('status', 'Published')
             ->where('blog_id', '!=', $blog->blog_id)
@@ -133,7 +151,7 @@ class FrontendController extends Controller
         $categories = BlogCategory::where('status', 'Active')
             ->get();
 
-        return view('frontend.blogDetails', compact('blog', 'recentBlogs', 'categories'));
+        return view('frontend.blogDetails', compact('blog', 'recentBlogs', 'categories', 'previousBlog', 'nextBlog'));
     }
 
     public function service(){

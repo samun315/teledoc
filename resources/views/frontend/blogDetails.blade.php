@@ -48,10 +48,18 @@
                             <div class="prev-next">
                                 <ul>
                                     <li>
-                                        <a href="blog-details.html">Previous</a>
+                                        @if($previousBlog)
+                                            <a href="{{ route('blog-details', $previousBlog->slug) }}">Previous</a>
+                                        @else
+                                            <a href="javascript:void(0)" style="pointer-events: none; opacity: 0.5;">Previous</a>
+                                        @endif
                                     </li>
                                     <li>
-                                        <a href="blog-details.html">Next</a>
+                                        @if($nextBlog)
+                                            <a href="{{ route('blog-details', $nextBlog->slug) }}">Next</a>
+                                        @else
+                                            <a href="javascript:void(0)" style="pointer-events: none; opacity: 0.5;">Next</a>
+                                        @endif
                                     </li>
                                 </ul>
                             </div>
