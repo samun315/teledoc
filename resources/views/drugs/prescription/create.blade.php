@@ -288,6 +288,8 @@
                                         <div class="card shadow-sm text-center p-3">
                                             <input type="hidden" name="patient_id" id="kt_patient_id"
                                                 value="{{ $patientInfo?->patient_id }}">
+                                            <input type="hidden" name="appointment_id" id="kt_appointment_id"
+                                                value="{{ request()->query('appointment_id') }}">
                                             <img src="{{ $patientInfo?->photo ? asset('uploads/patient/' . $patientInfo->photo) : asset('assets/media/avatars/blank.png') }}"
                                                 class="rounded-circle mb-2 mx-auto d-block" width="100" height="100"
                                                 alt="Patient Avatar">

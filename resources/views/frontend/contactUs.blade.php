@@ -166,7 +166,7 @@
                                                 <input name="gridCheck" value="I agree to the terms and privacy policy." class="form-check-input" type="checkbox" id="gridCheck" required="">
 
                                                 <label class="form-check-label" for="gridCheck">
-                                                    Accept <a href="terms-condition.html">Terms & Conditions</a> And <a href="privacy-policy.html">Privacy Policy.</a>
+                                                    Accept <a href="./terms-conditions">Terms & Conditions</a> And <a href="./privacy-policy">Privacy Policy.</a>
                                                 </label>
                                                 <div class="help-block with-errors gridCheck-error"></div>
                                             </div>

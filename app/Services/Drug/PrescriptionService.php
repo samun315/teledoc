@@ -2,6 +2,7 @@
 
 namespace App\Services\Drug;
 
+use App\Models\Doctor\DoctorAppointment;
 use App\Models\Drug\DrugDoses;
 use App\Models\Drug\Prescription;
 use App\Models\Drug\PrescriptionClinicalRecord;
@@ -113,12 +114,23 @@ class PrescriptionService
                 'doctor_id' => $data['doctor_id'],
                 'doctor_advice' => $data['doctor_advice'],
                 'follow_up' => $data['follow_up'],
-                'appointment_id' => 1,
+                'appointment_id' => !empty($data['appointment_id']) ? $data['appointment_id'] : null,
                 'created_by' => $data['created_by'],
                 'created_at' => $data['created_at'],
             ];
 
             $prescription = Prescription::query()->create($prescriptionData);
+
+            // Update appointment status to 'Approved' if appointment_id is provided
+            if (!empty($data['appointment_id'])) {
+                DoctorAppointment::query()
+                    ->where('appointment_id', $data['appointment_id'])
+                    ->update([
+                        'appointment_status' => 'Approved',
+                        'updated_by' => loggedInUserId(),
+                        'updated_at' => now(),
+                    ]);
+            }
 
             // make prescription medicaiton data
             // Only drug_id is mandatory, other fields are optional

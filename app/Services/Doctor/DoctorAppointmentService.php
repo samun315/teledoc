@@ -161,8 +161,11 @@ class DoctorAppointmentService
 
                 $editBtn = '<a href="' . route('appointment.edit', $row->appointment_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
+                $prescriptionBtn = '<a href="' . route('drug.prescription.create', $row->patient_id) . '?doctor_id=' . $row->doctor_id . '&appointment_id=' . $row->appointment_id . '" class="btn btn-icon btn-bg-success text-white btn-sm ms-2" title="Create Prescription"><i class="fas fa-file-prescription text-white"></i></a>';
+
                 $button = '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
+                            ' . $prescriptionBtn . '
                             </div>';
                 return $button;
             })

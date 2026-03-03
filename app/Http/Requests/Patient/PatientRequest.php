@@ -48,7 +48,7 @@ class PatientRequest extends FormRequest
             $validationData['phone'] = 'required|unique:patients,phone|unique:users,phone';
             $validationData['password'] = 'nullable|min:6';
             $validationData['confirm_password'] = 'nullable|same:password';
-            $validationData['date_of_birth'] = 'required';
+            $validationData['date_of_birth'] = 'nullable';
             $validationData['age'] = 'nullable';
             $validationData['height'] = 'nullable';
             $validationData['weight'] = 'nullable';
@@ -69,7 +69,7 @@ class PatientRequest extends FormRequest
         $inputData['name'] = $this->input('name');
         $inputData['email'] = $this->input('email') ?? null;
         $inputData['phone'] = $this->input('phone');
-        $inputData['date_of_birth'] = dateConvertFormToDB($this->input('date_of_birth'));
+        $inputData['date_of_birth'] = $this->input('date_of_birth') ? dateConvertFormToDB($this->input('date_of_birth')) : null;
         $inputData['age'] = $this->input('age') ?? null;
         $inputData['height'] = $this->input('height') ?? null;
         $inputData['weight'] = $this->input('weight') ?? null;

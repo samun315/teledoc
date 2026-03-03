@@ -187,11 +187,11 @@
 
                                     {{-- Date of Birth --}}
                                     <div class="col-md-4 fv-row mb-5">
-                                        <label class="required fs-5 fw-bold mb-2">Date of birth</label>
+                                        <label class="fs-5 fw-bold mb-2">Date of birth</label>
                                         <input type="text" name="date_of_birth" id="kt_date_of_birth"
                                             class="form-control form-control-light @error('date_of_birth') is-invalid @enderror"
                                             value="{{ !empty($editModeData?->date_of_birth) ? \Carbon\Carbon::parse($editModeData?->date_of_birth)->format('d-m-Y') : old('date_of_birth') }}"
-                                            placeholder="Enter date of birth" required>
+                                            placeholder="Enter date of birth">
                                         @error('date_of_birth')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror
@@ -201,9 +201,8 @@
                                     <div class="col-md-4 fv-row mb-5">
                                         <label class="fs-5 fw-bold mb-2">Age(Year)</label>
                                         <input type="number" name="age" id="kt_age"
-                                            class="form-control form-control-solid @error('age') is-invalid @enderror"
-                                            value="{{ $editModeData?->age ?? old('age') }}" placeholder="Age (Year)"
-                                            readonly>
+                                            class="form-control form-control-light @error('age') is-invalid @enderror"
+                                            value="{{ $editModeData?->age ?? old('age') }}" placeholder="Age (Year)">
                                         @error('age')
                                             <span class="text-danger mt-2 terms_error">{{ $message }}</span>
                                         @enderror

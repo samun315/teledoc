@@ -56,16 +56,24 @@ class PrescriptionController extends Controller
         $data['appointmentLists'] = DoctorAppointment::query()->with('doctor')->where('patient_id', $patientId)->get();
         $data['prescriptionDocs'] = PrescriptionDocs::query()->where('patient_id', $patientId)->get();
 
-        // Get logged-in user's email and find matching doctor
-        $loggedInUserEmail = session('logged_session_data.email');
-        if ($loggedInUserEmail) {
-            $defaultDoctor = Doctor::query()
-                ->where('email', $loggedInUserEmail)
-                ->whereNot('status', 'Inactive')
-                ->first(['doctor_id']);
-            $data['defaultDoctorId'] = $defaultDoctor ? $defaultDoctor->doctor_id : null;
+        // Get doctor_id from query parameter (if coming from appointment page)
+        $doctorIdFromQuery = request()->query('doctor_id');
+
+        if ($doctorIdFromQuery) {
+            // If doctor_id is provided in query, use it
+            $data['defaultDoctorId'] = $doctorIdFromQuery;
         } else {
-            $data['defaultDoctorId'] = null;
+            // Otherwise, get logged-in user's email and find matching doctor
+            $loggedInUserEmail = session('logged_session_data.email');
+            if ($loggedInUserEmail) {
+                $defaultDoctor = Doctor::query()
+                    ->where('email', $loggedInUserEmail)
+                    ->whereNot('status', 'Inactive')
+                    ->first(['doctor_id']);
+                $data['defaultDoctorId'] = $defaultDoctor ? $defaultDoctor->doctor_id : null;
+            } else {
+                $data['defaultDoctorId'] = null;
+            }
         }
 
         return view('drugs.prescription.create', $data);
