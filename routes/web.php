@@ -39,6 +39,8 @@ Route::get('/service-details/{id}', [FrontendController::class, 'serviceDetails'
 Route::get('/faqs', [FrontendController::class, 'faqs'])->name('faqs');
 Route::get('/doctors', [FrontendController::class, 'doctors'])->name('doctors');
 Route::get('/doctor-details/{id}', [FrontendController::class, 'doctorDetails'])->name('doctor-details');
+Route::get('/terms-conditions', [FrontendController::class, 'termsConditions'])->name('termsConditions');
+Route::get('/privacy-policy', [FrontendController::class, 'privacyPolicy'])->name('privacyPolicy');
 
 // Patient Registration Routes
 Route::get('/patient/register', [FrontendController::class, 'showRegistrationForm'])->name('patient.register');

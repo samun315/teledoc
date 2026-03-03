@@ -759,4 +759,16 @@ class FrontendController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
     }
+
+    function termsConditions(){
+        $termsConditionsService = app(\App\Services\TermsConditions\TermsConditionsService::class);
+        $termsConditions = $termsConditionsService->getActiveTermsConditions();
+        return view('frontend.termsConditions', compact('termsConditions'));
+    }
+
+    function privacyPolicy(){
+        $privacyPolicyService = app(\App\Services\PrivacyPolicy\PrivacyPolicyService::class);
+        $privacyPolicy = $privacyPolicyService->getActivePrivacyPolicy();
+        return view('frontend.privacyPolicy', compact('privacyPolicy'));
+    }
 }

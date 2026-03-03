@@ -45,6 +45,18 @@ Route::middleware(['auth'])->prefix('admin/settings')->name('admin.settings.')->
         Route::post('/update', [\App\Http\Controllers\About\AboutController::class, 'update'])->name('update');
     });
 
+    // Privacy Policy Settings
+    Route::prefix('privacy-policy')->name('privacy-policy.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PrivacyPolicy\PrivacyPolicyController::class, 'index'])->name('index');
+        Route::post('/update', [\App\Http\Controllers\PrivacyPolicy\PrivacyPolicyController::class, 'update'])->name('update');
+    });
+
+    // Terms & Conditions Settings
+    Route::prefix('terms-conditions')->name('terms-conditions.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\TermsConditions\TermsConditionsController::class, 'index'])->name('index');
+        Route::post('/update', [\App\Http\Controllers\TermsConditions\TermsConditionsController::class, 'update'])->name('update');
+    });
+
     // Expertise Section Settings
     Route::prefix('expertise')->name('expertise.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Expertise\ExpertiseController::class, 'index'])->name('index');
