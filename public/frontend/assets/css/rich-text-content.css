@@ -1,0 +1,62 @@
+/* Rich text from CMS (Bangla/Unicode, long words, Summernote): stay within viewport on mobile */
+
+.terms-conditions-content,
+.privacy-policy-content {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  word-break: normal;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+@supports (overflow-wrap: anywhere) {
+  .terms-conditions-content,
+  .privacy-policy-content {
+    overflow-wrap: anywhere;
+  }
+}
+
+.terms-conditions-content p,
+.terms-conditions-content li,
+.terms-conditions-content td,
+.terms-conditions-content th,
+.privacy-policy-content p,
+.privacy-policy-content li,
+.privacy-policy-content td,
+.privacy-policy-content th {
+  overflow-wrap: inherit;
+  word-wrap: inherit;
+}
+
+.terms-conditions-content img,
+.terms-conditions-content video,
+.terms-conditions-content iframe,
+.terms-conditions-content embed,
+.privacy-policy-content img,
+.privacy-policy-content video,
+.privacy-policy-content iframe,
+.privacy-policy-content embed {
+  max-width: 100%;
+  height: auto;
+}
+
+.terms-conditions-content table,
+.privacy-policy-content table {
+  max-width: 100%;
+}
+
+.terms-conditions-content td,
+.terms-conditions-content th,
+.privacy-policy-content td,
+.privacy-policy-content th {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Bootstrap .row is flex; columns need min-width 0 or long-line content forces page overflow */
+.faq-area .faq-wrap > [class*="col-"] {
+  min-width: 0;
+}

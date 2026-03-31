@@ -24,6 +24,8 @@
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}">
         <!-- Responsive CSS -->
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/responsive.css') }}">
+        <!-- CMS rich text (Unicode / mobile wrap) -->
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}">
         <!-- Theme Dark CSS -->
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/theme-dark.css') }}">
 
