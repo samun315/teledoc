@@ -1,7 +1,9 @@
 /* Rich text from CMS (Bangla/Unicode, long words, Summernote): stay within viewport on mobile */
 
 .terms-conditions-content,
-.privacy-policy-content {
+.privacy-policy-content,
+.service-content,
+.about-description {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -15,7 +17,9 @@
 
 @supports (overflow-wrap: anywhere) {
   .terms-conditions-content,
-  .privacy-policy-content {
+  .privacy-policy-content,
+  .service-content,
+  .about-description {
     overflow-wrap: anywhere;
   }
 }
@@ -46,7 +50,33 @@
 .privacy-policy-content h3,
 .privacy-policy-content h4,
 .privacy-policy-content h5,
-.privacy-policy-content h6 {
+.privacy-policy-content h6,
+.service-content p,
+.service-content li,
+.service-content td,
+.service-content th,
+.service-content div,
+.service-content section,
+.service-content article,
+.service-content h1,
+.service-content h2,
+.service-content h3,
+.service-content h4,
+.service-content h5,
+.service-content h6,
+.about-description p,
+.about-description li,
+.about-description td,
+.about-description th,
+.about-description div,
+.about-description section,
+.about-description article,
+.about-description h1,
+.about-description h2,
+.about-description h3,
+.about-description h4,
+.about-description h5,
+.about-description h6 {
   max-width: 100%;
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -80,13 +110,41 @@
   .privacy-policy-content h3,
   .privacy-policy-content h4,
   .privacy-policy-content h5,
-  .privacy-policy-content h6 {
+  .privacy-policy-content h6,
+  .service-content p,
+  .service-content li,
+  .service-content td,
+  .service-content th,
+  .service-content div,
+  .service-content section,
+  .service-content article,
+  .service-content h1,
+  .service-content h2,
+  .service-content h3,
+  .service-content h4,
+  .service-content h5,
+  .service-content h6,
+  .about-description p,
+  .about-description li,
+  .about-description td,
+  .about-description th,
+  .about-description div,
+  .about-description section,
+  .about-description article,
+  .about-description h1,
+  .about-description h2,
+  .about-description h3,
+  .about-description h4,
+  .about-description h5,
+  .about-description h6 {
     overflow-wrap: anywhere;
   }
 }
 
 .terms-conditions-content pre,
-.privacy-policy-content pre {
+.privacy-policy-content pre,
+.service-content pre,
+.about-description pre {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -101,20 +159,34 @@
 .privacy-policy-content img,
 .privacy-policy-content video,
 .privacy-policy-content iframe,
-.privacy-policy-content embed {
+.privacy-policy-content embed,
+.service-content img,
+.service-content video,
+.service-content iframe,
+.service-content embed,
+.about-description img,
+.about-description video,
+.about-description iframe,
+.about-description embed {
   max-width: 100%;
   height: auto;
 }
 
 .terms-conditions-content table,
-.privacy-policy-content table {
+.privacy-policy-content table,
+.service-content table,
+.about-description table {
   max-width: 100%;
 }
 
 .terms-conditions-content td,
 .terms-conditions-content th,
 .privacy-policy-content td,
-.privacy-policy-content th {
+.privacy-policy-content th,
+.service-content td,
+.service-content th,
+.about-description td,
+.about-description th {
   word-wrap: break-word;
   overflow-wrap: break-word;
   word-break: normal;
@@ -123,4 +195,192 @@
 /* Bootstrap .row is flex; columns need min-width 0 or long-line content forces page overflow */
 .faq-area .faq-wrap > [class*="col-"] {
   min-width: 0;
+}
+
+/* ----- Service details (/service-details/{id}) ----- */
+.services-details-img {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.services-details-img h2 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+.services-details-img blockquote {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.service-details-area .row > [class*="col-"] {
+  min-width: 0;
+}
+
+.service-details-inner {
+  min-width: 0;
+}
+
+.service-details-inner h2,
+.service-details-inner p {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+/* "Our Services" cards reuse .blog-area; Bangla titles/descriptions */
+.blog-area .row > [class*="col-"] {
+  min-width: 0;
+}
+
+.service-item h3,
+.service-item p {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+}
+
+@supports (overflow-wrap: anywhere) {
+  .services-details-img h2,
+  .services-details-img blockquote,
+  .service-details-inner h2,
+  .service-details-inner p,
+  .service-item h3,
+  .service-item p {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Long dynamic titles in hero breadcrumb */
+.page-title-four .page-title-item {
+  max-width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+  box-sizing: border-box;
+}
+
+.page-title-four .page-title-item h2,
+.page-title-four .page-title-item ul li {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+}
+
+/* ----- About page (/about) ----- */
+.about-area .row > [class*="col-"] {
+  min-width: 0;
+}
+
+.about-item.about-right {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.about-item.about-right h2,
+.about-item.about-right > ul > li {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+.about-item.about-right > a {
+  max-width: 100%;
+  display: inline-block;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.speciality-area .row > [class*="col-"],
+.speciality-item .row > [class*="col-"] {
+  min-width: 0;
+}
+
+.speciality-inner h3,
+.speciality-inner p {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+.speciality-emergency h3,
+.speciality-emergency a {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+}
+
+.services-area .row > [class*="col-"] {
+  min-width: 0;
+}
+
+.testimonial-wrap > h2 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.testimonial-area .testimonial-item {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.testimonial-area .testimonial-item h3,
+.testimonial-area .testimonial-item p,
+.testimonial-area .testimonial-item .designation {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+.blog-item .blog-bottom h3,
+.blog-item .blog-bottom h3 a,
+.blog-item .blog-bottom p,
+.blog-item .blog-bottom ul li,
+.blog-item .blog-bottom ul li a {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+}
+
+.counter-area .row > [class*="col-"] {
+  min-width: 0;
+}
+
+.section-title-two h2,
+.section-title-two span {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+@supports (overflow-wrap: anywhere) {
+  .about-item.about-right h2,
+  .about-item.about-right > ul > li,
+  .speciality-inner h3,
+  .speciality-inner p,
+  .speciality-emergency h3,
+  .speciality-emergency a,
+  .testimonial-area .testimonial-item h3,
+  .testimonial-area .testimonial-item p,
+  .testimonial-area .testimonial-item .designation,
+  .blog-item .blog-bottom h3,
+  .blog-item .blog-bottom h3 a,
+  .blog-item .blog-bottom p,
+  .section-title-two h2,
+  .testimonial-wrap > h2 {
+    overflow-wrap: anywhere;
+  }
 }
