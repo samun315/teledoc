@@ -24,10 +24,10 @@
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}">
         <!-- Responsive CSS -->
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/responsive.css') }}">
-        <!-- CMS rich text (Unicode / mobile wrap) -->
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}">
         <!-- Theme Dark CSS -->
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/theme-dark.css') }}">
+        <!-- CMS rich text (Unicode / mobile wrap) — after theme so wrapping wins -->
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}">
 
         <title>{{ $siteSettings['site_name'] ?? 'Medsev' }} - {{ $siteSettings['site_tagline'] ?? 'Healthcare Clinic & Doctor' }}</title>
 

@@ -2,6 +2,7 @@
 
 .terms-conditions-content,
 .privacy-policy-content {
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
@@ -9,6 +10,7 @@
   word-break: normal;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  box-sizing: border-box;
 }
 
 @supports (overflow-wrap: anywhere) {
@@ -18,16 +20,78 @@
   }
 }
 
+/* Nested blocks from Summernote: inherit alone is not always enough across browsers */
 .terms-conditions-content p,
 .terms-conditions-content li,
 .terms-conditions-content td,
 .terms-conditions-content th,
+.terms-conditions-content div,
+.terms-conditions-content section,
+.terms-conditions-content article,
+.terms-conditions-content h1,
+.terms-conditions-content h2,
+.terms-conditions-content h3,
+.terms-conditions-content h4,
+.terms-conditions-content h5,
+.terms-conditions-content h6,
 .privacy-policy-content p,
 .privacy-policy-content li,
 .privacy-policy-content td,
-.privacy-policy-content th {
-  overflow-wrap: inherit;
-  word-wrap: inherit;
+.privacy-policy-content th,
+.privacy-policy-content div,
+.privacy-policy-content section,
+.privacy-policy-content article,
+.privacy-policy-content h1,
+.privacy-policy-content h2,
+.privacy-policy-content h3,
+.privacy-policy-content h4,
+.privacy-policy-content h5,
+.privacy-policy-content h6 {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
+  box-sizing: border-box;
+}
+
+@supports (overflow-wrap: anywhere) {
+  .terms-conditions-content p,
+  .terms-conditions-content li,
+  .terms-conditions-content td,
+  .terms-conditions-content th,
+  .terms-conditions-content div,
+  .terms-conditions-content section,
+  .terms-conditions-content article,
+  .terms-conditions-content h1,
+  .terms-conditions-content h2,
+  .terms-conditions-content h3,
+  .terms-conditions-content h4,
+  .terms-conditions-content h5,
+  .terms-conditions-content h6,
+  .privacy-policy-content p,
+  .privacy-policy-content li,
+  .privacy-policy-content td,
+  .privacy-policy-content th,
+  .privacy-policy-content div,
+  .privacy-policy-content section,
+  .privacy-policy-content article,
+  .privacy-policy-content h1,
+  .privacy-policy-content h2,
+  .privacy-policy-content h3,
+  .privacy-policy-content h4,
+  .privacy-policy-content h5,
+  .privacy-policy-content h6 {
+    overflow-wrap: anywhere;
+  }
+}
+
+.terms-conditions-content pre,
+.privacy-policy-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .terms-conditions-content img,
