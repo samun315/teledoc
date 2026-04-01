@@ -87,16 +87,7 @@
     <div class="counter-area counter-bg counter-area-four">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-sm-6 col-md-3 col-lg-3">
-                    <div class="counter-item">
-                        <i class="icofont-patient-bed"></i>
-                        <h3>
-                            <span class="odometer" data-count="850">00</span>
-                        </h3>
-                        <p>Patients Beds</p>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3 col-lg-3">
+                <div class="col-sm-6 col-md-4 col-lg-4">
                     <div class="counter-item">
                         <i class="icofont-people"></i>
                         <h3>
@@ -106,16 +97,16 @@
                         <p>Happy Patients</p>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3 col-lg-3">
+                <div class="col-sm-6 col-md-4 col-lg-4">
                     <div class="counter-item">
                         <i class="icofont-doctor-alt"></i>
                         <h3>
-                            <span class="odometer" data-count="750">00</span>
+                            <span class="odometer" data-count="01">00</span>
                         </h3>
-                        <p>Doctors  & Nurse</p>
+                        <p>Doctors</p>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3 col-lg-3">
+                <div class="col-sm-6 col-md-4 col-lg-4">
                     <div class="counter-item">
                         <i class="icofont-badge"></i>
                         <h3>
