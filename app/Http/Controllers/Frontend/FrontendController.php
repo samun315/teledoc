@@ -771,4 +771,9 @@ class FrontendController extends Controller
         $privacyPolicy = $privacyPolicyService->getActivePrivacyPolicy();
         return view('frontend.privacyPolicy', compact('privacyPolicy'));
     }
+
+    public function paymentInstructions()
+    {
+        return view('frontend.paymentInstructions');
+    }
 }
