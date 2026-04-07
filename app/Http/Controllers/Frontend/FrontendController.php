@@ -24,6 +24,10 @@ use App\Models\Order\OrderItem;
 use App\Models\Feedback\Feedback;
 use App\Models\Common\SiteSetting;
 use App\Services\Patient\PatientService;
+use App\Services\PaymentInstructionHero\PaymentInstructionHeroService;
+use App\Services\PaymentMode\PaymentModeService;
+use App\Services\PaymentTermItem\PaymentTermItemService;
+use App\Services\PaymentQuickSummaryItem\PaymentQuickSummaryItemService;
 use App\Http\Requests\Frontend\FrontendPatientRequest;
 use App\Http\Requests\Frontend\FeedbackRequest;
 use Carbon\Carbon;
@@ -772,8 +776,17 @@ class FrontendController extends Controller
         return view('frontend.privacyPolicy', compact('privacyPolicy'));
     }
 
-    public function paymentInstructions()
-    {
-        return view('frontend.paymentInstructions');
+    public function paymentInstructions(
+        PaymentInstructionHeroService $paymentInstructionHeroService,
+        PaymentModeService $paymentModeService,
+        PaymentTermItemService $paymentTermItemService,
+        PaymentQuickSummaryItemService $paymentQuickSummaryItemService
+    ) {
+        return view('frontend.paymentInstructions', [
+            'paymentInstructionHero' => $paymentInstructionHeroService->getHeroForFrontend(),
+            'paymentModes' => $paymentModeService->activeOrdered(),
+            'paymentTermItems' => $paymentTermItemService->activeOrdered(),
+            'paymentQuickSummaryItems' => $paymentQuickSummaryItemService->activeOrdered(),
+        ]);
     }
 }

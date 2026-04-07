@@ -92,6 +92,27 @@
         color: #475569;
         margin: 0 0 1.5rem;
     }
+    .pi-text--richtext {
+        font-size: 1rem;
+        line-height: 1.65;
+        color: #475569;
+        margin: 0 0 1.5rem;
+    }
+    .pi-text--richtext p {
+        margin: 0 0 0.85rem;
+    }
+    .pi-text--richtext p:last-child {
+        margin-bottom: 0;
+    }
+    .pi-text--richtext ul,
+    .pi-text--richtext ol {
+        margin: 0 0 0.85rem;
+        padding-left: 1.25rem;
+    }
+    .pi-text--richtext a {
+        color: #0284c7;
+        text-decoration: underline;
+    }
     .pi-actions {
         display: flex;
         flex-wrap: wrap;
@@ -588,8 +609,8 @@
                 <div class="pi-banner-wrap">
                     <img
                         class="pi-banner-img"
-                        src="{{ asset('frontend/assets/img/home-one/6.jpg') }}"
-                        alt="Payment and healthcare consultation"
+                        src="{{ $paymentInstructionHero['banner_src'] }}"
+                        alt="{{ $paymentInstructionHero['title'] }}"
                         width="800"
                         height="600"
                         loading="eager"
@@ -598,13 +619,11 @@
                 </div>
                 <div class="pi-banner-content text-center text-md-start">
                     <h2 class="pi-heading" id="pi-heading">
-                        Pay for your consultation with confidence
+                        {{ $paymentInstructionHero['title'] }}
                     </h2>
-                    <p class="pi-text">
-                        Follow the steps for your preferred method—bKash, Nagad, or card. Account numbers and
-                        instructions are listed below. Please read the payment terms so your booking stays valid
-                        and we can confirm you without delay.
-                    </p>
+                    <div class="pi-text pi-text--richtext">
+                        {!! $paymentInstructionHero['description'] !!}
+                    </div>
                     <div class="pi-actions" role="navigation" aria-label="Jump to page sections">
                         <a href="#section-payment-modes" class="pi-jump-btn pi-jump-btn--primary">
                             <i class="icofont-wallet"></i>
@@ -631,302 +650,12 @@
 
     <section class="faq-area pt-4 pt-md-5 pb-70">
         <div class="container">
-            {{-- Payment modes: bKash, Nagad, Credit card --}}
-            <div id="section-payment-modes" class="payment-modes-wrap text-center text-md-start" tabindex="-1">
-                <h2 class="payment-modes-heading">Payment modes</h2>
-                <p class="payment-modes-lead">
-                    Choose a payment method below. Each section includes steps and applicable terms for completing your consultation fee.
-                </p>
-
-                <div class="accordion pm-accordion text-start" id="paymentModesAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="pmHeadingBkash">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#pmBkash"
-                                aria-expanded="true" aria-controls="pmBkash">
-                                bKash
-                            </button>
-                        </h2>
-                        <div id="pmBkash" class="accordion-collapse collapse show" aria-labelledby="pmHeadingBkash"
-                            data-bs-parent="#paymentModesAccordion">
-                            <div class="accordion-body">
-                                <div class="row g-4 align-items-stretch">
-                                    <div class="col-md-5">
-                                        <div class="pm-bkash-brand h-100">
-                                            <div class="pm-bkash-logo text-center">
-                                                bKash
-                                                <span>Send Money</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <div class="pm-pay-title">bKash Payment</div>
-                                        <div class="pm-subblock">
-                                            <div class="pm-subblock-title">Account details</div>
-                                            <ul class="pm-instruction-list">
-                                                <li>আপনার কনসালটেশন [ ফি ]</li>
-                                                <li>ফি পেমেন্ট করবেন বিকাশ (bKash)</li>
-                                                <li>
-                                                    <div class="pm-copy-row">
-                                                        <span>একাউন্ট মোবাইল নম্বর: <strong>018 6035 6716</strong></span>
-                                                        <button type="button" class="btn-copy-pm" data-copy="01860356716" title="Copy number to dialer / bKash">
-                                                            <i class="icofont-copy" aria-hidden="true"></i>
-                                                            <span class="btn-copy-pm__label">Copy</span>
-                                                        </button>
-                                                    </div>
-                                                </li>
-                                                <li class="pm-note-en">[Please Choose &quot;Send Money&quot;]</li>
-                                            </ul>
-                                        </div>
-                                        <div class="pm-subblock">
-                                            <div class="pm-subblock-title">Instructions</div>
-                                            <ul class="pm-instruction-list">
-                                                <li>ফি দেয়ার জন্য নিজের একাউন্ট না থাকলেও চলবে—অনেক জায়গায় বিকাশ এজেন্ট পাবেন—তাদের মাধ্যমে দেয়া যাবে।</li>
-                                                <li>ফি দেয়া হলে কষ্ট করে মেসেজ দিয়ে জানাবেন।</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="pmHeadingNagad">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pmNagad"
-                                aria-expanded="false" aria-controls="pmNagad">
-                                Nagad
-                            </button>
-                        </h2>
-                        <div id="pmNagad" class="accordion-collapse collapse" aria-labelledby="pmHeadingNagad"
-                            data-bs-parent="#paymentModesAccordion">
-                            <div class="accordion-body">
-                                <div class="row g-4 align-items-stretch">
-                                    <div class="col-md-5">
-                                        <div class="pm-nagad-brand h-100">
-                                            <div class="pm-nagad-logo text-center">Nagad</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <div class="pm-pay-title">Nagad Payment</div>
-                                        <div class="pm-subblock">
-                                            <div class="pm-subblock-title">Account details</div>
-                                            <ul class="pm-instruction-list">
-                                                <li>আপনার কনসালটেশন ফি</li>
-                                                <li>ফি পেমেন্ট করবেন নগদ (Nagad)</li>
-                                                <li>একাউন্ট মোবাইল নম্বর: <strong>—</strong> <span class="text-muted small">(অফিস থেকে নিশ্চিত করুন)</span></li>
-                                                <li class="pm-note-en">[Please use &quot;Send Money&quot; or equivalent option in the Nagad app]</li>
-                                            </ul>
-                                        </div>
-                                        <div class="pm-subblock">
-                                            <div class="pm-subblock-title">Instructions</div>
-                                            <ul class="pm-instruction-list">
-                                                <li>নগদ এজেন্ট পয়েন্ট বা নিজের অ্যাকাউন্টের মাধ্যমে ফি পরিশোধ করা যাবে। বিস্তারিত প্রয়োজনে সাপোর্টে যোগাযোগ করুন।</li>
-                                                <li>পরিশোধের পর অনুগ্রহ করে মেসেজ বা কলের মাধ্যমে জানাবেন।</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="pmHeadingCard">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pmCard"
-                                aria-expanded="false" aria-controls="pmCard">
-                                Credit Card Payment
-                            </button>
-                        </h2>
-                        <div id="pmCard" class="accordion-collapse collapse" aria-labelledby="pmHeadingCard"
-                            data-bs-parent="#paymentModesAccordion">
-                            <div class="accordion-body">
-                                <div class="row g-4 align-items-stretch">
-                                    <div class="col-md-5">
-                                        <div class="pm-card-brand h-100">
-                                            <i class="icofont-mastercard"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <div class="pm-pay-title">Credit / Debit Card</div>
-                                        <div class="pm-subblock">
-                                            <div class="pm-subblock-title">Account details</div>
-                                            <ul class="pm-instruction-list">
-                                                <li>আপনার কনসালটেশন ফি</li>
-                                                <li>নিরাপদ পেমেন্ট গেটওয়ের মাধ্যমে কার্ড পরিশোধ (যেখানে উপলব্ধ)</li>
-                                                <li class="pm-note-en">[Use the payment link or checkout screen after booking, if enabled]</li>
-                                            </ul>
-                                        </div>
-                                        <div class="pm-subblock">
-                                            <div class="pm-subblock-title">Instructions</div>
-                                            <ul class="pm-instruction-list">
-                                                <li>কার্ড পেমেন্টে ব্যাংক/গেটওয়ের চার্জ প্রযোজ্য হতে পারে। ট্রানজাকশন সফল হলে রসিদ ইমেইল/এসএমএস সংরক্ষণ করুন।</li>
-                                                <li>সমস্যা হলে ট্রানজাকশন আইডি সহ যোগাযোগ করুন।</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{-- Payment modes: admin/settings/payment-instructions (tab Payment modes) --}}
+            @include('frontend.partials.payment-instructions.modes-block', ['paymentModes' => $paymentModes])
 
             <div id="section-payment-terms" class="payment-terms-wrap text-center text-md-start" tabindex="-1">
-                <span class="payment-terms-badge">
-                    <i class="icofont-file-text"></i>
-                    Terms &amp; Conditions
-                </span>
-                <h1 class="payment-terms-title">Payment Terms &amp; Conditions</h1>
-                <p class="payment-terms-lead">
-                    Please read and understand our payment policies before proceeding with your consultation booking
-                </p>
-
-                <div class="payment-terms-notice text-start">
-                    <i class="icofont-warning-alt"></i>
-                    <div>
-                        <h3>Important Notice</h3>
-                        <p>
-                            By completing your payment, you acknowledge that you have read and agree to the following terms and conditions.
-                            Please review each point carefully.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="accordion payment-terms-accordion mt-4 text-start" id="paymentTermsAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="ptHeading1">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#ptCollapse1"
-                                aria-expanded="true" aria-controls="ptCollapse1">
-                                <span class="d-flex align-items-center gap-3 w-100">
-                                    <span class="pt-icon pt-icon-blue"><i class="icofont-clock-time"></i></span>
-                                    <span>Payment must be completed within 24 hours</span>
-                                </span>
-                            </button>
-                        </h2>
-                        <div id="ptCollapse1" class="accordion-collapse collapse show" aria-labelledby="ptHeading1"
-                            data-bs-parent="#paymentTermsAccordion">
-                            <div class="accordion-body">
-                                <div class="pt-inner pt-inner-blue">
-                                    After booking your consultation, you have 24 hours to complete the payment.
-                                    Unpaid bookings will be automatically cancelled after this period.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="ptHeading2">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ptCollapse2"
-                                aria-expanded="false" aria-controls="ptCollapse2">
-                                <span class="d-flex align-items-center gap-3 w-100">
-                                    <span class="pt-icon pt-icon-green"><i class="icofont-shield"></i></span>
-                                    <span>Consultation confirmed after verification</span>
-                                </span>
-                            </button>
-                        </h2>
-                        <div id="ptCollapse2" class="accordion-collapse collapse" aria-labelledby="ptHeading2"
-                            data-bs-parent="#paymentTermsAccordion">
-                            <div class="accordion-body">
-                                <div class="pt-inner">
-                                    Your consultation is confirmed only after we verify your payment. You will receive a confirmation
-                                    message or email once verification is complete.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="ptHeading3">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ptCollapse3"
-                                aria-expanded="false" aria-controls="ptCollapse3">
-                                <span class="d-flex align-items-center gap-3 w-100">
-                                    <span class="pt-icon pt-icon-orange"><i class="icofont-close-circled"></i></span>
-                                    <span>Non-payment may cancel appointment</span>
-                                </span>
-                            </button>
-                        </h2>
-                        <div id="ptCollapse3" class="accordion-collapse collapse" aria-labelledby="ptHeading3"
-                            data-bs-parent="#paymentTermsAccordion">
-                            <div class="accordion-body">
-                                <div class="pt-inner">
-                                    If payment is not received within the required time, your appointment slot may be released and
-                                    offered to other patients.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="ptHeading4">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ptCollapse4"
-                                aria-expanded="false" aria-controls="ptCollapse4">
-                                <span class="d-flex align-items-center gap-3 w-100">
-                                    <span class="pt-icon pt-icon-red"><i class="icofont-close-line-circled"></i></span>
-                                    <span>No refund after consultation is completed</span>
-                                </span>
-                            </button>
-                        </h2>
-                        <div id="ptCollapse4" class="accordion-collapse collapse" aria-labelledby="ptHeading4"
-                            data-bs-parent="#paymentTermsAccordion">
-                            <div class="accordion-body">
-                                <div class="pt-inner">
-                                    Consultation fees are generally non-refundable once the consultation has been completed as scheduled.
-                                    Refund eligibility for other cases follows our standard policy and applicable law.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="ptHeading5">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ptCollapse5"
-                                aria-expanded="false" aria-controls="ptCollapse5">
-                                <span class="d-flex align-items-center gap-3 w-100">
-                                    <span class="pt-icon pt-icon-purple"><i class="icofont-star-shape"></i></span>
-                                    <span>Emergency cases may get priority</span>
-                                </span>
-                            </button>
-                        </h2>
-                        <div id="ptCollapse5" class="accordion-collapse collapse" aria-labelledby="ptHeading5"
-                            data-bs-parent="#paymentTermsAccordion">
-                            <div class="accordion-body">
-                                <div class="pt-inner">
-                                    In urgent or emergency situations, scheduling and verification may be prioritized to ensure timely care,
-                                    which can affect slot availability for routine bookings.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="payment-terms-summary text-start">
-                    <h3>
-                        <i class="icofont-info-circle"></i>
-                        Quick Summary
-                    </h3>
-                    <ul class="pt-summary-list">
-                        <li>
-                            <span class="pt-num pt-num-1">1</span>
-                            <span>Payment must be completed within 24 hours</span>
-                        </li>
-                        <li>
-                            <span class="pt-num pt-num-2">2</span>
-                            <span>Consultation confirmed after verification</span>
-                        </li>
-                        <li>
-                            <span class="pt-num pt-num-3">3</span>
-                            <span>Non-payment may cancel appointment</span>
-                        </li>
-                        <li>
-                            <span class="pt-num pt-num-4">4</span>
-                            <span>No refund after consultation is completed</span>
-                        </li>
-                        <li>
-                            <span class="pt-num pt-num-5">5</span>
-                            <span>Emergency cases may get priority</span>
-                        </li>
-                    </ul>
-                </div>
+                @include('frontend.partials.payment-instructions.terms-block', ['paymentTermItems' => $paymentTermItems])
+                @include('frontend.partials.payment-instructions.summary-block', ['paymentQuickSummaryItems' => $paymentQuickSummaryItems])
             </div>
         </div>
     </section>
