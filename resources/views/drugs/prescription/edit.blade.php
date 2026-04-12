@@ -296,7 +296,14 @@
                     </div>
                     <!--end::Card body-->
 
-                    <div class="submit-btn-wrapper text-end">
+                    <div class="submit-btn-wrapper d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                        @isset($prescriptionInfo)
+                            <a href="{{ route('drug.prescription.print', $prescriptionInfo->prescription_id) }}"
+                                target="_blank" rel="noopener noreferrer"
+                                class="btn btn-primary btn-sm border">
+                                <i class="fas fa-eye me-1"></i>Preview
+                            </a>
+                        @endisset
                         <button type="submit" class="btn btn-success btn-sm" id="btnPrescriptionSubmit">Update</button>
                     </div>
                 </form>
@@ -317,6 +324,14 @@
 @endsection
 
 @section('page_script')
+
+    @if (session('open_prescription_print_id'))
+        <script nonce="{{ $cspNonce }}">
+            document.addEventListener('DOMContentLoaded', function () {
+                window.open(@json(route('drug.prescription.print', session('open_prescription_print_id'))), '_blank');
+            });
+        </script>
+    @endif
 
     <script nonce="{{ $cspNonce }}">
         @isset($prescriptionInfo)

@@ -121,12 +121,12 @@ class PrescriptionService
 
             $prescription = Prescription::query()->create($prescriptionData);
 
-            // Update appointment status to 'Approved' if appointment_id is provided
+            // Mark linked appointment completed when prescription is saved
             if (!empty($data['appointment_id'])) {
                 DoctorAppointment::query()
                     ->where('appointment_id', $data['appointment_id'])
                     ->update([
-                        'appointment_status' => 'Approved',
+                        'appointment_status' => 'Completed',
                         'updated_by' => loggedInUserId(),
                         'updated_at' => now(),
                     ]);

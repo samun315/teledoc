@@ -283,13 +283,38 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+
+                                            <div class="col-md-12 mt-3">
+                                                @php
+                                                    $selectedAppointmentId = old('appointment_id', request()->query('appointment_id'));
+                                                @endphp
+                                                <label class="fs-6 fw-bold mb-2">Appointment <span class="text-muted fw-normal">(optional)</span></label>
+                                                <select id="kt_appointment_id" name="appointment_id"
+                                                    class="form-select form-select-light @error('appointment_id') is-invalid @enderror"
+                                                    data-control="select2" data-placeholder="Link to appointment">
+                                                    <option value=""></option>
+                                                    @foreach ($appointmentLists as $appt)
+                                                        @php
+                                                            $apptId = $appt->appointment_id;
+                                                        @endphp
+                                                        <option value="{{ $apptId }}"
+                                                            {{ (string) $selectedAppointmentId === (string) $apptId ? 'selected' : '' }}>
+                                                            {{ \Carbon\Carbon::parse($appt->appointment_date)->format('d M Y') }}
+                                                            —
+                                                            {{ $appt?->doctor?->title }} {{ $appt?->doctor?->name }}
+                                                            ({{ \Carbon\Carbon::parse($appt->slot_time)->format('g:i A') }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('appointment_id')
+                                                    <div class="text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
                                         </div>
 
                                         <div class="card shadow-sm text-center p-3">
                                             <input type="hidden" name="patient_id" id="kt_patient_id"
                                                 value="{{ $patientInfo?->patient_id }}">
-                                            <input type="hidden" name="appointment_id" id="kt_appointment_id"
-                                                value="{{ request()->query('appointment_id') }}">
                                             <img src="{{ $patientInfo?->photo ? asset('uploads/patient/' . $patientInfo->photo) : asset('assets/media/avatars/blank.png') }}"
                                                 class="rounded-circle mb-2 mx-auto d-block" width="100" height="100"
                                                 alt="Patient Avatar">

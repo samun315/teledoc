@@ -80,15 +80,17 @@ class PrescriptionController extends Controller
     }
 
 
-    public function store(PrescriptionRequest $request): RedirectResponse|bool
+    public function store(PrescriptionRequest $request): RedirectResponse
     {
         try {
 
             $prescription = $this->prescriptionService->createPrescription($request->fields());
             if (!empty($prescription)) {
-                return to_route('drug.prescription.print', $prescription->prescription_id);
+                return to_route('drug.prescription.edit', $prescription->prescription_id)
+                    ->with('open_prescription_print_id', $prescription->prescription_id);
             }
-            return true;
+
+            return back()->with('error', 'Prescription could not be created.');
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());
         }

@@ -24,6 +24,7 @@ class PrescriptionRequest extends FormRequest
         return [
             'doctor_id' => 'required',
             'prescription_date' => 'nullable',
+            'appointment_id' => 'nullable|exists:appointments,appointment_id',
         ];
     }
 
@@ -45,7 +46,9 @@ class PrescriptionRequest extends FormRequest
         $inputData['prescription_date'] = $this->input('prescription_date');
         $inputData['doctor_id'] = $this->input('doctor_id');
         $inputData['patient_id'] = $this->input('patient_id');
-        $inputData['appointment_id'] = $this->input('appointment_id');
+        $inputData['appointment_id'] = $this->filled('appointment_id')
+            ? (int) $this->input('appointment_id')
+            : null;
         $inputData['doctor_advice'] = $this->input('doctor_advice');
         $inputData['follow_up'] = $this->input('follow_up');
 

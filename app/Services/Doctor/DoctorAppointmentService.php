@@ -49,6 +49,7 @@ class DoctorAppointmentService
                 'departments.department_name',
                 'orders.status as order_status',
                 'orders.order_id as order_id',
+                DB::raw('(SELECT p.prescription_id FROM prescriptions p WHERE p.appointment_id = appointments.appointment_id ORDER BY p.prescription_id DESC LIMIT 1) as linked_prescription_id'),
             )->latest();
 
         if ($searchKeyword) {
@@ -158,16 +159,29 @@ class DoctorAppointmentService
                 return '<span class="badge ' . $badgeClass . '">' . ucfirst(strtolower($orderStatus)) . '</span>';
             })
             ->addColumn('action', function ($row) {
+                $status = $row->appointment_status ?? '';
+
+                if (strcasecmp((string) $status, 'Completed') === 0) {
+                    $prescriptionId = $row->linked_prescription_id ?? null;
+                    if ($prescriptionId) {
+                        $viewUrl = route('drug.prescription.edit', $prescriptionId);
+
+                        return '<div class="btn-group" role="group" aria-label="Prescription actions">
+                            <a href="' . $viewUrl . '" class="btn btn-icon btn-bg-light btn-active-light-primary btn-sm" title="View prescription"><i class="fas fa-eye text-primary"></i></a>
+                            </div>';
+                    }
+
+                    return '<span class="text-muted fs-8">No prescription</span>';
+                }
 
                 $editBtn = '<a href="' . route('appointment.edit', $row->appointment_id) . '" class="btn btn-icon btn-bg-info text-white btn-sm"><i class="fas fa-edit text-white"></i></a>';
 
                 $prescriptionBtn = '<a href="' . route('drug.prescription.create', $row->patient_id) . '?doctor_id=' . $row->doctor_id . '&appointment_id=' . $row->appointment_id . '" class="btn btn-icon btn-bg-success text-white btn-sm ms-2" title="Create Prescription"><i class="fas fa-file-prescription text-white"></i></a>';
 
-                $button = '<div class="btn-group" role="group" aria-label="Basic example">
+                return '<div class="btn-group" role="group" aria-label="Basic example">
                             ' . $editBtn . '
                             ' . $prescriptionBtn . '
                             </div>';
-                return $button;
             })
             ->rawColumns(['date_of_appointment', 'doctor_info', 'patient_info', 'payment_status', 'action'])
             ->make(true);

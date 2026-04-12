@@ -83,7 +83,7 @@ let table = $("#kt_appointment_table").DataTable({
 
                 if (data == "Pending") {
                     status = "badge-warning";
-                } else if (data == "Approved") {
+                } else if (data == "Approved" || data == "Completed") {
                     status = "badge-success";
                 } else {
                     status = "badge-danger";
