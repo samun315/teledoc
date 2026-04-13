@@ -33,36 +33,51 @@
             margin-top: 10px;
         }
 
-        .prescription-header-logo {
-            flex: 0 0 22%;
-            max-width: 140px;
+        .prescription-header-doctor {
+            flex: 0 0 28%;
+            max-width: 280px;
             text-align: left;
+            min-width: 0;
+        }
+
+        .prescription-header-logo {
+            flex: 1 1 auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-width: 0;
+            padding: 0 6px;
         }
 
         .prescription-header-logo img {
             max-height: 72px;
-            max-width: 100%;
+            max-width: 220px;
+            width: auto;
             height: auto;
             object-fit: contain;
             display: block;
         }
 
-        .prescription-header-doctor {
-            flex: 1 1 auto;
-            text-align: center;
-            min-width: 0;
-            padding: 0 6px;
+        .prescription-header-patient {
+            flex: 0 0 auto;
+            width: max-content;
+            max-width: min(240px, 38vw);
+            text-align: left;
+            align-self: flex-start;
         }
 
-        .prescription-header-patient {
-            flex: 0 0 30%;
-            max-width: 240px;
-            text-align: left;
+        .prescription-header-patient > div {
+            margin: 0;
+            line-height: 1.35;
+        }
+
+        .prescription-header-patient > div + div {
+            margin-top: 2px;
         }
 
         .prescription-header-patient .label {
             display: inline-block;
-            width: 110px;
+            min-width: 4.5rem;
             font-weight: bold;
         }
 
@@ -70,8 +85,13 @@
             display: none;
         }
 
+        .prescription-header-row--no-logo {
+            justify-content: space-between;
+        }
+
         .prescription-header-row--no-logo .prescription-header-doctor {
-            text-align: center;
+            flex: 1 1 auto;
+            max-width: 50%;
         }
 
         .rx-title {
@@ -176,14 +196,8 @@
 
 <body class="p-4">
 
-    <!-- Logo (left) | Doctor (center) | Patient (right) -->
+    <!-- Doctor (left) | Logo (center) | Patient (right) -->
     <div class="prescription-header-row {{ empty($headerLogo?->file_path) ? 'prescription-header-row--no-logo' : '' }}">
-        <div class="prescription-header-logo">
-            @if (!empty($headerLogo?->file_path))
-                <img src="{{ asset($headerLogo->file_path) }}" alt="{{ $headerLogo->alt_text ?? 'Logo' }}">
-            @endif
-        </div>
-
         <div class="prescription-header-doctor">
             <span class="text-info doctor-name">
                 {{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }}
@@ -204,9 +218,18 @@
             @endif
         </div>
 
+        <div class="prescription-header-logo">
+            @if (!empty($headerLogo?->file_path))
+                <img src="{{ asset($headerLogo->file_path) }}" alt="{{ $headerLogo->alt_text ?? 'Logo' }}">
+            @endif
+        </div>
+
         <div class="prescription-header-patient">
             @if (!empty($prescription->patient->name))
                 <div><span class="label">Name:</span> {{ $prescription->patient->name }}</div>
+            @endif
+            @if (!empty($prescription->patient->patient_id_number))
+                <div><span class="label">Patient ID:</span> {{ $prescription->patient->patient_id_number }}</div>
             @endif
             @if (!empty($prescription->patient->age))
                 <div><span class="label">Age:</span> {{ $prescription->patient->age }} Yrs</div>
