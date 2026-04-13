@@ -23,31 +23,55 @@
             font-size: 12px;
         }
 
-        .top-row {
+        .prescription-header-row {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: flex-start;
+            justify-content: space-between;
             width: 100%;
-            overflow: hidden;
+            gap: 10px;
             margin-top: 10px;
         }
 
-        .doctor-info {
-            float: left;
-            width: 60%;
-        }
-
-        .patient-info-right {
-            float: right;
-            width: 38%;
+        .prescription-header-logo {
+            flex: 0 0 22%;
+            max-width: 140px;
             text-align: left;
         }
 
-        .patient-info-right .label {
+        .prescription-header-logo img {
+            max-height: 72px;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .prescription-header-doctor {
+            flex: 1 1 auto;
+            text-align: center;
+            min-width: 0;
+            padding: 0 6px;
+        }
+
+        .prescription-header-patient {
+            flex: 0 0 30%;
+            max-width: 240px;
+            text-align: left;
+        }
+
+        .prescription-header-patient .label {
             display: inline-block;
             width: 110px;
             font-weight: bold;
         }
 
-        .clearfix {
-            clear: both;
+        .prescription-header-row--no-logo .prescription-header-logo {
+            display: none;
+        }
+
+        .prescription-header-row--no-logo .prescription-header-doctor {
+            text-align: center;
         }
 
         .rx-title {
@@ -142,15 +166,25 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+
+            .prescription-header-row {
+                break-inside: avoid;
+            }
         }
     </style>
 </head>
 
 <body class="p-4">
 
-    <!-- Doctor + Patient Info -->
-    <div class="top-row">
-        <div class="doctor-info">
+    <!-- Logo (left) | Doctor (center) | Patient (right) -->
+    <div class="prescription-header-row {{ empty($headerLogo?->file_path) ? 'prescription-header-row--no-logo' : '' }}">
+        <div class="prescription-header-logo">
+            @if (!empty($headerLogo?->file_path))
+                <img src="{{ asset($headerLogo->file_path) }}" alt="{{ $headerLogo->alt_text ?? 'Logo' }}">
+            @endif
+        </div>
+
+        <div class="prescription-header-doctor">
             <span class="text-info doctor-name">
                 {{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }}
             </span><br>
@@ -168,10 +202,9 @@
                     <b>{{ strtoupper($prescription->doctor->department->department_name) }}</b>
                 </div>
             @endif
-
         </div>
 
-        <div class="patient-info-right">
+        <div class="prescription-header-patient">
             @if (!empty($prescription->patient->name))
                 <div><span class="label">Name:</span> {{ $prescription->patient->name }}</div>
             @endif
@@ -186,8 +219,6 @@
             @endif
             <div><span class="label">Date:</span> {{ $prescription->created_at->format('d.m.Y') }}</div>
         </div>
-
-        <div class="clearfix"></div>
     </div>
 
     <hr>

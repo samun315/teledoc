@@ -211,7 +211,9 @@ class PrescriptionController extends Controller
             'clinicalRecord.subscriptionType'
         ])->findOrFail($prescriptionId);
 
-        $data['siteInfo'] = SiteLogo::query()->where('type','footer')->first();
+        $data['siteInfo'] = SiteLogo::query()->where('type', 'footer')->first();
+        $data['headerLogo'] = SiteLogo::query()->where('type', 'main')->first()
+            ?? $data['siteInfo'];
 
         return view('drugs.prescription.print-prescription', $data);
     }

@@ -18,7 +18,16 @@
 
                 <!--begin::Header-->
                 <div class="card-header border-0 pt-5">
-                    <x-search />
+                    <div class="card-title d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-4 w-100">
+                        <div class="flex-grow-1 flex-md-grow-0" style="min-width: 240px;">
+                            <x-search />
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 ms-md-auto">
+                            <label for="filter_appointment_date" class="form-label mb-0 text-nowrap text-muted fw-semibold">Appointment date</label>
+                            <input type="date" id="filter_appointment_date" class="form-control form-control-solid form-control-sm w-auto" value="{{ now()->format('Y-m-d') }}" />
+                            <button type="button" class="btn btn-sm btn-light" id="filter_appointment_date_clear" title="Clear date filter">Clear</button>
+                        </div>
+                    </div>
                 </div>
                 <!--end::Header-->
 

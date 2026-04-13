@@ -24,6 +24,8 @@ class DoctorAppointmentService
     public function getAppointmentList(Request $request): JsonResponse|Model|Builder
     {
         $searchKeyword = $request->input('search');
+        $filterDate = $request->input('filter_date');
+
         $query = DoctorAppointment::query()
             ->leftJoin('doctors', 'appointments.doctor_id', '=', 'doctors.doctor_id')
             ->leftJoin('departments', 'doctors.department_id', '=', 'departments.department_id')
@@ -36,6 +38,7 @@ class DoctorAppointmentService
             ->select(
                 'appointments.*',
                 'patients.name as patient_name',
+                'patients.patient_id_number as patient_id_number',
                 'patients.email as patient_email',
                 'patients.phone as patient_phone',
                 'patients.date_of_birth as patient_dob',
@@ -58,6 +61,9 @@ class DoctorAppointmentService
                 ->orWhere('doctors.name', 'like', '%' . $searchKeyword . '%');
         }
 
+        if (is_string($filterDate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $filterDate)) {
+            $query->whereDate('appointments.appointment_date', $filterDate);
+        }
 
         // $query->orderBy('orders');
 
@@ -91,30 +97,32 @@ class DoctorAppointmentService
 
                 $photo = '<img src="' . $photoPath . '" alt="Patient" class="rounded-circle me-2" width="60" height="60">';
 
-                $name = $row->patient_name ?? '';
-                $gender = $row->patient_gender ?? '';
-                $blood_group = $row->patient_blood_group ?? '';
-                $marital_status = $row->patient_marital_status ?? '';
-                $dob = $row->patient_dob ?? '';
-                $email = $row->patient_email ?? '';
-                $phone = $row->patient_phone ?? '';
+                $name = e($row->patient_name ?? '');
+                $idNumber = e($row->patient_id_number ?? '');
+                $phoneRaw = $row->patient_phone ?? '';
+                $phone = $phoneRaw !== '' ? e($phoneRaw) : '—';
 
-                $info = '
+                $ageLabel = '—';
+                if (!empty($row->patient_dob)) {
+                    try {
+                        $ageLabel = (string) Carbon::parse($row->patient_dob)->age;
+                    } catch (Exception $e) {
+                        $ageLabel = '—';
+                    }
+                }
+
+                return '
                     <div class="d-flex align-items-start">
                         <div class="me-3">
                             ' . $photo . '
                         </div>
                         <div>
-                            <div><i class="fas fa-venus-mars text-danger"></i> :' . $gender . ',
-                            <i class="fas fa-tint text-danger ms-1"></i> :' . $blood_group . '</div>
-                            <div><i class="fas fa-ring text-warning"></i> :' . $marital_status . '</div>
-                            <div><i class="fas fa-calendar-day text-success"></i> :' . $dob . '</div>
-                            <div><i class="fas fa-envelope text-primary"></i> :' . $email . '</div>
-                            <div><i class="fas fa-phone text-dark"></i> :' . $phone . '</div>
+                            <div class="fw-bold">' . $name . '</div>
+                            <div class="text-muted fs-7">ID: ' . $idNumber . '</div>
+                            <div class="fs-7">Age: ' . e($ageLabel) . '</div>
+                            <div class="fs-7"><i class="fas fa-phone text-dark me-1"></i>' . $phone . '</div>
                         </div>
                     </div>';
-
-                return $info;
             })
             ->addColumn('payment_status', function ($row) {
                 $orderStatus = $row->order_status ?? null;

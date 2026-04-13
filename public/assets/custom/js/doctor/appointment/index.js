@@ -1,4 +1,5 @@
 let search = $("#search");
+let filterAppointmentDate = $("#filter_appointment_date");
 
 // Get the current URL of the window
 const BASE_URL = window.location.origin + "/appointment";
@@ -45,6 +46,7 @@ let table = $("#kt_appointment_table").DataTable({
         url: BASE_URL,
         data: function (d) {
             d.search = search.val();
+            d.filter_date = filterAppointmentDate.length ? filterAppointmentDate.val() : "";
         },
     },
     columns: [
@@ -106,6 +108,15 @@ let table = $("#kt_appointment_table").DataTable({
 });
 
 search.keyup(function () {
+    table.draw();
+});
+
+filterAppointmentDate.on("change", function () {
+    table.draw();
+});
+
+$("#filter_appointment_date_clear").on("click", function () {
+    filterAppointmentDate.val("");
     table.draw();
 });
 
