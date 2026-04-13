@@ -321,9 +321,9 @@
     <div class="footer-bar">
         <hr class="text-dark">
         <div class="footer-left">
-            @if ($siteInfo?->file_path)
+            {{-- @if ($siteInfo?->file_path)
                 <img src="{{ asset($siteInfo->file_path) }}" class="site-logo">
-            @endif
+            @endif --}}
 
             <div class="doctor-footer-info">
                 <b>Teledoc-Athful's Healthcare Platform.</b><br>

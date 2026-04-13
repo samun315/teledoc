@@ -281,7 +281,17 @@ class PrescriptionService
 
     public function getPrescriptionInfoById(int $prescriptionId): Model|Builder
     {
-        return Prescription::query()->with('medication', 'clinicalRecord')->where('prescription_id', $prescriptionId)->first();
+        return Prescription::query()
+            ->with([
+                'medication',
+                'clinicalRecord' => function ($query) {
+                    $query->join('subscription_types', 'prescription_clinical_records.subscription_type_id', '=', 'subscription_types.subscription_type_id')
+                        ->orderBy('subscription_types.orders', 'asc')
+                        ->select('prescription_clinical_records.*');
+                },
+            ])
+            ->where('prescription_id', $prescriptionId)
+            ->first();
     }
 
     public function updateSubscription(array $updateData, int $prescriptionId): int

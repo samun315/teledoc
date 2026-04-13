@@ -208,7 +208,12 @@ class PrescriptionController extends Controller
             'medication.drugDuration',
             'medication.drugDose',
             'medication.drugAdvice',
-            'clinicalRecord.subscriptionType'
+            'clinicalRecord' => function ($query) {
+                $query->join('subscription_types', 'prescription_clinical_records.subscription_type_id', '=', 'subscription_types.subscription_type_id')
+                    ->orderBy('subscription_types.orders', 'asc')
+                    ->select('prescription_clinical_records.*')
+                    ->with('subscriptionType');
+            },
         ])->findOrFail($prescriptionId);
 
         $data['siteInfo'] = SiteLogo::query()->where('type', 'footer')->first();
