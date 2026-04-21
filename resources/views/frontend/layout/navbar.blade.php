@@ -93,6 +93,9 @@
                             <a href="{{ route('doctors') }}" class="nav-link ">Doctor</a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('payment-instructions') }}" class="nav-link ">Payment</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('contact-us') }}" class="nav-link">Contact Us</a>
                         </li>
                     </ul>

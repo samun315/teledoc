@@ -22,9 +22,26 @@ class PrescriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'doctor_id' => 'required',
+            'doctor_id' => 'required|integer|exists:doctors,doctor_id',
+            'patient_id' => 'required|integer|exists:patients,patient_id',
             'prescription_date' => 'nullable',
             'appointment_id' => 'nullable|exists:appointments,appointment_id',
+            'drug_id' => 'nullable|array',
+            'drug_id.*' => 'nullable|integer|exists:drugs,drug_id',
+            'drug_type_id' => 'nullable|array',
+            'drug_type_id.*' => 'nullable|integer|exists:drug_types,drug_type_id',
+            'drug_strength_id' => 'nullable|array',
+            'drug_strength_id.*' => 'nullable|integer|exists:drug_strengths,drug_strength_id',
+            'drug_dose_id' => 'nullable|array',
+            'drug_dose_id.*' => 'nullable|integer|exists:drug_doses,drug_dose_id',
+            'drug_duration_id' => 'nullable|array',
+            'drug_duration_id.*' => 'nullable|integer|exists:drug_durations,drug_duration_id',
+            'drug_advice_id' => 'nullable|array',
+            'drug_advice_id.*' => 'nullable|integer|exists:drug_advices,drug_advice_id',
+            'subscription_type_id' => 'nullable|array',
+            'subscription_type_id.*' => 'nullable|integer|exists:subscription_types,subscription_type_id',
+            'subscription_details' => 'nullable|array',
+            'subscription_details.*' => 'nullable|string',
         ];
     }
 
