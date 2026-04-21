@@ -38,7 +38,7 @@
                             <div class="footer-contact">
                                 <div class="footer-logo mb-3">
                                     <a href="{{ route('home') }}">
-                                        <img src="{{ $footerLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" style="max-height: 60px;">
+                                        <img src="{{ $footerLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" style="max-height: 100px;">
                                     </a>
                                 </div>
                                 <h3>Contact Us</h3>
