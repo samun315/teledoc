@@ -211,7 +211,7 @@
     <!-- End Drop -->
 
     <!-- Map -->
-    <iframe id="map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59843174.53779285!2d62.17507173408571!3d23.728204508550363!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3663f18a24cbe857%3A0xa9416bfcd3a0f459!2sAsia!5e0!3m2!1sen!2sbd!4v1609366033158!5m2!1sen!2sbd" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+    <iframe id="map" src="https://www.google.com/maps?q=23.804093,90.4152376&z=11&output=embed" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
     <!-- End Map -->
 @endsection
 
