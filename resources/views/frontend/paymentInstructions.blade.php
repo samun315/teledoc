@@ -629,10 +629,10 @@
                             <i class="icofont-wallet"></i>
                             Payment modes
                         </a>
-                        <a href="#section-payment-terms" class="pi-jump-btn pi-jump-btn--ghost">
+                        {{-- <a href="#section-payment-terms" class="pi-jump-btn pi-jump-btn--ghost">
                             <i class="icofont-file-text"></i>
                             Terms &amp; Conditions
-                        </a>
+                        </a> --}}
                         <a href="{{ route('patient.appointment') }}" class="pi-jump-btn pi-jump-btn--ghost">
                             <i class="icofont-calendar"></i>
                             Book appointment
@@ -653,10 +653,10 @@
             {{-- Payment modes: admin/settings/payment-instructions (tab Payment modes) --}}
             @include('frontend.partials.payment-instructions.modes-block', ['paymentModes' => $paymentModes])
 
-            <div id="section-payment-terms" class="payment-terms-wrap text-center text-md-start" tabindex="-1">
+            {{-- <div id="section-payment-terms" class="payment-terms-wrap text-center text-md-start" tabindex="-1">
                 @include('frontend.partials.payment-instructions.terms-block', ['paymentTermItems' => $paymentTermItems])
                 @include('frontend.partials.payment-instructions.summary-block', ['paymentQuickSummaryItems' => $paymentQuickSummaryItems])
-            </div>
+            </div> --}}
         </div>
     </section>
 @endsection
