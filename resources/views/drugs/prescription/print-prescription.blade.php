@@ -116,8 +116,9 @@
         .footer-bar {
             background: #ffffff;
             color: #eb0707;
-            padding: 10px;
-            font-size: 11px;
+            padding: 6px 10px 4px;
+            font-size: 10px;
+            line-height: 1.25;
             font-weight: bolder;
             position: fixed;
             bottom: 0;
@@ -126,11 +127,15 @@
             z-index: 1000;
         }
 
+        .footer-bar hr {
+            margin: 0 0 4px;
+        }
+
         .footer-left {
             float: left;
             width: 50%;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .footer-right {
@@ -151,7 +156,7 @@
 
         .doctor-footer-info {
             margin-left: 10px;
-            line-height: 1.4;
+            line-height: 1.25;
             color: #000;
         }
 
@@ -319,14 +324,15 @@
         <hr class="text-dark">
         <div class="footer-left">
             @php
-                $contactWhatsapp = siteSetting('contact_whatsapp', siteSetting('contact_phone_1', ''));
-                $contactEmail = siteSetting('contact_email_1', '');
+                $contactWhatsapp = siteSetting('contact_whatsapp', siteSetting('contact_phone_1', '+960 9303893'));
+                $contactEmail = siteSetting('contact_email_1', 'info@teledocathful.com');
+                $contactWebsite = siteSetting('contact_website', 'www.teledocathful.com');
             @endphp
             <div class="doctor-footer-info">
                 <b>Athful's-Teledoc Healthcare Platform.</b><br>
                     Contact: {{ $contactWhatsapp }} (WhatsApp message)<br>
                     Email: {{ $contactEmail }} <br>
-                    Weblink:www.teledocathful.com<br>
+                    Weblink: {{ $contactWebsite }}<br>
             </div>
         </div>
         <div class="footer-right">
