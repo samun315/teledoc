@@ -34,8 +34,8 @@
         }
 
         .prescription-header-doctor {
-            flex: 0 0 28%;
-            max-width: 280px;
+            flex: 0 0 50%;
+            max-width: 50%;
             text-align: left;
             min-width: 0;
         }
@@ -59,9 +59,8 @@
         }
 
         .prescription-header-patient {
-            flex: 0 0 auto;
-            width: max-content;
-            max-width: min(240px, 38vw);
+            flex: 0 0 50%;
+            max-width: 50%;
             text-align: left;
             align-self: flex-start;
         }
@@ -129,21 +128,25 @@
 
         .footer-left {
             float: left;
-            width: 66.66%;
+            width: 78%;
             display: flex;
             align-items: center;
         }
 
         .footer-right {
             float: right;
-            width: 33.33%;
+            width: 22%;
             text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
         }
 
         .site-logo {
-            max-width: 80px;
-            max-height: 50px;
+            max-width: 150px;
+            max-height: 70px;
             object-fit: contain;
+            display: inline-block;
         }
 
         .doctor-footer-info {
@@ -197,7 +200,7 @@
 <body class="p-4">
 
     <!-- Doctor (left) | Logo (center) | Patient (right) -->
-    <div class="prescription-header-row {{ empty($headerLogo?->file_path) ? 'prescription-header-row--no-logo' : '' }}">
+    <div class="prescription-header-row prescription-header-row--no-logo">
         <div class="prescription-header-doctor">
             <span class="text-info doctor-name">
                 {{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }}
@@ -218,15 +221,9 @@
             @endif
         </div>
 
-        <div class="prescription-header-logo">
-            @if (!empty($headerLogo?->file_path))
-                <img src="{{ asset($headerLogo->file_path) }}" alt="{{ $headerLogo->alt_text ?? 'Logo' }}">
-            @endif
-        </div>
-
         <div class="prescription-header-patient">
             @if (!empty($prescription->patient->name))
-                <div><span class="label">Name:</span> {{ $prescription->patient->name }}</div>
+                <div><span class="label">Patient Name:</span> {{ $prescription->patient->name }}</div>
             @endif
             @if (!empty($prescription->patient->patient_id_number))
                 <div><span class="label">Patient ID:</span> {{ $prescription->patient->patient_id_number }}</div>
@@ -321,24 +318,30 @@
     <div class="footer-bar">
         <hr class="text-dark">
         <div class="footer-left">
-            {{-- @if ($siteInfo?->file_path)
-                <img src="{{ asset($siteInfo->file_path) }}" class="site-logo">
-            @endif --}}
-
+            @php
+                $contactWhatsapp = siteSetting('contact_whatsapp', siteSetting('contact_phone_1', ''));
+                $contactEmail = siteSetting('contact_email_1', '');
+            @endphp
             <div class="doctor-footer-info">
-                <b>Teledoc-Athful's Healthcare Platform.</b><br>
-                Contact: +960 9303893 (WhatsApp message)<br>
-                Email: info@teledocathful.com <br>
-                @php $siteUrl = request()->getSchemeAndHttpHost(); @endphp
+                <b>Athful's-Teledoc Healthcare Platform.</b><br>
+                @if (!empty($contactWhatsapp))
+                    Contact: {{ $contactWhatsapp }} (WhatsApp message)<br>
+                @endif
+                @if (!empty($contactEmail))
+                    Email: {{ $contactEmail }} <br>
+                @endif
                 Weblink:www.teledocathful.com<br>
 
             </div>
         </div>
-
-        <div class="footer-right text-dark">
-            <small>
-                যে কোন স্বাস্থ্য বিষয়ক পরামর্শের জন্য ওয়েবসাইট লিঙ্কে গিয়ে আপনার নাম রেজিস্ট্রেশন করে এপয়ন্টমেন্ট করুন।
-            </small>
+        <div class="footer-right">
+            @php
+                $footerLogoPath = $siteInfo?->file_path ?? $headerLogo?->file_path;
+                $footerLogoAlt = $siteInfo?->alt_text ?? $headerLogo?->alt_text ?? 'Logo';
+            @endphp
+            @if (!empty($footerLogoPath))
+                <img src="{{ asset($footerLogoPath) }}" class="site-logo" alt="{{ $footerLogoAlt }}">
+            @endif
         </div>
 
         <div class="clearfix"></div>

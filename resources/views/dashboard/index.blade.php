@@ -14,7 +14,7 @@
 
                     <div class="col-xl-3">
                         <!--begin::Statistics Widget 5-->
-                        <a href="javascript:void(0)" class="card bg-danger hoverable card-xl-stretch mb-xl-8">
+                        <a href="/patient" class="card bg-danger hoverable card-xl-stretch mb-xl-8">
                             <!--begin::Body-->
                             <div class="card-body">
                                 <!--begin::Svg Icon | path: icons/duotune/ecommerce/ecm002.svg-->
@@ -37,7 +37,7 @@
                                     </svg><!--end::Svg Icon--></span>
                                 <!--end::Svg Icon-->
                                 <div class="text-white fw-bolder fs-2 mb-2 mt-5">Total Patient</div>
-                                <div class="fw-bold text-white">00</div>
+                                <div class="fw-bold text-white">{{ $totalPatients }}</div>
                             </div>
                             <!--end::Body-->
                         </a>
@@ -46,7 +46,7 @@
 
                     <div class="col-xl-3">
                         <!--begin::Statistics Widget 5-->
-                        <a href="/marchant/all/balance/request" class="card bg-primary hoverable card-xl-stretch mb-xl-8">
+                        <a href="/appointment" class="card bg-primary hoverable card-xl-stretch mb-xl-8">
                             <!--begin::Body-->
                             <div class="card-body">
                                 <!--begin::Svg Icon | path: icons/duotune/ecommerce/ecm008.svg-->
@@ -68,7 +68,7 @@
                                     </svg><!--end::Svg Icon--></span>
                                 <!--end::Svg Icon-->
                                 <div class="text-white fw-bolder fs-2 mb-2 mt-5">Pending Appointment</div>
-                                <div class="fw-bold text-white">00</div>
+                                <div class="fw-bold text-white">{{ $pendingAppointments }}</div>
                             </div>
                             <!--end::Body-->
                         </a>
@@ -77,7 +77,7 @@
 
                     <div class="col-xl-3">
                         <!--begin::Statistics Widget 5-->
-                        <a href="javascript:void(0)" class="card bg-success hoverable card-xl-stretch mb-5 mb-xl-8">
+                        <a href="/doctor" class="card bg-success hoverable card-xl-stretch mb-5 mb-xl-8">
                             <!--begin::Body-->
                             <div class="card-body">
                                 <!--begin::Svg Icon | path: icons/duotune/graphs/gra005.svg-->
@@ -101,7 +101,7 @@
                                     </svg><!--end::Svg Icon--></span>
                                 <!--end::Svg Icon-->
                                 <div class="text-white fw-bolder fs-2 mb-2 mt-5">Total Doctor</div>
-                                <div class="fw-bold text-white">0</div>
+                                <div class="fw-bold text-white">{{ $totalDoctors }}</div>
                             </div>
                             <!--end::Body-->
                         </a>

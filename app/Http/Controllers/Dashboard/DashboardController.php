@@ -3,21 +3,20 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Hrm\Employee\Employee;
-use App\Models\Sales\Lead\Lead;
-use App\Models\Sales\Opportunity\Opportunity;
-use Illuminate\Http\Request;
+use App\Models\Doctor\Doctor;
+use App\Models\Doctor\DoctorAppointment;
+use App\Models\Patient\Patient;
 use Illuminate\View\View;
-use App\Models\Marchant\OrderBalance;
-use App\Models\Marchant\BalanceRequest;
-use App\Models\Marchant\RequestWhitelist;
-use App\Models\Payment\Account;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        $data=[];
+        $data = [
+            'totalPatients' => Patient::count(),
+            'pendingAppointments' => DoctorAppointment::whereRaw('LOWER(appointment_status) = ?', ['pending'])->count(),
+            'totalDoctors' => Doctor::count(),
+        ];
 
         return view('dashboard.index', $data);
     }
