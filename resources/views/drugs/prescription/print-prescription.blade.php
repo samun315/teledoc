@@ -128,14 +128,14 @@
 
         .footer-left {
             float: left;
-            width: 78%;
+            width: 50%;
             display: flex;
             align-items: center;
         }
 
         .footer-right {
             float: right;
-            width: 22%;
+            width: 50%;
             text-align: right;
             display: flex;
             justify-content: flex-end;
