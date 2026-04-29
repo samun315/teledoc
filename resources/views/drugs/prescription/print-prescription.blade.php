@@ -336,8 +336,8 @@
         </div>
         <div class="footer-right">
             @php
-                $footerLogoPath = $siteInfo?->file_path ?? $headerLogo?->file_path;
-                $footerLogoAlt = $siteInfo?->alt_text ?? $headerLogo?->alt_text ?? 'Logo';
+                $footerLogoPath =  $headerLogo?->file_path;
+                $footerLogoAlt =  $headerLogo?->alt_text ?? 'Logo';
             @endphp
             @if (!empty($footerLogoPath))
                 <img src="{{ asset($footerLogoPath) }}" class="site-logo" alt="{{ $footerLogoAlt }}">
