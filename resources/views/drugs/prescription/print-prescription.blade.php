@@ -324,14 +324,9 @@
             @endphp
             <div class="doctor-footer-info">
                 <b>Athful's-Teledoc Healthcare Platform.</b><br>
-                @if (!empty($contactWhatsapp))
                     Contact: {{ $contactWhatsapp }} (WhatsApp message)<br>
-                @endif
-                @if (!empty($contactEmail))
                     Email: {{ $contactEmail }} <br>
-                @endif
-                www.teledocathful.com
-
+                    Weblink:www.teledocathful.com<br>
             </div>
         </div>
         <div class="footer-right">
