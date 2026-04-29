@@ -321,6 +321,8 @@
             @php
                 $contactWhatsapp = siteSetting('contact_whatsapp', siteSetting('contact_phone_1', ''));
                 $contactEmail = siteSetting('contact_email_1', '');
+                echo $contactWhatsapp;
+                echo $contactEmail;
             @endphp
             <div class="doctor-footer-info">
                 <b>Athful's-Teledoc Healthcare Platform.</b><br>
