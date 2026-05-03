@@ -214,7 +214,8 @@
             @if ($prescription->doctor->degrees && $prescription->doctor->degrees->count())
                 @foreach ($prescription->doctor->degrees as $deg)
                     <div class="doctor-degree">
-                        {{ $deg->degree_title }} - {{ $deg->degree_description }}
+                        {{ $deg->degree_title }}
+                        {{-- - {{ $deg->degree_description }} --}}
                     </div>
                 @endforeach
             @endif
