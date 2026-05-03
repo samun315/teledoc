@@ -63,21 +63,25 @@
             max-width: 50%;
             text-align: left;
             align-self: flex-start;
-        }
-
-        .prescription-header-patient > div {
-            margin: 0;
+            display: grid;
+            grid-template-columns: max-content auto minmax(0, 1fr);
+            column-gap: 0.35rem;
+            row-gap: 2px;
+            align-items: baseline;
             line-height: 1.35;
         }
 
-        .prescription-header-patient > div + div {
-            margin-top: 2px;
+        .prescription-header-patient .patient-label {
+            font-weight: bold;
         }
 
-        .prescription-header-patient .label {
-            display: inline-block;
-            min-width: 4.5rem;
+        .prescription-header-patient .patient-colon {
             font-weight: bold;
+        }
+
+        .prescription-header-patient .patient-value {
+            min-width: 0;
+            word-break: break-word;
         }
 
         .prescription-header-row--no-logo .prescription-header-logo {
@@ -229,21 +233,21 @@
 
         <div class="prescription-header-patient">
             @if (!empty($prescription->patient->name))
-                <div><span class="label">Patient Name:</span> {{ $prescription->patient->name }}</div>
+                <span class="patient-label">Patient Name</span><span class="patient-colon">:</span><span class="patient-value">{{ $prescription->patient->name }}</span>
             @endif
             @if (!empty($prescription->patient->patient_id_number))
-                <div><span class="label">Patient ID:</span> {{ $prescription->patient->patient_id_number }}</div>
+                <span class="patient-label">Patient ID</span><span class="patient-colon">:</span><span class="patient-value">{{ $prescription->patient->patient_id_number }}</span>
             @endif
             @if (!empty($prescription->patient->age))
-                <div><span class="label">Age:</span> {{ $prescription->patient->age }} Yrs</div>
+                <span class="patient-label">Age</span><span class="patient-colon">:</span><span class="patient-value">{{ $prescription->patient->age }} Yrs</span>
             @endif
             @if (!empty($prescription->patient->weight))
-                <div><span class="label">Weight:</span> {{ $prescription->patient->weight }} kg</div>
+                <span class="patient-label">Weight</span><span class="patient-colon">:</span><span class="patient-value">{{ $prescription->patient->weight }} kg</span>
             @endif
             @if (!empty($prescription->patient->blood_group))
-                <div><span class="label">Blood Group:</span> {{ $prescription->patient->blood_group }}</div>
+                <span class="patient-label">Blood Group</span><span class="patient-colon">:</span><span class="patient-value">{{ $prescription->patient->blood_group }}</span>
             @endif
-            <div><span class="label">Date:</span> {{ $prescription->created_at->format('d.m.Y') }}</div>
+            <span class="patient-label">Date</span><span class="patient-colon">:</span><span class="patient-value">{{ $prescription->created_at->format('d.m.Y') }}</span>
         </div>
     </div>
 
