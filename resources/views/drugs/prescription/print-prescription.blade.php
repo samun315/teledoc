@@ -11,7 +11,12 @@
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 13px;
-            margin-bottom: 200px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .prescription-print {
+            padding: 1rem 1rem 0;
         }
 
         .doctor-name {
@@ -169,28 +174,38 @@
             text-decoration: underline;
         }
 
-        /* ✅ Signature fixed just above footer */
-        .signature-wrapper {
-            position: fixed;
-            right: 30px;
-            bottom: 130px;
-            display: inline-block;
-            background: #fff;
-            z-index: 9999; /* 🔥 FIX: doctor name visible */
+        /* Signature: in document flow so it appears once, after all content, on the last page */
+        .signature-block {
+            clear: both;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            padding-top: 0.5rem;
+            text-align: right;
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
 
-        .signature-image {
+        .signature-block .signature-image {
             max-width: 150px;
             max-height: 60px;
             object-fit: contain;
+            margin-left: auto;
             margin-bottom: 5px;
             display: block;
         }
 
-        .signature-section {
+        .signature-block .signature-name {
             border-top: 1px solid #ccc;
             padding-top: 10px;
+            display: inline-block;
+            min-width: 180px;
             text-align: right;
+        }
+
+        /* Reserve space above the fixed footer so signature/content are not covered */
+        .print-footer-spacer {
+            height: 88px;
+            clear: both;
         }
 
         @media print {
@@ -201,12 +216,20 @@
 
             .prescription-header-row {
                 break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .signature-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 
-<body class="p-4">
+<body>
+
+    <div class="prescription-print">
 
     <!-- Doctor (left) | Logo (center) | Patient (right) -->
     <div class="prescription-header-row prescription-header-row--no-logo">
@@ -314,15 +337,19 @@
         </div>
     </div>
 
-    <!-- Signature -->
-    <div class="signature-wrapper text-end">
+    <!-- Signature (document flow: once at end of prescription, never overlapping content) -->
+    <div class="signature-block">
         <img src="{{ asset('uploads/doctor sign/athful_sign.png') }}" alt="Doctor Signature" class="signature-image">
-        <div class="signature-section">
+        <div class="signature-name">
             <strong>
                 ({{ $prescription?->doctor->title }} {{ $prescription?->doctor->name }})
             </strong>
         </div>
     </div>
+
+    <div class="print-footer-spacer" aria-hidden="true"></div>
+
+    </div><!-- /.prescription-print -->
 
     <!-- Footer -->
     <div class="footer-bar">
