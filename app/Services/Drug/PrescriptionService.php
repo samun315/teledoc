@@ -314,6 +314,8 @@ class PrescriptionService
             $prescription = $this->getPrescriptionInfoById($prescriptionId);
 
             $prescription->update([
+                'doctor_advice' => $updateData['doctor_advice'] ?? null,
+                'follow_up' => $updateData['follow_up'] ?? null,
                 'updated_by' => $updateData['updated_by'],
                 'updated_at' => $updateData['updated_at'],
             ]);
