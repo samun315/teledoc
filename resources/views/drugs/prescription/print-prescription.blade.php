@@ -8,6 +8,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style nonce="{{ $cspNonce }}">
+        :root {
+            --footer-print-height: 100px;
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 13px;
@@ -15,8 +24,61 @@
             padding: 0;
         }
 
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 0;
+        }
+
+        .print-table td {
+            border: 0;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .print-table thead {
+            display: none;
+        }
+
+        .print-table tbody,
+        .print-table tfoot {
+            display: block;
+            width: 100%;
+        }
+
+        .print-table tbody td {
+            display: block;
+            padding-bottom: var(--footer-print-height);
+        }
+
+        .print-table tfoot {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .print-table tfoot td {
+            vertical-align: bottom;
+        }
+
+        .footer-zone {
+            min-height: var(--footer-print-height);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
         .prescription-print {
             padding: 1rem 1rem 0;
+        }
+
+        .prescription-print,
+        .prescription-print * {
+            overflow: visible !important;
+            visibility: visible !important;
+            max-height: none !important;
         }
 
         .doctor-name {
@@ -129,11 +191,10 @@
             font-size: 10px;
             line-height: 1.25;
             font-weight: bolder;
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            position: static;
             width: 100%;
-            z-index: 1000;
+            margin-top: 2px;
+            box-sizing: border-box;
         }
 
         .footer-bar hr {
@@ -174,7 +235,7 @@
             text-decoration: underline;
         }
 
-        /* Signature: in document flow so it appears once, after all content, on the last page */
+        /* Signature: document flow — only on last page */
         .signature-block {
             clear: both;
             margin-top: 2.5rem;
@@ -202,16 +263,52 @@
             text-align: right;
         }
 
-        /* Reserve space above the fixed footer so signature/content are not covered */
-        .print-footer-spacer {
-            height: 88px;
-            clear: both;
-        }
-
         @media print {
+            html,
             body {
+                height: auto !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+            }
+
+            .print-table {
+                display: table;
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            .print-table thead {
+                display: table-header-group;
+            }
+
+            .print-table tbody {
+                display: table-row-group;
+            }
+
+            .print-table tfoot {
+                display: table-footer-group;
+                position: static !important;
+                bottom: auto !important;
+                left: auto !important;
+                right: auto !important;
+                width: 100%;
+            }
+
+            .print-table tr {
+                display: table-row;
+            }
+
+            .print-table td {
+                display: table-cell;
+            }
+
+            .print-table tbody td {
+                padding-bottom: 0;
+            }
+
+            .footer-zone {
+                min-height: var(--footer-print-height);
             }
 
             .prescription-header-row {
@@ -219,15 +316,83 @@
                 page-break-inside: avoid;
             }
 
-            .signature-block {
+            .history-section div,
+            .prescription-print .col-6,
+            .prescription-print .col-6 p,
+            .prescription-print .col-6 div,
+            .prescription-print .col-6 span,
+            .medicine-list,
+            .advice-content,
+            .advice-content * {
+                break-inside: auto;
+                page-break-inside: auto;
+                overflow: visible !important;
+                visibility: visible !important;
+            }
+
+            .medicine-list li {
                 break-inside: avoid;
                 page-break-inside: avoid;
+            }
+
+            .signature-block {
+                position: static !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .footer-bar {
+                position: fixed !important;
+                width: 100%;
+                margin-top: 2px;
+                bottom: 0;
+                background: #ffffff;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <table class="print-table">
+        <thead><tr><td></td></tr></thead>
+        <tfoot>
+            <tr>
+                <td>
+                    <div class="footer-zone">
+                    <div class="footer-bar">
+                        <hr class="text-dark">
+                        <div class="footer-left">
+                            @php
+                                $contactWhatsapp = siteSetting('contact_whatsapp', siteSetting('contact_phone_1', '+960 9303893'));
+                                $contactEmail = siteSetting('contact_email_1', 'info@teledocathful.com');
+                                $contactWebsite = siteSetting('contact_website', 'www.teledocathful.com');
+                            @endphp
+                            <div class="doctor-footer-info">
+                                <b>Athful's-Teledoc Healthcare Platform.</b><br>
+                                    Contact: {{ $contactWhatsapp }} (WhatsApp message)<br>
+                                    Email: {{ $contactEmail }} <br>
+                                    Weblink: {{ $contactWebsite }}<br>
+                            </div>
+                        </div>
+                        <div class="footer-right">
+                            @php
+                                $footerLogoPath =  $headerLogo?->file_path;
+                                $footerLogoAlt =  $headerLogo?->alt_text ?? 'Logo';
+                            @endphp
+                            @if (!empty($footerLogoPath))
+                                <img src="{{ asset($footerLogoPath) }}" class="site-logo" alt="{{ $footerLogoAlt }}">
+                            @endif
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr>
+                <td>
 
     <div class="prescription-print">
 
@@ -327,7 +492,7 @@
 
             @if (!empty($prescription->doctor_advice))
                 <div class="rx-title">Advice</div>
-                {!! $prescription->doctor_advice !!}
+                <div class="advice-content">{!! $prescription->doctor_advice !!}</div>
             @endif
 
             @if (!empty($prescription->follow_up))
@@ -347,38 +512,12 @@
         </div>
     </div>
 
-    <div class="print-footer-spacer" aria-hidden="true"></div>
-
     </div><!-- /.prescription-print -->
 
-    <!-- Footer -->
-    <div class="footer-bar">
-        <hr class="text-dark">
-        <div class="footer-left">
-            @php
-                $contactWhatsapp = siteSetting('contact_whatsapp', siteSetting('contact_phone_1', '+960 9303893'));
-                $contactEmail = siteSetting('contact_email_1', 'info@teledocathful.com');
-                $contactWebsite = siteSetting('contact_website', 'www.teledocathful.com');
-            @endphp
-            <div class="doctor-footer-info">
-                <b>Athful's-Teledoc Healthcare Platform.</b><br>
-                    Contact: {{ $contactWhatsapp }} (WhatsApp message)<br>
-                    Email: {{ $contactEmail }} <br>
-                    Weblink: {{ $contactWebsite }}<br>
-            </div>
-        </div>
-        <div class="footer-right">
-            @php
-                $footerLogoPath =  $headerLogo?->file_path;
-                $footerLogoAlt =  $headerLogo?->alt_text ?? 'Logo';
-            @endphp
-            @if (!empty($footerLogoPath))
-                <img src="{{ asset($footerLogoPath) }}" class="site-logo" alt="{{ $footerLogoAlt }}">
-            @endif
-        </div>
-
-        <div class="clearfix"></div>
-    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     <script nonce="{{ $cspNonce }}">
         document.addEventListener("DOMContentLoaded", function () {
@@ -386,6 +525,16 @@
             document.title = patientName
                 ? patientName + "'s Prescription"
                 : "Prescription";
+
+            const footer = document.querySelector(".footer-bar");
+            if (footer) {
+                const footerHeight = Math.ceil(footer.getBoundingClientRect().height) + 6;
+                document.documentElement.style.setProperty(
+                    "--footer-print-height",
+                    footerHeight + "px"
+                );
+            }
+
             window.print();
         });
     </script>
