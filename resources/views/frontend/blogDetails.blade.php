@@ -8,7 +8,7 @@
                     <h2>Our Latest Blogs</h2>
                     <ul>
                         <li>
-                            <a href="index.html">Home</a>
+                            <a href="{{ route('home') }}">Home</a>
                         </li>
                         <li>
                             <i class="icofont-simple-right"></i>

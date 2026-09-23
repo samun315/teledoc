@@ -1,4 +1,8 @@
 @extends('frontend.master')
+
+@section('title', ($siteSettings['site_name'] ?? 'TeleDoc') . ' - Blog')
+@section('meta_description', 'Read the latest healthcare tips, news, and updates from TeleDoc Athful.')
+
 @section('content')
     <!-- Page Title -->
     <div class="page-title-area page-title-four">
@@ -8,7 +12,7 @@
                     <h2>Our Latest Blogs</h2>
                     <ul>
                         <li>
-                            <a href="index.html">Home</a>
+                            <a href="{{ route('home') }}">Home</a>
                         </li>
                         <li>
                             <i class="icofont-simple-right"></i>

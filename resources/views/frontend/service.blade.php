@@ -1,4 +1,8 @@
 @extends('frontend.master')
+
+@section('title', ($siteSettings['site_name'] ?? 'TeleDoc') . ' - Our Services')
+@section('meta_description', 'Explore TeleDoc Athful telemedicine and healthcare platform services.')
+
 @section('content')
     <!-- Page Title -->
     <div class="page-title-area page-title-four">

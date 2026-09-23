@@ -38,7 +38,7 @@
                             <div class="footer-contact">
                                 <div class="footer-logo mb-3">
                                     <a href="{{ route('home') }}">
-                                        <img src="{{ $footerLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" style="max-height: 100px;">
+                                        <img src="{{ $footerLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" style="max-height: 100px;" width="180" height="100" loading="lazy" decoding="async">
                                     </a>
                                 </div>
                                 <h3>Contact Us</h3>
@@ -86,9 +86,9 @@
                                 <ul>
                                     @forelse($footerQuickLinks as $link)
                                     <li>
-                                        <a href="{{ $link->url }}" target="{{ $link->target }}">
+                                        <a href="{{ $link->url }}" target="{{ $link->target }}" @if($link->target === '_blank') rel="noopener noreferrer" @endif>
                                             @if($link->icon)
-                                            <i class="{{ $link->icon }}"></i>
+                                            <i class="{{ $link->icon }}" aria-hidden="true"></i>
                                             @endif
                                             {{ $link->title }}
                                         </a>
@@ -128,16 +128,19 @@
                                 <form id="feedbackForm" method="POST" action="{{ route('feedback.store') }}">
                                     @csrf
                                     <div class="form-group">
-                                        <input type="text" name="name" id="feedback_name" class="form-control" placeholder="Name" required>
-                                        <span class="error text-danger" id="error_name"></span>
+                                        <label class="sr-only" for="feedback_name">Name</label>
+                                        <input type="text" name="name" id="feedback_name" class="form-control" placeholder="Name" required autocomplete="name">
+                                        <span class="error text-danger" id="error_name" role="alert"></span>
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" name="phone" id="feedback_phone" class="form-control" placeholder="Phone" required>
-                                        <span class="error text-danger" id="error_phone"></span>
+                                        <label class="sr-only" for="feedback_phone">Phone</label>
+                                        <input type="text" name="phone" id="feedback_phone" class="form-control" placeholder="Phone" required autocomplete="tel">
+                                        <span class="error text-danger" id="error_phone" role="alert"></span>
                                     </div>
                                     <div class="form-group">
+                                        <label class="sr-only" for="feedback_message">Message</label>
                                         <textarea class="form-control" name="message" id="feedback_message" rows="5" placeholder="Message" required></textarea>
-                                        <span class="error text-danger" id="error_message"></span>
+                                        <span class="error text-danger" id="error_message" role="alert"></span>
                                     </div>
                                     <div class="text-left">
                                         <button type="submit" class="btn feedback-btn" id="feedbackSubmitBtn">SUBMIT</button>

@@ -1,5 +1,9 @@
 @extends('frontend.master')
 
+@push('extra_scripts')
+<script src="{{ asset('frontend/assets/js/sweetalert2.all.min.js') }}"></script>
+@endpush
+
 @push('styles')
 <style>
     html {

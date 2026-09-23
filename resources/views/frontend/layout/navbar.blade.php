@@ -8,16 +8,16 @@
                         <ul>
                             @if(!empty($siteSettings['contact_phone_1']))
                             <li>
-                                <a href="tel:{{ $siteSettings['contact_phone_1'] }}">
-                                    <i class="icofont-ui-call"></i>
+                                <a href="tel:{{ preg_replace('/\s+/', '', $siteSettings['contact_phone_1']) }}">
+                                    <i class="icofont-ui-call" aria-hidden="true"></i>
                                     Call : {{ $siteSettings['contact_phone_1'] }}
                                 </a>
                             </li>
                             @endif
                             @if(!empty($siteSettings['contact_whatsapp']))
                             <li>
-                                <a href="https://wa.me/{{ str_replace([' ', '-', '(', ')', '+'], '', $siteSettings['contact_whatsapp']) }}" target="_blank">
-                                    <i class="icofont-whatsapp"></i>
+                                <a href="https://wa.me/{{ str_replace([' ', '-', '(', ')', '+'], '', $siteSettings['contact_whatsapp']) }}" target="_blank" rel="noopener noreferrer">
+                                    <i class="icofont-whatsapp" aria-hidden="true"></i>
                                     WhatsApp : {{ $siteSettings['contact_whatsapp'] }}
                                 </a>
                             </li>
@@ -25,14 +25,14 @@
                             @if(!empty($siteSettings['contact_email_1']))
                             <li>
                                 <a href="mailto:{{ $siteSettings['contact_email_1'] }}">
-                                    <i class="icofont-ui-message"></i>
+                                    <i class="icofont-ui-message" aria-hidden="true"></i>
                                     {{ $siteSettings['contact_email_1'] }}
                                 </a>
                             </li>
                             @endif
                             @if(!empty($siteSettings['contact_address_1']))
                             <li>
-                                <i class="icofont-location-pin"></i>
+                                <i class="icofont-location-pin" aria-hidden="true"></i>
                                 {{ $siteSettings['contact_address_1'] }}
                             </li>
                             @endif
@@ -46,8 +46,8 @@
                         <ul>
                             @foreach($socialMediaHeader as $social)
                             <li>
-                                <a href="{{ $social->url }}" target="_blank">
-                                    <i class="{{ $social->icon_class }}"></i>
+                                <a href="{{ $social->url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ ucfirst($social->platform ?? 'Social media') }}">
+                                    <i class="{{ $social->icon_class }}" aria-hidden="true"></i>
                                 </a>
                             </li>
                             @endforeach
@@ -64,16 +64,16 @@
     <!-- Menu For Mobile Device -->
     <div class="mobile-nav">
         <a href="{{ route('home') }}" class="logo">
-            <img src="{{ $mobileLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}">
+            <img src="{{ $mobileLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" width="120" height="40" decoding="async">
         </a>
     </div>
 
     <!-- Menu For Desktop Device -->
     <div class="main-nav">
         <div class="container">
-            <nav class="navbar navbar-expand-md navbar-light">
+            <nav class="navbar navbar-expand-md navbar-light" aria-label="Main navigation">
                 <a class="navbar-brand" href="{{ route('home') }}">
-                    <img src="{{ $mainLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}">
+                    <img src="{{ $mainLogo }}" alt="{{ $siteSettings['site_name'] ?? 'Site Logo' }}" width="160" height="50" decoding="async">
                 </a>
                 <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
                     <ul class="navbar-nav">
@@ -101,15 +101,21 @@
                     </ul>
                     <div class="nav-srh">
                         <div class="search-toggle">
-                            <button class="search-icon icon-search"><i class="icofont-search-1"></i></button>
-                            <button class="search-icon icon-close"><i class="icofont-close"></i></button>
+                            <button type="button" class="search-icon icon-search" aria-label="Open search">
+                                <i class="icofont-search-1" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="search-icon icon-close" aria-label="Close search">
+                                <i class="icofont-close" aria-hidden="true"></i>
+                            </button>
                         </div>
                         <div class="search-area">
-                            <form>
+                            <form role="search" aria-label="Site search">
+                                <label class="sr-only" for="search-terms">Search</label>
                                 <input type="text" class="src-input" id="search-terms"
-                                    placeholder="Search here...">
-                                <button type="submit" name="submit" value="Go" class="search-icon"><i
-                                        class="icofont-search-1"></i></button>
+                                    placeholder="Search here..." name="q" autocomplete="off">
+                                <button type="submit" name="submit" value="Go" class="search-icon" aria-label="Submit search">
+                                    <i class="icofont-search-1" aria-hidden="true"></i>
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -119,4 +125,3 @@
     </div>
 </div>
 <!-- End Navbar Area -->
-

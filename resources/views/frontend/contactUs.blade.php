@@ -1,4 +1,12 @@
 @extends('frontend.master')
+
+@section('title', ($siteSettings['site_name'] ?? 'TeleDoc') . ' - Contact Us')
+@section('meta_description', 'Contact TeleDoc Athful for online healthcare consultations, appointments, and medical support.')
+
+@push('extra_scripts')
+<script src="{{ asset('frontend/assets/js/sweetalert2.all.min.js') }}"></script>
+@endpush
+
 @section('content')
     <!-- Page Title -->
     <div class="page-title-area page-title-five">
@@ -106,7 +114,7 @@
                         <ul>
                             @if(!empty($settings['contact_whatsapp']))
                                 <li>
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['contact_whatsapp']) }}" target="_blank">{{ $settings['contact_whatsapp'] }}</a>
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['contact_whatsapp']) }}" target="_blank" rel="noopener noreferrer">{{ $settings['contact_whatsapp'] }}</a>
                                 </li>
                             @else
                                 <li>
@@ -134,27 +142,31 @@
                                 <div class="row justify-content-center">
                                     <div class="col-md-12 col-lg-12">
                                         <div class="form-group">
-                                            <input type="text" name="name" id="name" class="form-control" required="" data-error="Please enter your name" placeholder="Name">
+                                            <label class="sr-only" for="name">Name</label>
+                                            <input type="text" name="name" id="name" class="form-control" required="" data-error="Please enter your name" placeholder="Name" autocomplete="name">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6 col-lg-6">
                                         <div class="form-group">
-                                            <input type="email" name="email" id="email" class="form-control" data-error="Please enter a valid email" placeholder="Email">
+                                            <label class="sr-only" for="email">Email</label>
+                                            <input type="email" name="email" id="email" class="form-control" data-error="Please enter a valid email" placeholder="Email" autocomplete="email">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6 col-lg-6">
                                         <div class="form-group">
-                                            <input type="text" name="phone_number" id="phone_number" required="" data-error="Please enter your number" class="form-control" placeholder="Phone">
+                                            <label class="sr-only" for="phone_number">Phone</label>
+                                            <input type="text" name="phone_number" id="phone_number" required="" data-error="Please enter your number" class="form-control" placeholder="Phone" autocomplete="tel">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 col-lg-12">
                                         <div class="form-group">
+                                            <label class="sr-only" for="message">Message</label>
                                             <textarea name="message" class="form-control" id="message" cols="30" rows="5" required="" data-error="Write your message" placeholder="Your Message"></textarea>
                                             <div class="help-block with-errors"></div>
                                         </div>
@@ -211,7 +223,7 @@
     <!-- End Drop -->
 
     <!-- Map -->
-    <iframe id="map" src="https://www.google.com/maps?q=23.804093,90.4152376&z=11&output=embed" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+    <iframe id="map" title="TeleDoc Athful location map" src="https://www.google.com/maps?q=23.804093,90.4152376&z=11&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     <!-- End Map -->
 @endsection
 

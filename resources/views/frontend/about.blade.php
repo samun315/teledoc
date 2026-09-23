@@ -1,4 +1,20 @@
 @extends('frontend.master')
+
+@section('title', ($siteSettings['site_name'] ?? 'TeleDoc') . ' - About Us')
+@section('meta_description', 'Learn about TeleDoc Athful — an online healthcare platform connecting patients with doctors through telemedicine.')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/odometer.min.css') }}">
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.carousel.min.css') }}">
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.theme.default.min.css') }}">
+@endpush
+
+@push('extra_scripts')
+<script src="{{ asset('frontend/assets/js/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('frontend/assets/js/odometer.min.js') }}"></script>
+<script src="{{ asset('frontend/assets/js/jquery.appear.min.js') }}"></script>
+@endpush
+
 @section('content')
     <!-- Page Title -->
     <div class="page-title-area page-title-four">
@@ -8,7 +24,7 @@
                     <h2>About</h2>
                     <ul>
                         <li>
-                            <a href="index.html">Home</a>
+                            <a href="{{ route('home') }}">Home</a>
                         </li>
                         <li>
                             <i class="icofont-simple-right"></i>

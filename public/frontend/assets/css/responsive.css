@@ -100,7 +100,8 @@
   .slider-item .slider-text {
     margin-top: 0px;
   }
-  .slider-item .slider-text h1 {
+  .slider-item .slider-text h1,
+  .slider-item .slider-text h2.slider-heading {
     font-size: 26px;
     margin-bottom: 18px;
     max-width: 100%;
@@ -490,7 +491,8 @@
     padding-top: 160px;
     padding-bottom: 150px;
   }
-  .home-slider-two .slider-item .slider-text h1 {
+  .home-slider-two .slider-item .slider-text h1,
+  .slider-item .slider-text h2.slider-heading {
     font-size: 24px;
   }
   /*-- End Home Slider --*/
@@ -1603,7 +1605,8 @@
   .slider-item .slider-text {
     margin-top: 0;
   }
-  .slider-item .slider-text h1 {
+  .slider-item .slider-text h1,
+  .slider-item .slider-text h2.slider-heading {
     font-size: 30px;
     margin-bottom: 30px;
     margin-left: auto;
@@ -1951,7 +1954,8 @@
   .home-slider-two .slider-item:before {
     display: none;
   }
-  .home-slider-two .slider-item .slider-text h1 {
+  .home-slider-two .slider-item .slider-text h1,
+  .slider-item .slider-text h2.slider-heading {
     color: #232323;
   }
   .home-slider-two .slider-item .slider-text p {

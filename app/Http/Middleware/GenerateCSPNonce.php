@@ -13,7 +13,7 @@ class GenerateCSPNonce
         View::share('cspNonce', $nonce);
         $response = $next($request);
 
-        // Create the CSP policy string
+        // Only set CSP when directives are configured (empty header hurts Best Practices)
         $cspPolicy = [
 //            "default-src 'self'",
 //            "script-src 'self' 'nonce-$nonce'",
@@ -25,10 +25,15 @@ class GenerateCSPNonce
 //            "base-uri 'self'"
         ];
 
-        // Join the directives into a single CSP string
-        $cspPolicyString = implode('; ', $cspPolicy);
+        if (!empty($cspPolicy)) {
+            $response->headers->set('Content-Security-Policy', implode('; ', $cspPolicy));
+        }
 
-        $response->headers->set('Content-Security-Policy', $cspPolicyString);
+        // Security headers that help Best Practices without changing behavior
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
         return $response;
     }

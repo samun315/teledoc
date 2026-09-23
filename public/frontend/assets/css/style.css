@@ -52,10 +52,9 @@ This files table contents are outlined below>>>>>
 ** - Home Four CSS
 ** - Home Five CSS
 */
-@import url("../../../../css");
 /*-- Default CSS --*/
 body {
-  font-family: "Poppins";
+  font-family: "Poppins", "Noto Sans Bengali", "Kalpurush", sans-serif;
   color: #4a6f8a;
   background-color: #ffffff;
   font-size: 15px;

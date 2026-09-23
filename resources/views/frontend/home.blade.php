@@ -1,7 +1,24 @@
     @extends('frontend.master')
+
+        @push('head')
+            @if(isset($sliders) && $sliders->isNotEmpty() && $sliders->first()->image)
+            <link rel="preload" as="image" href="{{ asset('storage/' . $sliders->first()->image) }}" fetchpriority="high">
+            @endif
+        @endpush
+
+        @push('critical_styles')
+            <link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.carousel.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.theme.default.min.css') }}">
+        @endpush
+
+        @push('extra_scripts')
+            <script src="{{ asset('frontend/assets/js/owl.carousel.min.js') }}"></script>
+        @endpush
+
         @section('content')
+            <h1 class="sr-only">{{ $siteSettings['site_name'] ?? 'TeleDoc' }} — {{ $siteSettings['site_tagline'] ?? 'Online Healthcare Platform' }}</h1>
             <!-- Start Home Slider -->
-            @include('frontend.layout.slider');
+            @include('frontend.layout.slider')
             <!-- End Home Slider -->
 
             <!-- Counter -->
@@ -58,14 +75,14 @@
                         <div class="col-lg-6">
                             <div class="about-item">
                                 <div class="about-left">
-                                    <img src="{{ $about->left_image ? asset('storage/' . $about->left_image) : asset('frontend/assets/img/home-one/4.jpg') }}" alt="About">
+                                    <img src="{{ $about->left_image ? asset('storage/' . $about->left_image) : asset('frontend/assets/img/home-one/4.jpg') }}" alt="{{ $about->title ?? 'About TeleDoc' }}" width="540" height="420" loading="lazy" decoding="async">
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="about-item about-right">
                                 @if($about->right_image)
-                                <img src="{{ asset('storage/' . $about->right_image) }}" alt="About">
+                                <img src="{{ asset('storage/' . $about->right_image) }}" alt="{{ $about->title ?? 'About TeleDoc' }}" width="540" height="420" loading="lazy" decoding="async">
                                 @endif
                                 <h2>{{ $about->title }}</h2>
                                 <div class="about-description">{!! $about->description !!}</div>
@@ -262,7 +279,7 @@
                         <div class="col-lg-6">
                             <div class="expertise-item">
                                 <div class="expertise-right">
-                                    <img src="{{ $expertise->image ? asset('storage/' . $expertise->image) : asset('frontend/assets/img/home-one/6.jpg') }}" alt="Expertise">
+                                    <img src="{{ $expertise->image ? asset('storage/' . $expertise->image) : asset('frontend/assets/img/home-one/6.jpg') }}" alt="{{ $expertise->title ?? 'Our expertise' }}" width="540" height="420" loading="lazy" decoding="async">
                                 </div>
                             </div>
                         </div>
@@ -441,7 +458,7 @@
                             <div class="col-sm-6 col-lg-4 wow fadeInUp" data-wow-delay="{{ $delay }}">
                                 <div class="doctor-item">
                                     <div class="doctor-top">
-                                        <img src="{{ $photoPath }}" alt="{{ $doctor->name }}">
+                                        <img src="{{ $photoPath }}" alt="{{ $doctor->title }} {{ $doctor->name }}" width="400" height="400" loading="lazy" decoding="async">
                                     </div>
                                     <div class="doctor-bottom">
                                         <h3>
@@ -479,7 +496,7 @@
                             <div class="blog-item">
                                 <div class="blog-top">
                                     <a href="{{ route('blog-details', $latestBlog->slug) }}">
-                                        <img src="{{ $latestBlog->banner_image ? asset('storage/' . $latestBlog->banner_image) : asset('assets/img/home-one/11.jpg') }}" alt="{{ $latestBlog->title }}">
+                                        <img src="{{ $latestBlog->banner_image ? asset('storage/' . $latestBlog->banner_image) : asset('frontend/assets/img/home-one/11.jpg') }}" alt="{{ $latestBlog->title }}" width="400" height="250" loading="lazy" decoding="async">
                                     </a>
                                 </div>
                                 <div class="blog-bottom">

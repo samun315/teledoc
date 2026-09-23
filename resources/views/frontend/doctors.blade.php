@@ -1,4 +1,8 @@
 @extends('frontend.master')
+
+@section('title', ($siteSettings['site_name'] ?? 'TeleDoc') . ' - Our Doctors')
+@section('meta_description', 'Meet qualified doctors on TeleDoc Athful and book online healthcare appointments.')
+
 @section('content')
     <!-- Page Title -->
     <div class="page-title-area page-title-one">

@@ -8,12 +8,12 @@
                             <div class="slider-text">
                                 <div class="slider-shape{{ $index == 0 ? '' : ($index == 1 ? '-two' : '-three') }}">
                                     @if($slider->shape_image)
-                                        <img src="{{ asset('storage/' . $slider->shape_image) }}" alt="{{ $slider->title }}">
+                                        <img src="{{ asset('storage/' . $slider->shape_image) }}" alt="" width="400" height="400" @if($index === 0) fetchpriority="high" decoding="async" @else loading="lazy" decoding="async" @endif aria-hidden="true">
                                     @else
-                                        <img src="frontend/assets/img/home-one/home-slider/{{ $index + 1 }}.png" alt="Shape">
+                                        <img src="{{ asset('frontend/assets/img/home-one/home-slider/' . ($index + 1) . '.png') }}" alt="" width="400" height="400" @if($index === 0) fetchpriority="high" decoding="async" @else loading="lazy" decoding="async" @endif aria-hidden="true">
                                     @endif
                                 </div>
-                                <h1>{{ $slider->title }}</h1>
+                                <h2 class="slider-heading">{{ $slider->title }}</h2>
                                 @if($slider->subtitle)
                                     <p>{{ $slider->subtitle }}</p>
                                 @endif
@@ -68,9 +68,9 @@
                         <div class="container">
                             <div class="slider-text">
                                 <div class="slider-shape">
-                                    <img src="frontend/assets/img/home-one/home-slider/1.png" alt="Shape">
+                                    <img src="{{ asset('frontend/assets/img/home-one/home-slider/1.png') }}" alt="" width="400" height="400" decoding="async" aria-hidden="true">
                                 </div>
-                                <h1>Welcome to Our Healthcare Center</h1>
+                                <h2 class="slider-heading">Welcome to Our Healthcare Center</h2>
                                 <p>Providing exceptional healthcare services with care and compassion.</p>
                                 <div class="common-btn">
                                     <a href="{{ route('contact-us') }}">Contact Us</a>

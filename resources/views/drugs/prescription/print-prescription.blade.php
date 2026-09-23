@@ -191,7 +191,7 @@
             font-size: 10px;
             line-height: 1.25;
             font-weight: bolder;
-            position: static;
+            position: fixed;
             width: 100%;
             margin-top: 2px;
             box-sizing: border-box;
