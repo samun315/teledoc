@@ -134,8 +134,8 @@
                                             <label class="form-label">Current Background:</label>
                                             <img src="{{ asset('storage/' . $slider->image) }}"
                                                  alt="{{ $slider->title }}"
-                                                 class="img-fluid rounded"
-                                                 style="max-height: 150px;">
+                                                 class="img-fluid rounded d-block"
+                                                 style="max-width: 100%; max-height: 150px; height: auto;">
                                         </div>
                                     @endif
 
@@ -167,8 +167,8 @@
                                             <label class="form-label">Current Shape:</label>
                                             <img src="{{ asset('storage/' . $slider->shape_image) }}"
                                                  alt="Shape"
-                                                 class="img-fluid rounded"
-                                                 style="max-height: 150px;">
+                                                 class="img-fluid rounded d-block"
+                                                 style="max-width: 100%; max-height: 150px; height: auto;">
                                         </div>
                                     @endif
 

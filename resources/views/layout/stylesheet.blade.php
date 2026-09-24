@@ -1,4 +1,4 @@
-<base href="../../">
+<base href="{{ url('/') }}/">
 <title>@yield('title') | TeleDoc </title>
 
 <meta charset="utf-8" />
