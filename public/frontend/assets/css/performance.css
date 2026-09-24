@@ -1,14 +1,5 @@
 /* Performance & a11y helpers — no visual design changes */
 @font-face {
-  font-family: IcoFont;
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url("../fonts/icofont.woff2") format("woff2"),
-       url("../fonts/icofont.woff") format("woff");
-}
-
-@font-face {
   font-family: "Poppins";
   font-style: normal;
   font-weight: 400;
@@ -55,6 +46,38 @@
   visibility: hidden !important;
   pointer-events: none !important;
   display: none !important;
+}
+
+.home-slider.owl-carousel {
+  display: block;
+}
+
+.home-slider.owl-carousel:not(.owl-loaded) > .slider-item ~ .slider-item {
+  display: none;
+}
+
+.slider-item {
+  overflow: hidden;
+}
+
+.slider-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.slider-item .d-table {
+  position: relative;
+  z-index: 1;
+}
+
+.slider-shape-img {
+  width: min(100%, 480px);
+  height: auto;
+  aspect-ratio: 3 / 2;
 }
 
 .slider-item .slider-text h2.slider-heading {

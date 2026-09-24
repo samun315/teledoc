@@ -1,17 +1,36 @@
 <!-- Home Slider -->
         <div class="home-slider owl-theme owl-carousel">
             @forelse($sliders as $index => $slider)
-            <div class="slider-item slider-item-img" @if($slider->image) style="background-image: url('{{ asset('storage/' . $slider->image) }}');" @endif>
+            @php
+                $bgSmall = $slider->image ? responsive_image($slider->image, 640, 50) : null;
+                $bgLarge = $slider->image ? responsive_image($slider->image, 1280, 55) : null;
+                $shapeSrc = $slider->shape_image ? responsive_image($slider->shape_image, 480, 50) : asset('frontend/assets/img/home-one/home-slider/' . ($index + 1) . '.png');
+            @endphp
+            <div class="slider-item slider-item-img">
+                @if($bgSmall)
+                    <img
+                        class="slider-bg"
+                        @if($index === 0)
+                            src="{{ $bgSmall }}"
+                            srcset="{{ $bgSmall }} 640w, {{ $bgLarge }} 1280w"
+                            sizes="100vw"
+                            fetchpriority="high"
+                        @else
+                            data-src="{{ $bgSmall }}"
+                            data-srcset="{{ $bgSmall }} 640w, {{ $bgLarge }} 1280w"
+                        @endif
+                        alt=""
+                        width="640"
+                        height="420"
+                        decoding="async"
+                    >
+                @endif
                 <div class="d-table">
                     <div class="d-table-cell">
                         <div class="container">
                             <div class="slider-text">
                                 <div class="slider-shape{{ $index == 0 ? '' : ($index == 1 ? '-two' : '-three') }}">
-                                    @if($slider->shape_image)
-                                        <img src="{{ asset('storage/' . $slider->shape_image) }}" alt="" width="400" height="400" @if($index === 0) fetchpriority="high" decoding="async" @else loading="lazy" decoding="async" @endif aria-hidden="true">
-                                    @else
-                                        <img src="{{ asset('frontend/assets/img/home-one/home-slider/' . ($index + 1) . '.png') }}" alt="" width="400" height="400" @if($index === 0) fetchpriority="high" decoding="async" @else loading="lazy" decoding="async" @endif aria-hidden="true">
-                                    @endif
+                                    <img class="slider-shape-img" data-src="{{ $shapeSrc }}" alt="" width="480" height="320" decoding="async" aria-hidden="true">
                                 </div>
                                 <h2 class="slider-heading">{{ $slider->title }}</h2>
                                 @if($slider->subtitle)

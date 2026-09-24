@@ -42,7 +42,6 @@
         <link rel="icon" type="image/png" href="{{ $favicon }}">
 
         <link rel="preload" href="{{ asset('frontend/assets/fonts/poppins/poppins-400.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ asset('frontend/assets/fonts/icofont.woff2') }}" as="font" type="font/woff2" crossorigin>
 
         @stack('head')
 
@@ -50,11 +49,11 @@
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/bootstrap.min.css') }}">
         @stack('critical_styles')
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/meanmenu.css') }}">
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/icofont.min.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}?v={{ filemtime(public_path('frontend/assets/css/style.css')) }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/responsive.css') }}">
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}">
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/performance.css') }}">
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/performance.css') }}?v={{ filemtime(public_path('frontend/assets/css/performance.css')) }}">
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/icofont.min.css') }}" media="print" onload="this.media='all'">
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}" media="print" onload="this.media='all'">
 
         <!-- Non-critical CSS (async) -->
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}" media="print" onload="this.media='all'">
@@ -62,6 +61,8 @@
         <noscript>
             <link rel="stylesheet" href="{{ asset('frontend/assets/css/animate.min.css') }}">
             <link rel="stylesheet" href="{{ asset('frontend/assets/css/theme-dark.css') }}">
+            <link rel="stylesheet" href="{{ asset('frontend/assets/css/icofont.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}">
         </noscript>
 
         @stack('styles')

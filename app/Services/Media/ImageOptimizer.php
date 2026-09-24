@@ -111,6 +111,59 @@ class ImageOptimizer
         return $filename;
     }
 
+    /**
+     * Small WebP used for first paint. Generated once and reused.
+     * Returns null when the source file is missing.
+     */
+    public function variantUrl(?string $relativePath, int $width, int $quality = 55): ?string
+    {
+        $relativePath = ltrim(str_replace('\\', '/', (string) $relativePath), '/');
+        if ($relativePath === '' || str_contains($relativePath, '..')) {
+            return null;
+        }
+
+        $source = null;
+        foreach ($this->storagePaths($relativePath) as $candidate) {
+            if (is_file($candidate)) {
+                $source = $candidate;
+                break;
+            }
+        }
+
+        if ($source === null) {
+            return asset('storage/'.$relativePath);
+        }
+
+        $width = max(320, min($width, self::MAX_EDGE));
+        $stamp = filemtime($source) ?: 0;
+        $name = substr(sha1($relativePath.'|'.$stamp.'|'.$width.'|'.$quality), 0, 16).'-'.$width.'.webp';
+        $variantRelative = 'cache/img/'.$name;
+        $saved = false;
+
+        foreach ($this->storagePaths($variantRelative) as $absolutePath) {
+            if (is_file($absolutePath) && filesize($absolutePath) > 0) {
+                $saved = true;
+                break;
+            }
+
+            $folder = dirname($absolutePath);
+            if (! is_dir($folder) && ! mkdir($folder, 0755, true) && ! is_dir($folder)) {
+                continue;
+            }
+
+            $image = (new ImageManager(new Driver()))->read($source);
+            $image->scaleDown(width: $width);
+            $image->encode(new WebpEncoder(quality: $quality, strip: true))->save($absolutePath);
+            $saved = is_file($absolutePath);
+        }
+
+        if (! $saved) {
+            return asset('storage/'.$relativePath);
+        }
+
+        return asset('storage/'.$variantRelative);
+    }
+
     public function canConvert(UploadedFile $file): bool
     {
         $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: '');

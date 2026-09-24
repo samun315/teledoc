@@ -1,7 +1,19 @@
 <?php
 
+use App\Services\Media\ImageOptimizer;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+
+if (! function_exists('responsive_image')) {
+    function responsive_image(?string $path, int $width, int $quality = 55): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        return app(ImageOptimizer::class)->variantUrl($path, $width, $quality);
+    }
+}
 
 // Date converted form to database
 if (!function_exists('dateConvertFormToDB')) {
