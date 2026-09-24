@@ -3,8 +3,8 @@
 namespace App\Services\Testimonial;
 
 use App\Models\Testimonial\Testimonial;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class TestimonialService
 {
@@ -123,9 +123,7 @@ class TestimonialService
      */
     private function uploadImage($image)
     {
-        $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-        $path = $image->storeAs('testimonials', $filename, 'public');
-        return $path;
+        return app(ImageOptimizer::class)->storeOnDisk($image, 'testimonials');
     }
 
     /**

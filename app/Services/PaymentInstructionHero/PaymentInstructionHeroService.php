@@ -3,9 +3,9 @@
 namespace App\Services\PaymentInstructionHero;
 
 use App\Models\PaymentInstructionHero\PaymentInstructionHero;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PaymentInstructionHeroService
 {
@@ -82,9 +82,7 @@ class PaymentInstructionHeroService
 
     private function uploadBanner($file): string
     {
-        $filename = time().'_'.Str::random(10).'.'.$file->getClientOriginalExtension();
-
-        return $file->storeAs('payment-instruction-hero', $filename, 'public');
+        return app(ImageOptimizer::class)->storeOnDisk($file, 'payment-instruction-hero');
     }
 
     /**

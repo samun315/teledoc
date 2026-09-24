@@ -3,8 +3,8 @@
 namespace App\Services\About;
 
 use App\Models\About\About;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class AboutService
 {
@@ -77,9 +77,7 @@ class AboutService
      */
     private function uploadImage($image, $type = 'left')
     {
-        $filename = time() . '_' . $type . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-        $path = $image->storeAs('about', $filename, 'public');
-        return $path;
+        return app(ImageOptimizer::class)->storeOnDisk($image, 'about', $type);
     }
 
     /**

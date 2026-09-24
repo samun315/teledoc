@@ -3,10 +3,10 @@
 namespace App\Services\PaymentMode;
 
 use App\Models\PaymentMode\PaymentMode;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PaymentModeService
 {
@@ -71,9 +71,7 @@ class PaymentModeService
 
     private function storeImage($file): string
     {
-        $filename = time().'_'.Str::random(10).'.'.$file->getClientOriginalExtension();
-
-        return $file->storeAs('payment-modes', $filename, 'public');
+        return app(ImageOptimizer::class)->storeOnDisk($file, 'payment-modes');
     }
 
     private function deleteImageIfExists(?string $path): void

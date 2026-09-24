@@ -3,6 +3,7 @@
 namespace App\Services\Blog;
 
 use App\Models\Blog\Blog;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -129,9 +130,7 @@ class BlogService
      */
     private function uploadImage($image)
     {
-        $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-        $path = $image->storeAs('blog/images', $filename, 'public');
-        return $path;
+        return app(ImageOptimizer::class)->storeOnDisk($image, 'blog/images');
     }
 
     /**

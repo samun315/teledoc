@@ -3,8 +3,8 @@
 namespace App\Services\Expertise;
 
 use App\Models\Expertise\Expertise;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ExpertiseService
 {
@@ -64,9 +64,7 @@ class ExpertiseService
      */
     private function uploadImage($image)
     {
-        $filename = time() . '_expertise_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-        $path = $image->storeAs('expertise', $filename, 'public');
-        return $path;
+        return app(ImageOptimizer::class)->storeOnDisk($image, 'expertise', 'expertise');
     }
 
     /**

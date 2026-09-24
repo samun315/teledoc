@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Common\SiteLogo;
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class SiteLogoService
 {
@@ -45,12 +45,17 @@ class SiteLogoService
             unlink(public_path($oldLogo->file_path));
         }
 
-        // Generate unique filename
-        $filename = $type . '_' . time() . '.' . $file->getClientOriginalExtension();
-        $filePath = $directory . '/' . $filename;
+        $optimizer = app(ImageOptimizer::class);
 
-        // Move file to public directory
-        $file->move(public_path($directory), $filename);
+        // Favicons and vector files stay in their original format.
+        if ($type !== 'favicon' && $optimizer->canConvert($file)) {
+            $filename = $optimizer->storeInPublic($file, $directory, $type);
+            $filePath = $directory.'/'.$filename;
+        } else {
+            $filename = $type.'_'.time().'.'.$file->getClientOriginalExtension();
+            $filePath = $directory.'/'.$filename;
+            $file->move(public_path($directory), $filename);
+        }
 
         // Update or create logo record
         $logo = SiteLogo::updateOrCreate(

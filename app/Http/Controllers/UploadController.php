@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
 {
@@ -17,14 +17,11 @@ class UploadController extends Controller
 
             // Validate file
             $request->validate([
-                $fileKey => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+                $fileKey => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
             ]);
 
-            // Generate unique filename
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-            // Store file in public/uploads directory
-            $path = $file->storeAs('uploads', $filename, 'public');
+            $path = app(ImageOptimizer::class)->storeOnDisk($file, 'uploads');
+            $filename = basename($path);
 
             // Return CKEditor response format
             return response()->json([

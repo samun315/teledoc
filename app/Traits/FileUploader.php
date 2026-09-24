@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Services\Media\ImageOptimizer;
 use Illuminate\Http\Request;
 use Intervention\Image\Image;
 use Illuminate\Support\Facades\File;
@@ -31,21 +32,7 @@ trait FileUploader
 
             if (in_array($file_ext, $valid_extensions, true)) {
 
-                //Upload New File
-                $filenameWithExt = $requestFile->file($attach)->getClientOriginalName();
-                $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                $extension = $requestFile->file($attach)->getClientOriginalExtension();
-                $fileNameToStore = str_replace([' ', '-', '&', '#', '$', '%', '^', ';', ':'], '_',
-                        $filename) . '_' . time() . '.' . $extension;
-
-                //Crete Folder Location
-                $path = public_path('uploads/' . $directory . '/');
-                if (!File::exists($path)) {
-                    File::makeDirectory($path, 0777, true, true);
-                }
-
-                // Move file inside public/uploads/ directory
-                $requestFile->file($attach)->move('uploads/' . $directory . '/', $fileNameToStore);
+                $fileNameToStore = $this->persistUploadedFile($requestFile->file($attach), $directory);
             } else {
                 $fileNameToStore = null;
             }
@@ -80,22 +67,7 @@ trait FileUploader
                 $file_ext = $file->getClientOriginalExtension();
 
                 if (in_array($file_ext, $valid_extensions, true)) {
-                    // Generate unique filename
-                    $filenameWithExt = $file->getClientOriginalName();
-                    $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                    $extension = $file->getClientOriginalExtension();
-                    $fileNameToStore = str_replace([' ', '-', '&', '#', '$', '%', '^', ';', ':'], '_',
-                            $filename) . '_' . time() . '.' . $extension;
-
-                    // Create folder if not exists
-                    $path = public_path("uploads/{$directory}/");
-                    if (!File::exists($path)) {
-                        File::makeDirectory($path, 0777, true, true);
-                    }
-
-                    // Move file inside public/uploads/ directory
-                    $file->move("uploads/{$directory}/", $fileNameToStore);
-                    $uploadedFiles[] = $fileNameToStore;
+                    $uploadedFiles[] = $this->persistUploadedFile($file, $directory);
                 }
             }
         }
@@ -128,21 +100,7 @@ trait FileUploader
                     File::delete($old_attach);
                 }
 
-                //Upload New File
-                $filenameWithExt = $request->file($attach)->getClientOriginalName();
-                $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file($attach)->getClientOriginalExtension();
-                $fileNameToStore = str_replace([' ', '-', '&', '#', '$', '%', '^', ';', ':'], '_',
-                        $filename) . '_' . time() . '.' . $extension;
-
-                //Crete Folder Location
-                $path = public_path('uploads/' . $directory . '/');
-                if (!File::exists($path)) {
-                    File::makeDirectory($path, 0777, true, true);
-                }
-
-                // Move file inside public/uploads/ directory
-                $request->file($attach)->move('uploads/' . $directory . '/', $fileNameToStore);
+                $fileNameToStore = $this->persistUploadedFile($request->file($attach), $directory);
             } else {
                 $fileNameToStore = $oldAttach;
             }
@@ -201,21 +159,7 @@ trait FileUploader
                     File::delete($old_attach);
                 }
 
-                //Upload New File
-                $filenameWithExt = $request->file($attach)->getClientOriginalName();
-                $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-                $extension = $request->file($attach)->getClientOriginalExtension();
-                $fileNameToStore = str_replace([' ', '-', '&', '#', '$', '%', '^', ';', ':'], '_',
-                        $filename) . '_' . time() . '.' . $extension;
-
-                //Crete Folder Location
-                $path = public_path('uploads/' . $directory . '/');
-                if (!File::exists($path)) {
-                    File::makeDirectory($path, 0777, true, true);
-                }
-
-                // Move file inside public/uploads/ directory
-                $request->file($attach)->move('uploads/' . $directory . '/', $fileNameToStore);
+                $fileNameToStore = $this->persistUploadedFile($request->file($attach), $directory);
             } else {
                 $fileNameToStore = $model->$field;
             }
@@ -347,6 +291,31 @@ trait FileUploader
         } else {
             $fileNameToStore = $model->$field;
         }
+
+        return $fileNameToStore;
+    }
+
+    /**
+     * Store an upload. Raster images are converted to compressed WebP.
+     */
+    private function persistUploadedFile($file, string $directory): string
+    {
+        $optimizer = app(ImageOptimizer::class);
+
+        if ($optimizer->canConvert($file)) {
+            return $optimizer->storeInPublic($file, 'uploads/'.$directory);
+        }
+
+        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $extension = $file->getClientOriginalExtension();
+        $fileNameToStore = str_replace([' ', '-', '&', '#', '$', '%', '^', ';', ':'], '_', $filename).'_'.time().'.'.$extension;
+
+        $path = public_path('uploads/'.$directory.'/');
+        if (! File::exists($path)) {
+            File::makeDirectory($path, 0777, true, true);
+        }
+
+        $file->move('uploads/'.$directory.'/', $fileNameToStore);
 
         return $fileNameToStore;
     }
