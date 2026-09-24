@@ -4,7 +4,6 @@ namespace App\Services\Expertise;
 
 use App\Models\Expertise\Expertise;
 use App\Services\Media\ImageOptimizer;
-use Illuminate\Support\Facades\Storage;
 
 class ExpertiseService
 {
@@ -72,9 +71,7 @@ class ExpertiseService
      */
     private function deleteImage($imagePath)
     {
-        if (Storage::disk('public')->exists($imagePath)) {
-            Storage::disk('public')->delete($imagePath);
-        }
+        app(ImageOptimizer::class)->delete($imagePath);
     }
 }
 

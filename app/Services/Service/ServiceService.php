@@ -4,7 +4,6 @@ namespace App\Services\Service;
 
 use App\Models\Service\Service;
 use App\Services\Media\ImageOptimizer;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ServiceService
@@ -166,9 +165,7 @@ class ServiceService
      */
     private function deleteImage($imagePath)
     {
-        if (Storage::disk('public')->exists($imagePath)) {
-            Storage::disk('public')->delete($imagePath);
-        }
+        app(ImageOptimizer::class)->delete($imagePath);
     }
 }
 

@@ -28,6 +28,48 @@ Route::middleware(['preventBackHistory', 'user'])->group(function () {
 
 Route::post('/store/upload-image', [UploadController::class, 'upload'])->name('admin.summernote.uploadImage');
 
+// Serves uploaded images when public/storage is not the same folder as storage/app/public.
+Route::get('/storage/{path}', function (string $path) {
+    $path = str_replace('\\', '/', urldecode($path));
+
+    if ($path === '' || str_contains($path, '..')) {
+        abort(404);
+    }
+
+    $types = [
+        'webp' => 'image/webp',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+    ];
+    $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+    if (! isset($types[$extension])) {
+        abort(404);
+    }
+
+    foreach ([storage_path('app/public'), public_path('storage')] as $root) {
+        $candidate = $root.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $path);
+
+        if (! is_file($candidate)) {
+            continue;
+        }
+
+        $realRoot = realpath($root);
+        $realFile = realpath($candidate);
+
+        if ($realRoot && $realFile && str_starts_with($realFile, $realRoot)) {
+            return response()->file($realFile, [
+                'Content-Type' => $types[$extension],
+                'Cache-Control' => 'public, max-age=31536000',
+            ]);
+        }
+    }
+
+    abort(404);
+})->where('path', '.*');
+
 Route::get('/', [FrontendController::class, 'homePage'])->name('home');
 Route::get('/welcome2', [FrontendController::class, 'homePage2'])->name('welcome2');
 Route::get('/contact-us', [FrontendController::class, 'contactUs'])->name('contact-us');

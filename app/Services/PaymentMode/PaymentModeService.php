@@ -6,7 +6,6 @@ use App\Models\PaymentMode\PaymentMode;
 use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class PaymentModeService
 {
@@ -76,8 +75,6 @@ class PaymentModeService
 
     private function deleteImageIfExists(?string $path): void
     {
-        if ($path && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
+        app(ImageOptimizer::class)->delete($path);
     }
 }

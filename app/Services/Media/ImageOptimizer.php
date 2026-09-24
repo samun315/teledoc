@@ -3,7 +3,6 @@
 namespace App\Services\Media;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
@@ -37,21 +36,60 @@ class ImageOptimizer
         string $disk = 'public',
         ?int $maxEdge = null
     ): string {
-        $storage = Storage::disk($disk);
         $directory = trim($directory, '/');
+        $relativePath = $directory.'/'.$this->filename($prefix);
+        $saved = false;
 
-        if (! $storage->exists($directory)) {
-            $storage->makeDirectory($directory);
+        foreach ($this->storagePaths($relativePath) as $absolutePath) {
+            $folder = dirname($absolutePath);
+
+            if (! is_dir($folder) && ! mkdir($folder, 0755, true) && ! is_dir($folder)) {
+                continue;
+            }
+
+            $this->writeWebp($file, $absolutePath, $maxEdge);
+            $saved = is_file($absolutePath) || $saved;
         }
 
-        $relativePath = $directory.'/'.$this->filename($prefix);
-        $this->writeWebp($file, $storage->path($relativePath), $maxEdge);
-
-        if (! $storage->exists($relativePath)) {
+        if (! $saved) {
             throw new RuntimeException('Failed to save image file. Please check directory permissions.');
         }
 
         return $relativePath;
+    }
+
+    /**
+     * Remove a stored image from the public storage directory.
+     */
+    public function delete(?string $relativePath): void
+    {
+        if (! $relativePath) {
+            return;
+        }
+
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+
+        foreach ($this->storagePaths($relativePath) as $absolutePath) {
+            if (is_file($absolutePath)) {
+                unlink($absolutePath);
+            }
+        }
+    }
+
+    /**
+     * Web-visible path and Laravel's public disk path.
+     * On the live server these are not always the same directory.
+     *
+     * @return list<string>
+     */
+    private function storagePaths(string $relativePath): array
+    {
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+
+        return array_values(array_unique([
+            public_path('storage/'.$relativePath),
+            storage_path('app/public/'.$relativePath),
+        ]));
     }
 
     /**

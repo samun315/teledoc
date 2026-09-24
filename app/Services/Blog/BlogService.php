@@ -4,7 +4,6 @@ namespace App\Services\Blog;
 
 use App\Models\Blog\Blog;
 use App\Services\Media\ImageOptimizer;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class BlogService
@@ -138,9 +137,7 @@ class BlogService
      */
     private function deleteImage($imagePath)
     {
-        if (Storage::disk('public')->exists($imagePath)) {
-            Storage::disk('public')->delete($imagePath);
-        }
+        app(ImageOptimizer::class)->delete($imagePath);
     }
 
     /**

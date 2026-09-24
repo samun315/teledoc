@@ -5,7 +5,6 @@ namespace App\Services\PaymentInstructionHero;
 use App\Models\PaymentInstructionHero\PaymentInstructionHero;
 use App\Services\Media\ImageOptimizer;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class PaymentInstructionHeroService
 {
@@ -67,7 +66,7 @@ class PaymentInstructionHeroService
 
         if (! empty($data['banner_image'] ?? null)) {
             if ($hero->banner_image) {
-                Storage::disk('public')->delete($hero->banner_image);
+                app(ImageOptimizer::class)->delete($hero->banner_image);
             }
             $data['banner_image'] = $this->uploadBanner($data['banner_image']);
         } else {

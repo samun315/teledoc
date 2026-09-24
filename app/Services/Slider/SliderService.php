@@ -4,7 +4,6 @@ namespace App\Services\Slider;
 
 use App\Models\Slider\Slider;
 use App\Services\Media\ImageOptimizer;
-use Illuminate\Support\Facades\Storage;
 
 class SliderService
 {
@@ -121,9 +120,7 @@ class SliderService
      */
     private function deleteImage($imagePath)
     {
-        if (Storage::disk('public')->exists($imagePath)) {
-            Storage::disk('public')->delete($imagePath);
-        }
+        app(ImageOptimizer::class)->delete($imagePath);
     }
 }
 
