@@ -3,10 +3,19 @@
 @section('title', ($siteSettings['site_name'] ?? 'TeleDoc') . ' - About Us')
 @section('meta_description', 'Learn about TeleDoc Athful — an online healthcare platform connecting patients with doctors through telemedicine.')
 
+@push('head')
+<link rel="preload" as="image" href="{{ asset('frontend/assets/img/blog/1.webp') }}" type="image/webp" fetchpriority="high">
+@endpush
+
 @push('styles')
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/odometer.min.css') }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.carousel.min.css') }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.theme.default.min.css') }}" media="print" onload="this.media='all'">
+<noscript>
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/odometer.min.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.carousel.min.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/assets/css/owl.theme.default.min.css') }}">
+</noscript>
 @endpush
 
 @push('extra_scripts')
@@ -45,14 +54,14 @@
                 <div class="col-lg-6">
                     <div class="about-item">
                         <div class="about-left">
-                            <img src="{{ $about->left_image ? asset('storage/' . $about->left_image) : asset('frontend/assets/img/home-one/4.jpg') }}" alt="About">
+                            <img src="{{ $about->left_image ? asset('storage/' . $about->left_image) : asset('frontend/assets/img/home-one/4.jpg') }}" alt="About" decoding="async">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="about-item about-right">
                         @if($about->right_image)
-                        <img src="{{ asset('storage/' . $about->right_image) }}" alt="About">
+                        <img src="{{ asset('storage/' . $about->right_image) }}" alt="" decoding="async" loading="lazy">
                         @endif
                         <h2>{{ $about->title }}</h2>
                         <div class="about-description">{!! $about->description !!}</div>
@@ -167,7 +176,6 @@
                 </div>
                 <div class="col-lg-5 pr-0">
                     <div class="speciality-item speciality-right">
-                        <img src="frontend/assets/img/home-two/8.jpg" alt="Speciality">
                         <div class="speciality-emergency">
                             <div class="speciality-icon">
                                 <i class="icofont-ui-call"></i>
@@ -230,9 +238,9 @@
                     @forelse($testimonials as $testimonial)
                         <div class="testimonial-item">
                             @if($testimonial->patient_image)
-                                <img src="{{ asset('storage/' . $testimonial->patient_image) }}" alt="{{ $testimonial->patient_name }}">
+                                <img src="{{ asset('storage/' . $testimonial->patient_image) }}" alt="{{ $testimonial->patient_name }}" width="120" height="120" decoding="async" loading="lazy">
                             @else
-                                <img src="{{ asset('assets/img/home-three/7.png') }}" alt="{{ $testimonial->patient_name }}">
+                                <img src="{{ asset('frontend/assets/img/home-three/7.png') }}" alt="{{ $testimonial->patient_name }}" width="120" height="120" decoding="async" loading="lazy">
                             @endif
                             <h3>{{ $testimonial->patient_name }}</h3>
                             @if($testimonial->patient_designation)
@@ -249,7 +257,7 @@
                         </div>
                     @empty
                         <div class="testimonial-item">
-                            <img src="{{ asset('assets/img/home-three/7.png') }}" alt="Testimonial">
+                            <img src="{{ asset('frontend/assets/img/home-three/7.png') }}" alt="Testimonial" width="120" height="120" decoding="async" loading="lazy">
                             <h3>No Testimonials Yet</h3>
                             <p>We are collecting patient testimonials. Check back soon!</p>
                         </div>
@@ -273,7 +281,7 @@
                     <div class="blog-item">
                         <div class="blog-top">
                             <a href="{{ route('blog-details', $latestBlog->slug) }}">
-                                <img src="{{ $latestBlog->banner_image ? asset('storage/' . $latestBlog->banner_image) : asset('assets/img/home-one/11.jpg') }}" alt="{{ $latestBlog->title }}">
+                                <img src="{{ $latestBlog->banner_image ? asset('storage/' . $latestBlog->banner_image) : asset('frontend/assets/img/home-one/11.jpg') }}" alt="{{ $latestBlog->title }}" decoding="async" loading="lazy">
                             </a>
                         </div>
                         <div class="blog-bottom">

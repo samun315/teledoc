@@ -2740,6 +2740,14 @@ footer {
 /*-- Page Title --*/
 .page-title-four {
   background-image: url("../img/blog/1.jpg");
+  background-image: -webkit-image-set(
+    url("../img/blog/1.webp") type("image/webp"),
+    url("../img/blog/1.jpg") type("image/jpeg")
+  );
+  background-image: image-set(
+    url("../img/blog/1.webp") type("image/webp"),
+    url("../img/blog/1.jpg") type("image/jpeg")
+  );
 }
 .page-title-four .page-title-item {
   margin-top: 0;

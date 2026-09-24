@@ -86,24 +86,19 @@ class FrontendController extends Controller
     }
 
     function about(){
-        // Fetch 3 latest published blogs for home page
         $latestBlogs = Blog::where('status', 'Published')
             ->latest('published_at')
             ->take(3)
-            ->get();
-        // Fetch all active services
+            ->get(['blog_id', 'title', 'slug', 'banner_image', 'content', 'published_at', 'created_at']);
         $services = Service::where('status', 'Active')
             ->orderBy('order', 'asc')
-            ->get();
-        // Fetch all active specialities
+            ->get(['service_id', 'title', 'icon', 'short_description']);
         $specialities = Speciality::where('status', 'Active')
             ->orderBy('order', 'asc')
-            ->get();
-        // Fetch all active testimonials
+            ->get(['speciality_id', 'title', 'description', 'icon']);
         $testimonials = Testimonial::where('status', 'Active')
             ->orderBy('order', 'asc')
-            ->get();
-        // Fetch active about section
+            ->get(['testimonial_id', 'patient_name', 'patient_designation', 'patient_image', 'testimonial_text', 'rating']);
         $about = About::where('status', 'Active')->first();
 
         return view('frontend.about', compact('latestBlogs', 'services', 'specialities', 'testimonials', 'about'));

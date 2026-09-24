@@ -51,7 +51,7 @@
         @stack('critical_styles')
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/meanmenu.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/icofont.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}?v={{ filemtime(public_path('frontend/assets/css/style.css')) }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/responsive.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/rich-text-content.css') }}">
         <link rel="stylesheet" href="{{ asset('frontend/assets/css/performance.css') }}">
