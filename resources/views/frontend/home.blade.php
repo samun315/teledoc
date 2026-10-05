@@ -2,7 +2,7 @@
 
         @push('head')
             @if(isset($sliders) && $sliders->isNotEmpty() && $sliders->first()->image)
-            <link rel="preload" as="image" href="{{ responsive_image($sliders->first()->image, 640, 50) }}" fetchpriority="high" type="image/webp">
+            <link rel="preload" as="image" href="{{ responsive_image($sliders->first()->image, 1280, 55) }}" fetchpriority="high" type="image/webp">
             @endif
         @endpush
 

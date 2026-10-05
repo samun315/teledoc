@@ -2,18 +2,13 @@ jQuery(function ($) {
 	'use strict';
 
 	// START MENU JS
-	var scrollFrame = 0;
-	window.addEventListener('scroll', function () {
-		if (scrollFrame) return;
-		scrollFrame = window.requestAnimationFrame(function () {
-			scrollFrame = 0;
-			var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-			var nav = document.querySelector('.main-nav');
-			if (nav) nav.classList.toggle('menu-shrink', y > 50);
-			var toTop = document.getElementById('toTop');
-			if (toTop) toTop.classList.toggle('is-on', y > 200);
-		});
-	}, { passive: true });
+	$(window).on('scroll', function() {
+		if ($(this).scrollTop() > 50) {
+			$('.main-nav').addClass('menu-shrink');
+		} else {
+			$('.main-nav').removeClass('menu-shrink');
+		}
+	});
 	// END MENU JS
 
     // Mean Menu
@@ -24,30 +19,18 @@ jQuery(function ($) {
 	}
 
 	// Home Slider JS
-	function revealSliderImage(el) {
-		if (!el || !el.getAttribute('data-src')) return;
-		el.src = el.getAttribute('data-src');
-		el.removeAttribute('data-src');
-		if (el.getAttribute('data-srcset')) {
-			el.srcset = el.getAttribute('data-srcset');
-			el.removeAttribute('data-srcset');
-		}
-	}
-
 	function loadDeferredSliderImages() {
-		var pending = document.querySelectorAll('.slider-bg[data-src], .slider-shape-img[data-src]');
-		var index = 0;
-		function next() {
-			if (index >= pending.length) return;
-			revealSliderImage(pending[index]);
-			index += 1;
-			if ('requestIdleCallback' in window) {
-				window.requestIdleCallback(next, { timeout: 1000 });
-			} else {
-				window.setTimeout(next, 200);
+		$('.slider-bg[data-src], .slider-shape-img[data-src]').each(function () {
+			var el = this;
+			if (el.getAttribute('data-src')) {
+				el.src = el.getAttribute('data-src');
+				el.removeAttribute('data-src');
 			}
-		}
-		next();
+			if (el.getAttribute('data-srcset')) {
+				el.srcset = el.getAttribute('data-srcset');
+				el.removeAttribute('data-srcset');
+			}
+		});
 	}
 
 	if ($('.home-slider').length && $.fn.owlCarousel) {
@@ -57,10 +40,9 @@ jQuery(function ($) {
 			margin:0,
 			nav: true,
 			dots: true,
-			smartSpeed: 400,
-			checkVisibility: false,
+			smartSpeed: 1000,
 			autoplay:true,
-			autoplayTimeout:8000,
+			autoplayTimeout:15000,
 			autoplayHoverPause:true,
 			navText: [
 				"<i class='icofont-simple-left' aria-hidden='true'></i><span class='sr-only'>Previous slide</span>",
@@ -201,12 +183,15 @@ jQuery(function ($) {
 
 	// Back to top
 	$('body').append('<button type="button" id="toTop" class="back-to-top-btn" aria-label="Back to top"><i class="icofont-hand-drawn-up" aria-hidden="true"></i></button>');
-	var toTopBtn = document.getElementById('toTop');
-	if (toTopBtn && (window.pageYOffset || 0) > 200) {
-		toTopBtn.classList.add('is-on');
-	}
+	$(window).on('scroll', function () {
+		if ($(this).scrollTop() != 0) {
+			$('#toTop').fadeIn();
+		} else {
+			$('#toTop').fadeOut();
+		}
+	});
 	$('#toTop').on('click', function(){
-		window.scrollTo(0, 0);
+		$("html, body").animate({ scrollTop: 0 }, 0);
 		return false;
 	});
 
