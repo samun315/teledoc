@@ -107,6 +107,10 @@
   font: inherit;
 }
 
+#toTop.is-on {
+  display: block;
+}
+
 .switch-box .switch {
   cursor: pointer;
 }
